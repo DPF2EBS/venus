@@ -50,25 +50,25 @@ DP.define(function (D) {
      *		set style
      * 
      */
-		/**
-			* Property Meaning
-			* fillStyle The color, gradient, or pattern for fills
-			* font The CSS font for text-drawing commands
-			* globalAlpha Transparency to be added to all pixels
-			* drawn
-			* globalCompositeOperation How to combine pixel colors
-			* lineCap How the ends of lines are rendered
-			* lineJoin How vertices are rendered
-			* lineWidth The width of stroked lines
-			* miterLimit Maximum length of acute mitered vertices
-			* textAlign Horizontal alignment of text
-			* textBaseline Vertical alignment of text
-			* shadowBlur How crisp or fuzzy shadows are
-			* shadowColor The color of drop shadows
-			* shadowOffsetX The horizontal offset of shadows
-			* shadowOffsetY The vertical offset of shadows
-			* strokeStyle The color, gradient, or pattern for lines
-			**/
+    /*
+     * Property Meaning
+     * fillStyle The color, gradient, or pattern for fills
+     * font The CSS font for text-drawing commands
+     * globalAlpha Transparency to be added to all pixels
+     * drawn
+     * globalCompositeOperation How to combine pixel colors
+     * lineCap How the ends of lines are rendered
+     * lineJoin How vertices are rendered
+     * lineWidth The width of stroked lines
+     * miterLimit Maximum length of acute mitered vertices
+     * textAlign Horizontal alignment of text
+     * textBaseline Vertical alignment of text
+     * shadowBlur How crisp or fuzzy shadows are
+     * shadowColor The color of drop shadows
+     * shadowOffsetX The horizontal offset of shadows
+     * shadowOffsetY The vertical offset of shadows
+     * strokeStyle The color, gradient, or pattern for lines
+     */
     Canvas.prototype.style = function () {
         var args = D.makeArray(arguments),
             o, key;
@@ -247,28 +247,29 @@ DP.define(function (D) {
                 this.lineTo(x + r * Math.sin(angle), y - r * Math.cos(angle));
             }
             this.closePath(); // Connect last vertex back to the first
-						this.fill();
+            this.fill();
         },
-				shear:function(kx,ky){
-					/**
-  					* x' = ax + cy + e
-  					* y' = bx + dy + f
-					 */
-					// Shear transform:
-					// x' = x + kx*y;
-					// y' = y + ky*x;
-					this.transform(1,ky,kx,1,0,0);
-					return this;
-				},
+        shear: function (kx, ky) {
+            /**
+             * x' = ax + cy + e
+             * y' = bx + dy + f
+             */
+            // Shear transform:
+            // x' = x + kx*y;
+            // y' = y + ky*x;
+            this.transform(1, ky, kx, 1, 0, 0);
+            return this;
+        },
 
- 				// Rotate theta radians clockwise around (x,y).
- 				// This can also be accomplished with a translate,
- 				// rotate, translate back sequence of transformations.
-				rotateAbout:function(theta,x,y){
-					var ct = Math.cos(theta), st = Math.sin(theta);
-					this.transform(ct, -st, st, ct,-x*ct-y*st+x, x*st-y*ct+y);
-					return this;
-				}
+        // Rotate theta radians clockwise around (x,y).
+        // This can also be accomplished with a translate,
+        // rotate, translate back sequence of transformations.
+        rotateAbout: function (theta, x, y) {
+            var ct = Math.cos(theta),
+                st = Math.sin(theta);
+            this.transform(ct, -st, st, ct, -x * ct - y * st + x, x * st - y * ct + y);
+            return this;
+        }
 
     });
 
@@ -397,8 +398,9 @@ DP.define(function (D) {
 //	  readonly attribute unsigned long height;
 //	  readonly attribute Uint8ClampedArray data;
 //	};
-       
-/**
+
+/*
  * TODOs
  * 1 change style to attr
  */
+
