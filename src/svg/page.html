@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test svg</title>
+</head>
+<body>
+<script type="text/javascript" src="svg.js">
+</script>
+<script type="text/javascript" src="picasso.js"></script>
+<script type="text/javascript">
+    var canvas = Picasso.Draw.svg({
+        width:1000,
+        height:1000
+    });
+
+    var rect = Picasso.Draw.rect(100, 200).putItIn(canvas).putItAt(200, 100).fill('red').border(5, 'black');
+    var circle = Picasso.Draw.circle(40).putItIn(canvas).putItAt(200, 200).fill('blue');
+
+    canvas.putItIn(document.body);
+</script>
+</body>
+</html>
