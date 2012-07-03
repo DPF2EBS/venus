@@ -8,15 +8,38 @@
 </script>
 <script type="text/javascript" src="picasso.js"></script>
 <script type="text/javascript">
-    var canvas = Picasso.Draw.svg({
+
+    //买个画布 2支画笔
+    var canvas = Picasso.Buy.canvas({
         width:1000,
         height:1000
     });
+    var redBrush = Picasso.Buy.brush('red', 2);
+    var greenBrush = Picasso.Buy.brush('green', 2);
 
-    var rect = Picasso.Draw.rect(100, 200).putItIn(canvas).putItAt(200, 100).fill('red').border(5, 'black');
-    var circle = Picasso.Draw.circle(40).putItIn(canvas).putItAt(200, 200).fill('blue');
+    var g = Picasso.Draw.g();
+    g.at(10, 10).in(canvas);
+    g.scale(2).scale(0.5).translate(100, 100);
 
-    canvas.putItIn(document.body);
+
+    // 用绿笔画个矩形和圆形
+    Picasso.Brush.use(greenBrush);
+    var rect = Picasso.Draw.rect(100, 200).in(g).at(200, 100);
+    var circle = Picasso.Draw.circle(40).in(g).at(0, 200);
+
+    //用红笔把矩形加边框
+    Picasso.Brush.use(redBrush);
+    rect.stroke();
+
+    //绑个事件
+    rect.on('click', function (e) {
+        console.log('rect clicked', e);
+    });
+
+    //画个线 还是红笔
+    var line = Picasso.Draw.line(10, 10, 100, 100).in(canvas).stroke(10);
+
+    canvas.in(document.body);
 </script>
 </body>
 </html>
