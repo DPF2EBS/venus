@@ -132,17 +132,17 @@
     /*
      * canvas DOM
      */
-    Vango.attr = function (key, value) {
+    vangoprop.attr = function (key, value) {
         this.canvas.setAttribute(key, value);
     }
-    Vango.attr = __overloadGetterSetter.call(Vango.attr, function (key) {
+    vangoprop.attr = __overloadGetterSetter.call(Vango.attr, function (key) {
         this.canvas.getAttribute(key);
     });
 
-    Vango.css = function (property, value) {
+    vangoprop.css = function (property, value) {
         this.canvas.style[property] = value;
     };
-    Vango.css = __overloadGetterSetter.call(Vango.css, function (property) {
+    vangoprop.css = __overloadGetterSetter.call(Vango.css, function (property) {
         return this.canvas.style[property];
     });
 
@@ -183,11 +183,11 @@
 									{radialGradient}
 									{canvasPattern}
 	*/
-    Vango.style = function (key, value) {
+    vangoprop.style = function (key, value) {
         this.context[key] = value;
     };
 
-    Vango.style = __overloadGetterSetter.call(Vango.style, function (key) {
+    vangoprop.style = __overloadGetterSetter.call(Vango.style, function (key) {
         return this.context[key];
     });
 
@@ -225,9 +225,11 @@
      * transform
      */
     "scale", "rotate", "translate", "transform", "setTransform"].forEach(function (method) {
-        var ctx = this.context;
-        ctx[method].apply(ctx, arguments);
-        return this;
+		vangoprop[method]=function(){
+        	var ctx = this.context;
+        	ctx[method].apply(ctx, arguments);
+        	return this;
+		}
     });
 
 
@@ -261,8 +263,10 @@
      * 	void	addColorStop(float offset,string color)
      */
     "createLinearGradient", "createRadialGradient", "createPattern"], forEach(function (method) {
-        var ctx = this.context;
-        return ctx[method].apply(ctx, arguments);
+		vangoprop[method]=function(){
+        	var ctx = this.context;
+        	return ctx[method].apply(ctx, arguments);
+		}
     });
 
 
@@ -287,8 +291,38 @@
         /*
          * graph extends
          */
-        line: function (sx, sy, ex, ey) {},
-        cicle: function (x, y, radius) {},
+        line: function (sx, sy, ex, ey, styles) {
+			this.save();
+			if(stlyes){
+				this.style(styles);
+			}
+			this.beginPath();
+			this.moveTo(sx,sy);
+			this.lineTo(ex,ey);
+			if(styles.stroke){
+				this.stroke();
+			}
+			if(styles.fill){
+				this.fill();
+			}
+			this.restore();
+			return this;		
+		},
+        cicle: function (x, y, radius) {
+			this.save();
+			if(styles){
+				this.style(styles);
+			}	
+        	this.beginPath();
+        	this.arc(x, y, radius, 0, PI * 2);
+        	if (fill) {
+        	    this.fill();
+        	} else {
+        	    this.stroke();
+        	}
+			this.restore();
+        	return this;
+		},
         rect: function (x, y, width, height) {},
         ellipse: function (x, y, radiusX, radiusY) {},
         polygon: function (n, x, y, radius, angle) {},
