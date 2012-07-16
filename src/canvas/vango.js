@@ -85,7 +85,7 @@
 })(this, function () {
 
     var __hasProp = Object.prototype.hasOwnProperty,
-    DOC=document;
+    DOC=document,
     vangoprop=Vango.prototype,
   	__animate;
 	
