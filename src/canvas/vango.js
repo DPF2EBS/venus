@@ -89,7 +89,7 @@
     vangoprop=Vango.prototype,
   	__animate;
 	
-	__animate = (function() {
+		__animate = (function() {
   	  var requestAnimationFrame;
   	  requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function(callback) {
   	    setTimeout(function() {
@@ -320,7 +320,7 @@
 		A		elliptical arc						(rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 		R		Catmull-Rom curveto*				x1 y1 (x y)+
 		*/
-	  	path:function(pathString){},
+	  path:function(pathString){},
 		image:function(src,x,y){},
 		text:function(x,y,text){},
 
@@ -329,6 +329,15 @@
 		 */
 		shear:function(kx,ky){},
 		rotateAbout:function(x,y,theta){}
+	});
+
+	
+	/*
+	 * native events adapter
+	 */
+	Vango.extend({
+		on:function(type,listener){},
+		off:function(type,listener){}		
 	});
 
 	/*
