@@ -85,7 +85,7 @@
     DOC = document,
     vangoprop = Vango.prototype,
     defaultoptions = {
-      fill: true;
+      fill: true,
       stroke: false
     },
     __animate;
@@ -301,7 +301,7 @@
     },
     rectangle: function (x, y, width, height, options) {
       var ss;
-      options || options = {};
+      options = options || {};
       options = __mergeOptions(options, defaultOptions);
       ss = options.styles;
       this.save();
@@ -417,7 +417,7 @@
      */
     text: function (x, y, text, options) {
       var ss, maxWidth;
-      options || options = {};
+      options = options || {};
       options = __mergeOptions(options, defaultOptions);
       ss = options.styles;
       this.save();
@@ -476,14 +476,14 @@
     }
   }
 
-  function __overloadGetterSetter = function (getter) {
+  function __overloadGetterSetter(getter) {
     var that = this;
     return function (a, b) {
       if (a == null) return this;
-      if (type of a === "string" && arguments.length === 1 && getter) {
+      if (typeof a === "string" && arguments.length === 1 && getter) {
         return getter.call(this, a);
       }
-      if (type a === "object") {
+      if (typeof a === "object") {
         for (var k in a) {
           that.call(this, k, a[k]);
         }
@@ -496,7 +496,7 @@
 
   function __styleFillAndStroke(options, pathBuilder) {
     var ss;
-    options || options = {};
+    options = options || {};
     options = __mergeOptions(options, defaultOptions);
     ss = options.styles;
 
