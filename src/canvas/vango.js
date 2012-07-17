@@ -66,7 +66,6 @@
       // 8. return undefined
     };
   }
-
 })();
 /*
  * wrapper for browser,nodejs or AMD loader evn
@@ -85,6 +84,10 @@
   var __hasProp = Object.prototype.hasOwnProperty,
     DOC = document,
     vangoprop = Vango.prototype,
+    defaultoptions = {
+      fill: true;
+      stroke: false
+    },
     __animate;
 
   __animate = (function () {
@@ -199,32 +202,25 @@
   [
   /*
    * path method
-   */
-  "beginPath", "closePath", "fill", "stroke", "clip", "moveTo", "lineTo", "arc", "arcTo", "bezierCurveTo", "quadraticCurveTo", "rect",
+   */"beginPath", "closePath", "fill", "stroke", "clip", "moveTo", "lineTo", "arc", "arcTo", "bezierCurveTo", "quadraticCurveTo", "rect",
   /*
    * rectangles
-   */
-  "clearRect", "fillRect", "strokeRect",
+   */"clearRect", "fillRect", "strokeRect",
   /*
    * text
-   */
-  "fillText", "strokeText",
+   */"fillText", "strokeText",
   /*
    * image drawing
-   */
-  "drawImage",
+   */"drawImage",
   /*
    * pixel manipulation
-   */
-  "putImageData",
+   */"putImageData",
   /*
    * 2D Context
-   */
-  "save", "restore",
+   */"save", "restore",
   /*
    * transform
-   */
-  "scale", "rotate", "translate", "transform", "setTransform"].forEach(function (method) {
+   */"scale", "rotate", "translate", "transform", "setTransform"].forEach(function (method) {
     vangoprop[method] = function () {
       var ctx = this.context;
       ctx[method].apply(ctx, arguments);
@@ -235,18 +231,15 @@
 
   /*
    * return original returns
-   */
-  [
+   */ [
   /*
    * path
-   */
-  "isPointInPath",
+   */"isPointInPath",
   /*
    * text
    * measureText Interface
    * width	{float}	readonly
-   */
-  "measureText",
+   */"measureText",
   /*
    * pixel manipulation
    * imageData	interface
@@ -255,14 +248,12 @@
    * 	data	CanvasPixelArray	readyonly
    * CanvasPixelArray interface
    * 	length	unsigned	readyonly
-   */
-  "createImageData", "getImageData",
+   */"createImageData", "getImageData",
   /*
    * color style & shadow
    * CanvasGradient interface
    * 	void	addColorStop(float offset,string color)
-   */
-  "createLinearGradient", "createRadialGradient", "createPattern"].forEach(function (method) {
+   */"createLinearGradient", "createRadialGradient", "createPattern"].forEach(function (method) {
     vangoprop[method] = function () {
       var ctx = this.context;
       return ctx[method].apply(ctx, arguments);
@@ -292,41 +283,89 @@
      * graph extends
      */
     line: function (sx, sy, ex, ey, options) {
-      var that=this;
-			__styleFillAndStroke.call(this, options, function(){
-				that.beginPath();
-      	that.moveTo(sx, sy);
-      	that.lineTo(ex, ey);
-			});
+      var that = this;
+      __styleFillAndStroke.call(this, options, function () {
+        that.beginPath();
+        that.moveTo(sx, sy);
+        that.lineTo(ex, ey);
+      });
       return this;
     },
     circle: function (x, y, radius, options) {
-			var that=this;
-			__styleFillAndStroke.call(this, options, function(){
-      	that.beginPath();
-      	that.arc(x, y, radius, 0, PI * 2);
-			});
-			return this;
+      var that = this;
+      __styleFillAndStroke.call(this, options, function () {
+        that.beginPath();
+        that.arc(x, y, radius, 0, PI * 2);
+      });
+      return this;
     },
     rectangle: function (x, y, width, height, options) {
-			var ss;
-			options || options = {};
-			ss=options.styles;
-			this.save();
-			if(ss){
-				this.style(ss);
-			}
-			options.fill && this.fillRect(x, y, width, height);
-			options.stroke && this.strokeRect(x, y, width, height);
-			this.restore();
-			return this;
+      var ss;
+      options || options = {};
+      options = __mergeOptions(options, defaultOptions);
+      ss = options.styles;
+      this.save();
+      if (ss) {
+        this.style(ss);
+      }
+      options.fill && this.fillRect(x, y, width, height);
+      options.stroke && this.strokeRect(x, y, width, height);
+      this.restore();
+      return this;
 
-		},
-    ellipse: function (x, y, radiusX, radiusY) {
-			
-		},
-    polygon: function (n, x, y, radius, angle) {},
-    sector: function (x, y, radius, startAngle, endAngle) {},
+    },
+    /*
+     * http://www.williammalone.com/briefs/how-to-draw-ellipse-html5-canvas/
+     */
+    ellipse: function (x, y, radiusX, radiusY, options) {
+      var that = this;
+      __styleFillAndStroke.call(this, options, function () {
+        that.beginPath();
+        that.moveTo(x, y - radiusY);
+        that.bezierCurveTo(
+        x + radiusX, y - radiusY,
+        x + radiusX, y + radiusY,
+        x, y + radiusY);
+        that.bezierCurveTo(
+        x - radiusX, y + radiusY,
+        x - radiusX, y - radiusY,
+        x, y - radiusY);
+        that.closePath();
+      });
+      return this;
+    },
+    polygon: function (x, y, n, radius, angle, counterclockwise, options) {
+      var that = this;
+      angle = angle || 0;
+      counterclockwise = counterclockwise || false;
+      __styleFillAndStroke.call(this, options, function () {
+        that.beginPath();
+        // Compute vertex position and begin a subpath there
+        that.moveTo(x + radius * Math.sin(angle),
+        y - radius * Math.cos(angle));
+        var delta = 2 * Math.PI / n; // Angle between vertices
+        for (var i = 1; i < n; i++) { // For remaining vertices
+          // Compute angle of this vertex
+          angle += counterclockwise ? -delta : delta;
+          // Compute position of vertex and add a line to it
+          that.lineTo(x + radius * Math.sin(angle),
+          y - radius * Math.cos(angle));
+        }
+        that.closePath(); // Connect last vertex back to the first
+      });
+      return this;
+    },
+    sector: function (x, y, radius, startAngle, endAngle, /*[*/ counterclockwise, options /*]*/ ) {
+      var that = this;
+      counterclockwise = counterclockwise || false;
+      __styleFillAndStroke.call(this, options, function () {
+        that.beginPath();
+        that.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+        that.lineTo(x, y);
+        that.closePath();
+      });
+      return this;
+    },
     /*@params pathString {String}	path string in SVG format.	"M10,20L30,40"
 		Command	Name								Parameters
 		M		moveto								(x y)+
@@ -341,15 +380,74 @@
 		A		elliptical arc						(rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 		R		Catmull-Rom curveto*				x1 y1 (x y)+
 		*/
-    path: function (pathString) {},
-    image: function (src, x, y) {},
-    text: function (x, y, text) {},
+    /*
+    path: function (pathString,options) {
+			var 			
+		},
+		*/
+    /*
+     * http://blog.csdn.net/csharp25/article/details/6659855
+     *drawImage(image, dx, dy) 
+     *drawImage(image, dx, dy, dw, dh) 
+     *drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
+     * @params image {String}	src
+     * 							 {Object}	HTMLImageElement	HTMLCanvasElement	HTMLVideoElement
+     * @params 	coordinateDimensioning {Array}
+     *	[ dx, dy]	[dx, dy, dw, dh] [sx, sy, sw, sh, dx, dy, dw, dh]
+     *
+     */
+    image: function (image, coordinateDimensioning, /*[*/ callback /*]*/ ) {
+      var that = this;
+      if (typeof image === "string") {
+        __loadImage(image, drawImage);
+      } else {
+        drawImage(image);
+      }
+
+      function drawImage(image) {
+        coordinateDimensioning.unshift(image);
+        that.drawImage.apply(that, args);
+        callback && callback.call(null, coordinateDimensioning);
+      }
+      return this;
+    },
+    /*
+     * @params	options
+     * 					.maxWidth	{float}
+     */
+    text: function (x, y, text, options) {
+      var ss, maxWidth;
+      options || options = {};
+      options = __mergeOptions(options, defaultOptions);
+      ss = options.styles;
+      this.save();
+      if (ss) {
+        this.style(ss);
+      }
+      maxWidth = options.maxWidth;
+      options.fill && this.fillText(text, x, y, width, height, maxWdith);
+      options.stroke && this.strokeText(text, x, y, width, height, maxWidth);
+      this.restore();
+      return this;
+    },
 
     /*
      * transform extends
      */
-    shear: function (kx, ky) {},
-    rotateAbout: function (x, y, theta) {}
+    /*
+     * copy from Canvas Pocket Reference
+     */
+    shear: function (kx, ky) {
+      this.transform(1, ky, kx, 1, 0, 0);
+      return this;
+    },
+    rotateAbout: function (x, y, theta) {
+      var ct = Math.cos(theta);
+      var st = Math.sin(theta);
+      this.transform(ct, - st, st, ct, - x * ct - y * st + x,
+      x * st - y * ct + y);
+      return this;
+    }
   });
 
 
@@ -396,20 +494,72 @@
     }
   }
 
-	function __styleFillAndStroke(options,pathBuilder){
-		var ss;
-		options || options = {};
-		ss=options.styles;
-		
-		this.save();
-		if(ss){
-			this.style(ss);
-		}
-		pathBuilder && pathBuilder();
-		options.fill && this.fill();
-		options.stroke && this.stroke();
-		this.restore();
-	}
+  function __styleFillAndStroke(options, pathBuilder) {
+    var ss;
+    options || options = {};
+    options = __mergeOptions(options, defaultOptions);
+    ss = options.styles;
+
+    this.save();
+    if (ss) {
+      this.style(ss);
+    }
+    pathBuilder && pathBuilder();
+    options.fill && this.fill();
+    options.stroke && this.stroke();
+    this.restore();
+  }
+
+  function __loadImage(image, callback) {
+    var imageEle = DOC.createElememnt(img);
+    imageEle.onload = function () {
+      callback(imageEle);
+      delete imageEle;
+    }
+    image.src = image;
+  }
+
+  function __mergeOptions(dest, src) {
+    for (var i in src) {
+      dest[i] = src;
+    }
+    return dest;
+  }
+
+  /*
+   * from Raphael
+   */
+  /*
+	function __parsePathString(pathString) {
+        if (!pathString) {
+            return null;
+        }
+        var paramCounts = {a: 7, c: 6, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, z: 0},
+            data = [];
+        if (!data.length) {
+            pathString.replace(pathCommand, function (a, b, c) {
+                var params = [],
+                    name = b.toLowerCase();
+                c.replace(pathValues, function (a, b) {
+                    b && params.push(+b);
+                });
+                if (name == "m" && params.length > 2) {
+                    data.push([b][concat](params.splice(0, 2)));
+                    name = "l";
+                    b = b == "m" ? "l" : "L";
+                }
+                if (name == "r") {
+                    data.push([b][concat](params));
+                } else while (params.length >= paramCounts[name]) {
+                    data.push([b][concat](params.splice(0, paramCounts[name])));
+                    if (!paramCounts[name]) {
+                        break;
+                    }
+                }
+            });
+        }
+        return data;
+    }*/
 
   return Vango;
 });
