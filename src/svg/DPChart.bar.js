@@ -1,6 +1,22 @@
 (function () {
+	var colors=getColors();
+	
+	function getColors(){
+		var hues = [.6, .2, .05, .1333, .75, 0],
+                colors = [];
 
-    function VerticalBar(paper, x, y, ox, oy, w, h) {
+            for (var i = 0; i < 10; i++) {
+                if (i < hues.length) {
+                    colors.push('hsb(' + hues[i] + ',.75, .75)');
+                } else {
+                    colors.push('hsb(' + hues[i - hues.length] + ', 1, .5)');
+                }
+            }
+
+        return colors;
+	}
+
+    function VerticalBar(paper, x, y, ox, oy, w, h, color, d) {
         var path, rect = {};
 
         path = [
@@ -10,15 +26,17 @@
         ];
 
         rect = {
-            x:x,
+            x:x-ox/4,
             y:y,
             w:ox/ 2,
             h:h
         };
 
         // paper.path(path.join(''));
+		
+		paper.text(x,y-10,d);
 
-        paper.rect(rect.x, rect.y, rect.w, rect.h);
+        paper.rect(rect.x, rect.y, rect.w, rect.h).attr({'fill':color});
     }
 
     DPChart.addChart('bar', {
@@ -55,7 +73,7 @@
                 height =  xOrigin.y-posY;
 
                 // VerticalBar.call(this, posX, posY, posOffset.x, posOffset.y, width, height);
-                VerticalBar(paper, posX, posY, posOffset.x, posOffset.y, width, height);
+                VerticalBar(paper, posX, posY, posOffset.x, posOffset.y, width, height, colors[i], data.data);
             }
         }
     });
