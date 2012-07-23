@@ -1,4 +1,5 @@
 (function(){
+
 	function VerticalBar(paper, x,y,ox,oy,w,h){
 		var path, rect={};
 		
