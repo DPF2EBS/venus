@@ -4,42 +4,38 @@
     <title>test svg</title>
 </head>
 <body>
-<script type="text/javascript" src="svg.js">
+<script type="text/javascript" src="../../lib/raphael/raphael-min.js">
 </script>
-<script type="text/javascript" src="picasso.js"></script>
+<script type="text/javascript" src="customevent.js"></script>
+<script type="text/javascript" src="dpchart.js"></script>
+<script type="text/javascript" src="dpchart.bar.js"></script>
+<div id="chart_container" style="height: 1000px; width:1000px;"></div>
 <script type="text/javascript">
+    var container = document.getElementById('chart_container'),
+            data = [
+                {data:10},
+                {data:50},
+                {data:30},
+                {data:10}
+            ],
+            options = {
+                axis:{
+                    x:{
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:100
+                    },
+                    y:{
+                        ticks:[10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                        rotate:90,
+                        tickWidth:60,
+                        tickSize:10
+                    }
+                }, bar:{
 
-    //买个画布 2支画笔
-    var canvas = Picasso.Buy.canvas({
-        width:1000,
-        height:1000
-    });
-    var redBrush = Picasso.Buy.brush('red', 2);
-    var greenBrush = Picasso.Buy.brush('green', 2);
+                }
 
-    var g = Picasso.Draw.g();
-    g.at(10, 10).in(canvas);
-    g.scale(2).scale(0.5).translate(100, 100);
-
-
-    // 用绿笔画个矩形和圆形
-    Picasso.Brush.use(greenBrush);
-    var rect = Picasso.Draw.rect(100, 200).in(g).at(200, 100);
-    var circle = Picasso.Draw.circle(40).in(g).at(0, 200);
-
-    //用红笔把矩形加边框
-    Picasso.Brush.use(redBrush);
-    rect.stroke();
-
-    //绑个事件
-    rect.on('click', function (e) {
-        console.log('rect clicked', e);
-    });
-
-    //画个线 还是红笔
-    var line = Picasso.Draw.line(10, 10, 100, 100).in(canvas).stroke(10);
-
-    canvas.in(document.body);
+            }
+    new DPChart(container, data, options);
 </script>
 </body>
 </html>
