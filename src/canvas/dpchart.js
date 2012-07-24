@@ -382,7 +382,7 @@
 			   for(var kk = 1; kk <= yTickLength; kk++) {
 	  			  var xAxis = new Kinetic.Line({
 				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
-				          stroke: "#EDEDED",
+				          stroke: options.grid.color,
 				          strokeWidth: 1,
 				          lineCap: "round",
 				          lineJoin: "round"
