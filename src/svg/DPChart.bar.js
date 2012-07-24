@@ -36,7 +36,7 @@
 		
 		paper.text(x,y-10,d);
 
-        paper.rect(rect.x, rect.y, rect.w, rect.h).attr({'fill':color});
+        paper.rect(rect.x, rect.y, rect.w, rect.h).attr({'stroke':'none','fill':color});
     }
 
     DPChart.addChart('bar', {
