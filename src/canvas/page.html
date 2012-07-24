@@ -13,10 +13,10 @@
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
             data = [
-                {data:10},
-                {data:50},
-                {data:30},
-                {data:10}
+                {data:10, label:"FF"},
+                {data:50, label:"IE"},
+                {data:30, label: "Chrome"},
+                {data:10, label: "Ohter"}
             ],
             options = {
                 axis:{
@@ -30,7 +30,12 @@
                         tickWidth:60,
                         tickSize:10
                     }
-                }, bar:{
+                     },
+                legend:{
+                    position:["right","top"],
+                    itemType:"rect"
+                }, 
+                bar:{
 
                 }
 
