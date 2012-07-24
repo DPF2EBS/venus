@@ -111,12 +111,12 @@ DPChart.prototype={
 				len = labels.length;
 		for(var i=0; i<=len; i++) {
 			var texts = new Kinetic.Text({
-          x: ((this.options.width - 5)/len) * i,
-          y: this.options.height - 10,
-          text: labels[i] + '',
-          fontSize: 10,
-          textFill: "#000000",
-					align:"center"
+                x: ((this.options.width - 5)/len) * i,
+                y: this.options.height - 10,
+                text: labels[i] + '',
+                fontSize: 10,
+                textFill: "#000000",
+		        align:"right"
         });
 			var hrs = new Kinetic.Rect({
           x: ((this.options.width - 5)/len) * i + 14,
