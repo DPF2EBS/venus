@@ -78,7 +78,7 @@
                 itemType:'rect'
             },
             grid:{
-                color:''
+                color:'#CCCCCC'
             }
         };
         this.options = mix(defaultOptions, options || {});
@@ -218,8 +218,6 @@
         beginX = this.beginX = 100;
         beginY = this.beginY = 700;
         this.series = series;
-
-        console.log(axis);
 
         //if get ticks, use ticks
         pathString += ("M" + beginX + " " + beginY);
@@ -372,9 +370,27 @@
 				layer.add(itext);
 		}
     };
+	// not good
     var Grid = function (options, series, layer) {
         var beginX = this.beginX = 100,
-        	beginY = this.beginY = 700;	
+        	beginY = this.beginY = 700,
+			xAxises = options.axis.x,
+			yAxises =  options.axis.y;
+			if(yAxises.enable) {
+			   var yTickWidth = yAxises.tickWidth,
+				   yTickLength =  yAxises.ticks.length;
+			   for(var kk = 1; kk <= yTickLength; kk++) {
+	  			  var xAxis = new Kinetic.Line({
+				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
+				          stroke: "#EDEDED",
+				          strokeWidth: 1,
+				          lineCap: "round",
+				          lineJoin: "round"
+				    });
+				 	layer.add(xAxis);
+			   } 
+			}
+		
     }
 
 
