@@ -134,7 +134,7 @@
         },
         _initLegend:function () {
             var legendOption = this.options.legend;
-            this.legend = new Legend(legendOption);
+            this.legend = new Legend(legendOptio, this.series);
         },
         _initGrid:function () {
             var gridOption = this.options.grid;
@@ -282,8 +282,10 @@
         }
     }
 
-    var Legend = function () {
+    var Legend = function (options, series) {
+        var defaultOptions={};
 
+        
     };
     var Grid = function (options) {
 
