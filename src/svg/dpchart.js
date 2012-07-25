@@ -3,12 +3,15 @@
  * */
 
 (function (global, undefined) {
-    /*
-     * Class DPChart
-     * @param container{HTMLElement} container of the svg element to draw the chart
-     * @param data{Array} Array of the data
-     * @param options{object}
-     */
+    //extend Array forEach
+    !Array.prototype.forEach && (Array.prototype.forEach = function (fn, context) {
+        for (var i = 0, l = this.length; i < l; i++) {
+            if (i in this) {
+                fn && fn.call(context, this[i], i, this);
+            }
+        }
+    });
+
 
     var mix = function (o1, o2) {
             for (var attr in o2) {
@@ -36,6 +39,12 @@
 
 
     /*DPChart Begin*/
+    /*
+     * Class DPChart
+     * @param container{HTMLElement} container of the svg element to draw the chart
+     * @param data{Array} Array of the data
+     * @param options{object}
+     */
     function DPChart(container, data, options) {
         if (!container || !container.nodeType) {
             return;
@@ -62,6 +71,7 @@
         };
         this.options = mix(defaultOptions, options || {});
         this.raphael = new Raphael(container, this.options.width, this.options.height);
+        this.colors = colors;
 
         //init data
         this._initData();
@@ -220,7 +230,7 @@
     DPChart.getColors = function () {
         var hues = [0.6, 0.2, 0.05, 0.1333, 0.75, 0], colors = [];
 
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 12; i++) {
             if (i < hues.length) {
                 colors.push('rgb(' + _hsv2rgb(hues[i] * 360, 0.75, 0.75).join(',') + ')');
             } else {
@@ -434,6 +444,7 @@
             , startY = 0
             , item
             , text
+            ,textWidth
             , totalWidth = []
             , totalHeight
             , itemSet // set of items
@@ -464,11 +475,12 @@
                 'stroke-width':0,
                 'cursor':'pointer'
             });
-            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, data[i].data).attr({
-            });
+            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, data[i].data);
+            textWidth = text.getBBox().width;
+            text.translate(textWidth/2,0)
             itemSet.push(item);
             textSet.push(text)
-            totalWidth.push(text.getBBox().width);
+            totalWidth.push(textWidth);
         }
         totalWidth = Math.max.apply(Math, totalWidth) + width + span + padding * 2;
         totalHeight = lineHeight * l + padding * 2;
@@ -549,7 +561,7 @@
         if (options.rows.length) {
             options.rows.forEach(function (value) {
                 paper.path('M' + options._x + "," + value + "h" + options.width).attr({
-                    color:options.color,
+                    stroke:options.color,
                     "stroke-width":options['stroke-width'],
                     'opacity':options.opacity
                 })
@@ -566,5 +578,6 @@
 
 //add to global
     global.DPChart = DPChart;
+    DPChart.mix = mix;
 
 })(this);

@@ -1,8 +1,7 @@
 (function () {
 	var colors = DPChart.getColors();
 	
-	console.log(colors);
-	
+
 	function VerticalBar(paper, x, y, ox, oy, w, h, color, d) {
 		var path, rect = {}, bar;
 		
