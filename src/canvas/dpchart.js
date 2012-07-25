@@ -78,7 +78,7 @@
                 itemType:'rect'
             },
             grid:{
-                color:''
+                color:'#CCCCCC'
             }
         };
         this.options = mix(defaultOptions, options || {});
@@ -133,12 +133,12 @@
             this.axises = axises;
         },
         _initLegend:function () {
-            var legendOption = this.options.legend;
-            this.legend = new Legend(legendOptio, this.series);
+            var options = this.options;
+            this.legend = new Legend(options, this.series, this.layer);
         },
         _initGrid:function () {
-            var gridOption = this.options.grid;
-            this.grid = new Grid(gridOption);
+            var options = this.options;
+            this.grid = new Grid(options, this.series, this.layer);
         },
         _initEvents:function () {
 
@@ -219,24 +219,39 @@
         beginY = this.beginY = 700;
         this.series = series;
 
-        console.log(axis);
-
         //if get ticks, use ticks
         pathString += ("M" + beginX + " " + beginY);
         if (opt.ticks.length) {
             this.useTicks = true;
+			// 画坐标轴
+			var xAxis = new Kinetic.Line({
+			          points: [beginX, beginY, opt.tickWidth * opt.ticks.length, beginY],
+			          stroke: "#CCCCCC",
+			          strokeWidth: 1,
+			          lineCap: "round",
+			          lineJoin: "round"
+			        }),
+			yAxis = new Kinetic.Line({
+					   points: [beginX, beginY,beginX, beginY - opt.tickWidth * opt.ticks.length],
+					   stroke: "#CCCCCC",
+					   strokeWidth: 1,
+					   lineCap: "round",
+					   lineJoin: "round"
+				 });
+		   	layer.add(xAxis);
+			layer.add(yAxis); 
             for (i = 0, l = opt.ticks.length; i < l; i++) {
                 if(axis=="x"){
                     label=new Kinetic.Text({
                         x:beginX + (i + 1) * opt.tickWidth,
                         y:beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1),
-                        text:opt.ticks[i]+"",
+                        text:opt.ticks[i] + "",
                         fontSize: 10,
                         textFill: "#000000",
 				    	align:"center"
                     });
-                    layer.add(label);
-                }else{
+                    layer.add(label);  		
+                } else {
                     label=new Kinetic.Text({
                         x:beginX + labelMarginTop * (opt.rotate > 0 ? -1 : 1),
                         y:beginY - (i + 1) * opt.tickWidth,
@@ -282,13 +297,100 @@
         }
     }
 
-    var Legend = function (options, series) {
+    var Legend = function (options, series, layer) {
         var defaultOptions={};
-
-        
+		var legendOptions = options.legend,
+			legendWidth = legendOptions.width,
+			legendHeight = legendOptions.height,
+			positions = legendOptions.position,
+			positionTable = {
+				'left-top' : { x: 0, y:0 },
+				'right-top': { x: options.width - legendWidth, y: 0 },
+				'right-bottom': { x: options.width - legendWidth, y: options.height - legendHeight }
+			},
+			itemType = {
+				'rect': 'Rect',
+				'circle': 'Circle'
+			};
+		var pos = {},
+			legendBox;
+		for(var pos in positionTable) {
+			if(positions == pos) {
+				pos = positionTable[pos];
+				break;
+			}
+		}
+	    // 可以画图了。
+	   	legendBox = new Kinetic.Rect({
+		          x: pos.x,
+		          y: pos.y,
+		          width: legendWidth - 2,
+		          height: legendHeight - 2,
+		          fill: "#EFEFEF",
+		          stroke: "#CCCCCC",
+		          strokeWidth: 1
+		        });
+	    layer.add(legendBox);
+	 	// 根据具体的颜色来定义图例
+		console.log(legendOptions.itemType);
+		var showType; // 大写了。。。
+		for(var type in itemType) {
+			if(legendOptions.itemType == type) {
+				showType = itemType[type];
+				break;
+			}
+		}
+		var seriesLen = series.series.length,
+			labelTexts = [];
+		var colors=["red","blue","green","orange"];
+	   	for(var ii = 0; ii < seriesLen; ii++) {
+			labelTexts.push(series.series[ii].label);
+		}
+		console.log(labelTexts); // ["FF", "IE", "Chrome", "Ohter"] 
+		var lineHeight =  Math.ceil(legendHeight/seriesLen);
+		for(var jj = 0; jj < seriesLen; jj++){
+			 var  itype =  new Kinetic[showType]({
+				          x: pos.x + 5,
+				          y: pos.y + jj * lineHeight,
+				          width: legendWidth/2,
+				          height: lineHeight - 10,
+				          fill: colors[jj],
+				          stroke: "#FF0000",
+				          strokeWidth: 1
+				        }),
+				itext = new Kinetic.Text({
+					 x: pos.x + legendWidth/2 + 10,
+					 y: pos.y + (jj-1) * lineHeight + lineHeight + 5,
+					 text: labelTexts[jj],
+					 fontSize: 16,
+					 fontFamily: "Arial",
+					 textFill: "green"
+				});
+				layer.add(itype); 
+				layer.add(itext);
+		}
     };
-    var Grid = function (options) {
-
+	// not good
+    var Grid = function (options, series, layer) {
+        var beginX = this.beginX = 100,
+        	beginY = this.beginY = 700,
+			xAxises = options.axis.x,
+			yAxises =  options.axis.y;
+			if(yAxises.enable) {
+			   var yTickWidth = yAxises.tickWidth,
+				   yTickLength =  yAxises.ticks.length;
+			   for(var kk = 1; kk <= yTickLength; kk++) {
+	  			  var xAxis = new Kinetic.Line({
+				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
+				          stroke: options.grid.color,
+				          strokeWidth: 1,
+				          lineCap: "round",
+				          lineJoin: "round"
+				    });
+				 	layer.add(xAxis);
+			   } 
+			}
+		
     }
 
 
