@@ -3,12 +3,15 @@
  * */
 
 (function (global, undefined) {
-    /*
-     * Class DPChart
-     * @param container{HTMLElement} container of the svg element to draw the chart
-     * @param data{Array} Array of the data
-     * @param options{object}
-     */
+    //extend Array forEach
+    !Array.prototype.forEach && (Array.prototype.forEach = function (fn, context) {
+        for (var i = 0, l = this.length; i < l; i++) {
+            if (i in this) {
+                fn && fn.call(context, this[i], i, this);
+            }
+        }
+    });
+
 
     var mix = function (o1, o2) {
             for (var attr in o2) {
@@ -35,6 +38,12 @@
         , colors
 
     /*DPChart Begin*/
+    /*
+     * Class DPChart
+     * @param container{HTMLElement} container of the svg element to draw the chart
+     * @param data{Array} Array of the data
+     * @param options{object}
+     */
     function DPChart(container, data, options) {
         if (!container || !container.nodeType) {
             return;
@@ -65,6 +74,7 @@
         };
         this.options = mix(defaultOptions, options || {});
         this.raphael = new Raphael(container, this.options.width, this.options.height);
+        this.colors = colors;
 
         //init data
         this._initData();
@@ -175,6 +185,62 @@
     };
     DPChart.addChart = function (name, methods) {
         charts[name] = methods;
+    }
+	
+	var _hsv2rgb = function (h, s, v) {
+        var hi, f, p, q, t, result = [];
+        hi = Math.floor(h / 60) % 6;
+        f = hi % 2 ? h / 60 - hi : 1 - (h / 60 - hi);
+        p = v * (1 - s);
+        q = v * (1 - f * s);
+
+        switch (hi) {
+            case 0:
+                result = [v, q, p];
+                break;
+            case 1:
+                result = [q, v, p];
+                break;
+            case 2:
+                result = [p, v, q];
+                break;
+            case 3:
+                result = [p, q, v];
+                break;
+            case 4:
+                result = [q, p, v];
+                break;
+            case 5:
+                result = [v, p, q];
+                break;
+        }
+
+        for (var j = 0, L = result.length; j < L; j++) {
+            result[j] = Math.floor(result[j] * 255);
+        }
+
+        return result;
+    }
+
+    /**
+     * get a group of chart colors
+     * @param {Integer} colorCount How many colors needed.
+     * @example DPChart.getColors(6);
+     * @return a group of colors in type of rgb().
+     * @type {Array}
+     */
+    DPChart.getColors = function (colorCount) {
+        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;	
+		
+		//if colorCount is not provide, set colorCount default value 20
+		colorCount=parseInt(colorCount,10)||20;
+		L=Math.max(colorCount/5,6);		
+		
+		for(var c=0;c<colorCount;c++){
+			colors.push('rgb(' + _hsv2rgb(c%L*360/L, S[Math.floor(c/L)], V[Math.floor(c/L)]).join(',') + ')');
+		}
+
+        return colors;
     }
 
     colors = DPChart.getColors();
@@ -382,6 +448,7 @@
             , startY = 0
             , item
             , text
+            ,textWidth
             , totalWidth = []
             , totalHeight
             , itemSet // set of items
@@ -412,11 +479,12 @@
                 'stroke-width':0,
                 'cursor':'pointer'
             });
-            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, data[i].data).attr({
-            });
+            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, data[i].data);
+            textWidth = text.getBBox().width;
+            text.translate(textWidth/2,0)
             itemSet.push(item);
             textSet.push(text)
-            totalWidth.push(text.getBBox().width);
+            totalWidth.push(textWidth);
         }
         totalWidth = Math.max.apply(Math, totalWidth) + width + span + padding * 2;
         totalHeight = lineHeight * l + padding * 2;
@@ -497,7 +565,7 @@
         if (options.rows.length) {
             options.rows.forEach(function (value) {
                 paper.path('M' + options._x + "," + value + "h" + options.width).attr({
-                    color:options.color,
+                    stroke:options.color,
                     "stroke-width":options['stroke-width'],
                     'opacity':options.opacity
                 })
@@ -514,5 +582,6 @@
 
 //add to global
     global.DPChart = DPChart;
+    DPChart.mix = mix;
 
 })(this);
