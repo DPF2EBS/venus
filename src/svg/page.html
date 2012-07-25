@@ -3,39 +3,55 @@
 <head>
     <title>test svg</title>
 </head>
-<body>
+<body style="margin: 0;">
 <script type="text/javascript" src="../../lib/raphael/raphael-min.js">
 </script>
 <script type="text/javascript" src="customevent.js"></script>
 <script type="text/javascript" src="dpchart.js"></script>
 <script type="text/javascript" src="dpchart.bar.js"></script>
-<div id="chart_container" style="height: 1000px; width:1000px;"></div>
+<script type="text/javascript" src="dpchart.line.js"></script>
+<div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
-            data = [
-                {data:10},
-                {data:50},
-                {data:30},
-                {data:10}
-            ],
+
+            data = [],
+
             options = {
                 axis:{
                     x:{
-                        ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:100
+                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        tickWidth:50
+
+
                     },
                     y:{
-                        ticks:[10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-                        rotate:90,
-                        tickWidth:60,
+                        min:0,
+                        max:100,
+
+                        tickWidth:30,
+
                         tickSize:10
                     }
-                }, bar:{
-
+                },
+                bar:{},
+                line:{
+                    smooth:true
                 }
 
             }
-    new DPChart(container, data, options);
+    for (var i = 0, l = 12; i < l; i++) {
+        data.push({data:Math.ceil(Math.random() * 100)})
+    }
+    var bar = new DPChart(container, data, options);
+	
+	/*var L=60;
+	var c=DPChart.getColors(L);
+	for(var i=0;i<L;i++){
+		var a=document.createElement('input');
+		a.type='text';
+		a.style.cssText='background-color:'+c[i];
+		document.body.appendChild(a);
+	}*/
 </script>
 </body>
 </html>

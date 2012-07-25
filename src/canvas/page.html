@@ -9,6 +9,7 @@
 <script type="text/javascript" src="customevent.js"></script>
 <script type="text/javascript" src="dpchart.js"></script>
 <script type="text/javascript" src="dpchart.bar.js"></script>
+<script type="text/javascript" src="dpchart.line.js"></script>
 <div id="chart_container" style="height: 1000px; width:1000px;"></div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
@@ -16,12 +17,12 @@
                 {data:10, label:"FF"},
                 {data:50, label:"IE"},
                 {data:30, label: "Chrome"},
-                {data:10, label: "Ohter"}
+                {data:80, label: "Ohter"}
             ],
             options = {
                 axis:{
                     x:{ 
-						enable: false,
+						enable: true,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
                         tickWidth:100
                     },
@@ -41,11 +42,18 @@
                 },
  			   	grid: {
 	            	color: '#EFEFEF'
+				}, 
+				/*
+				bar: {
+					
 				},
-                bar:{
-
-                }
-
+				*/
+                line: {
+	              dot: {
+		          	 enable: true,
+					 radius: 6
+				  }
+				}
             }
     new DPChart(container, data, options);
 </script>
