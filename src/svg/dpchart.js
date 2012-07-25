@@ -30,23 +30,9 @@
         }
         , isObject = function (obj) {
             return obj === Object(obj);
-        },
-        getColor = function () {
-            var hues = [.6, .2, .05, .1333, .75, 0],
-                colors = [];
-
-            for (var i = 0; i < 10; i++) {
-                if (i < hues.length) {
-                    colors.push('hsb(' + hues[i] + ',.75, .75)');
-                } else {
-                    colors.push('hsb(' + hues[i - hues.length] + ', 1, .5)');
-                }
-            }
-
-            return colors;
         }
         , charts = {} // charts added by using DPChart.addChart
-        , colors = getColor()
+        , colors
 
 
     /*DPChart Begin*/
@@ -244,7 +230,7 @@
 
         return colors;
     }
-
+    colors = DPChart.getColors()
 
     /*DPChart End*/
 
