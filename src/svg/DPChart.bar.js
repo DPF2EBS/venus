@@ -4,24 +4,51 @@
 		
 		path = [
 			'M', x-ox/4, y+h,
-			'L', x-ox/4, y, x +ox / 4, y, x +ox/ 4, y+h,
+			'L', x-ox/4,y, x +ox / 4,y, x +ox/ 4,y+h,
 			'z'
 		];
 		
-		rect = {
+		/* rect = {
 			x : x - ox / 4,
 			y : y,
 			w : ox / 2,
 			h : h
-		};	
+		};	 */
 		
-		paper.text(x, y - 10, d);
+		(d||d===0)&&paper.text(x, y - 10, d);
 		
 		// console.log(path.join(','));
 		bar=paper.path(path.join(' '));
 		// bar=paper.rect(rect.x, rect.y, rect.w, rect.h);		
 		
-		bar.attr({
+		color&&bar.attr({
+			'stroke' : 'none',
+			'fill' : color
+		});;
+	}
+	
+	function HorizontalBar(paper, x, y, ox, oy, w, h, color, d) {
+		var path, rect = {}, bar;
+		
+		path = [
+			'M', x, y-oy/4,
+			'L', x+w, y-oy/4, x+w,y+oy/4, x,y+oy/4,
+			'z'
+		];
+		
+		/* rect = {
+			x : x,
+			y : y-oy/4,
+			w : w,
+			h : oy/2
+		};*/
+		
+		(d||d===0)&&paper.text(x+10, y, d);
+		
+		bar=paper.path(path.join(' '));
+		// bar=paper.rect(rect.x, rect.y, rect.w, rect.h);		
+		
+		color&&bar.attr({
 			'stroke' : 'none',
 			'fill' : color
 		});;
@@ -29,14 +56,10 @@
 	
 	DPChart.addChart('bar', {
 		draw : function () {
-			var series = this.series.getSeries();
-			// var range = this.series.getRange();
-			
-			var xAxis = this.axises.x,
-				yAxis = this.axises.y;
-				
-			var colors = DPChart.getColors(series.length);
-			console.log(colors);
+			var series = this.series.getSeries(),
+				colors = DPChart.getColors(series.length),
+				xAxis = this.axises.x,
+				yAxis = this.axises.y;				
 			
 			// console.log('data series elements count: ', series.length);
 			
