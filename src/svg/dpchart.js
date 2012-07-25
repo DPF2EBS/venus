@@ -212,25 +212,25 @@
 
     /**
      * get a group of chart colors
-     * @param {Integer} colorCount How many colors needed.(waiting...)
+     * @param {Integer} colorCount How many colors needed.
      * @example DPChart.getColors(6);
      * @return a group of colors in type of rgb().
      * @type {Array}
      */
-    DPChart.getColors = function () {
-        var hues = [0.6, 0.2, 0.05, 0.1333, 0.75, 0], colors = [];
-
-        for (var i = 0; i < 10; i++) {
-            if (i < hues.length) {
-                colors.push('rgb(' + _hsv2rgb(hues[i] * 360, 0.75, 0.75).join(',') + ')');
-            } else {
-                colors.push('rgb(' + _hsv2rgb(hues[i - hues.length] * 360, 1, 0.5).join(',') + ')');
-            }
-        }
+    DPChart.getColors = function (colorCount) {
+        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;	
+		
+		//if colorCount is not provide, set colorCount default value 20
+		colorCount=parseInt(colorCount,10)||20;
+		L=colorCount>30?colorCount/5:6;
+		
+		for(var c=0;c<colorCount;c++){
+			colors.push('rgb(' + _hsv2rgb(c%L*360/L, S[Math.floor(c/L)], V[Math.floor(c/L)]).join(',') + ')');
+		}
 
         return colors;
     }
-    colors = DPChart.getColors()
+    colors = DPChart.getColors();
 
     /*DPChart End*/
 
