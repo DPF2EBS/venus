@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="example.svg.css" />
+	<style type="text/css">
+	body{background:#2d2d2d;}
+	input{margin:4px; border:#dfdfdf 1px solid; height:40px; width:56px;}
+	</style>
+	<title>Bar-DPChart</title>
+</head>
+<body>	
+	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../../src/svg/customevent.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
+	
+	<script type="text/javascript">
+	var L=60;
+	var c=DPChart.getColors(L);
+	for(var i=0;i<L;i++){
+		var a=document.createElement('input');
+		a.type='text';
+		a.style.cssText='background-color:'+c[i];
+		document.body.appendChild(a);
+	}
+	</script>
+</body>
+</html>
