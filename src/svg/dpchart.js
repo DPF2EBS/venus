@@ -60,6 +60,7 @@
         var defaultOptions = {
             width:container.clientWidth,
             height:container.clientHeight,
+            colors:[],
             axis:{
                 y:{
                     rotate:90
@@ -185,6 +186,63 @@
     };
     DPChart.addChart = function (name, methods) {
         charts[name] = methods;
+    }
+
+
+    var _hsv2rgb = function (h, s, v) {
+        var hi, f, p, q, t, result = [];
+        hi = Math.floor(h / 60) % 6;
+        f = hi % 2 ? h / 60 - hi : 1 - (h / 60 - hi);
+        p = v * (1 - s);
+        q = v * (1 - f * s);
+
+        switch (hi) {
+            case 0:
+                result = [v, q, p];
+                break;
+            case 1:
+                result = [q, v, p];
+                break;
+            case 2:
+                result = [p, v, q];
+                break;
+            case 3:
+                result = [p, q, v];
+                break;
+            case 4:
+                result = [q, p, v];
+                break;
+            case 5:
+                result = [v, p, q];
+                break;
+        }
+
+        for (var j = 0, L = result.length; j < L; j++) {
+            result[j] = Math.floor(result[j] * 255);
+        }
+
+        return result;
+    }
+
+    /**
+     * get a group of chart colors
+     * @param {Integer} colorCount How many colors needed.(waiting...)
+     * @example DPChart.getColors(6);
+     * @return a group of colors in type of rgb().
+     * @type {Array}
+     */
+    DPChart.getColors = function () {
+        var hues = [0.6, 0.2, 0.05, 0.1333, 0.75, 0], colors = [];
+
+        for (var i = 0; i < 10; i++) {
+            if (i < hues.length) {
+                colors.push('rgb(' + _hsv2rgb(hues[i] * 360, 0.75, 0.75).join(',') + ')');
+            } else {
+                colors.push('rgb(' + _hsv2rgb(hues[i - hues.length] * 360, 1, 0.5).join(',') + ')');
+            }
+        }
+
+        return colors;
     }
 
 
