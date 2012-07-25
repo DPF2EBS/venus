@@ -12,18 +12,19 @@
 <div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
-            data = [25,25,40,10],
+            data = [25,25,40,10,30,40,60,33,22,10,45,9,60,35],
             options = {
                 axis:{
                     x:{
+						max:200,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:100
+                        tickWidth:40
 
                     },
                     y:{
                         min:0,
                         max:100,
-                        tickWidth:60,
+                        tickWidth:30,
                         tickSize:10
                     }
                 }, bar:{
@@ -32,6 +33,15 @@
 
             }
     var bar = new DPChart(container, data, options);
+	
+	/*var L=60;
+	var c=DPChart.getColors(L);
+	for(var i=0;i<L;i++){
+		var a=document.createElement('input');
+		a.type='text';
+		a.style.cssText='background-color:'+c[i];
+		document.body.appendChild(a);
+	}*/
 </script>
 </body>
 </html>
