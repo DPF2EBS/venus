@@ -380,17 +380,30 @@
 			   var yTickWidth = yAxises.tickWidth,
 				   yTickLength =  yAxises.ticks.length;
 			   for(var kk = 1; kk <= yTickLength; kk++) {
-	  			  var xAxis = new Kinetic.Line({
+	  			  var yAxis = new Kinetic.Line({
 				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
 				          stroke: options.grid.color,
 				          strokeWidth: 1,
 				          lineCap: "round",
 				          lineJoin: "round"
 				    });
-				 	layer.add(xAxis);
+				 	layer.add(yAxis);
 			   } 
 			}
-		
+			if(yAxises.enable) {
+			   var xTickWidth = xAxises.tickWidth,
+			   	   xTickLength = xAxises.ticks.length;
+				for(var kk = 1; kk <= xTickLength; kk++) {
+		  			  var xAxis = new Kinetic.Line({
+					          points: [beginX + xTickWidth * kk, beginY, beginX + xTickWidth * kk, beginY - yTickWidth * yTickLength],
+					          stroke: options.grid.color,
+					          strokeWidth: 1,
+					          lineCap: "round",
+					          lineJoin: "round"
+					    });
+				 		layer.add(xAxis);
+			   }
+			}
     }
 
 
