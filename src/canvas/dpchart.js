@@ -134,11 +134,15 @@
         },
         _initLegend:function () {
             var options = this.options;
-            this.legend = new Legend(options, this.series, this.layer);
+            if(options.legend){
+                this.legend = new Legend(options, this.series, this.layer);
+            }
         },
         _initGrid:function () {
             var options = this.options;
-            this.grid = new Grid(options, this.series, this.layer);
+            if(options.grid){
+                this.grid = new Grid(options, this.series, this.layer);
+            }
         },
         _initEvents:function () {
 
