@@ -45,7 +45,7 @@
 			}
 			
 			var series = this.series.getSeries(),
-				colors = DPChart.getColors(series.length),
+				colors = this.colors,
 				data,total=0,
 				startAngle=-90,endAngle;
 			

@@ -15,7 +15,7 @@
 	DPChart.addChart('dot', {
 		draw : function () {
 			var series = this.series.getSeries(),
-				colors = DPChart.getColors(series.length),
+				colors = this.colors,
 				xAxis = this.axises.x,
 				yAxis = this.axises.y,
 				axisLength=Math.min(xAxis.axisLength,yAxis.axisLength);
