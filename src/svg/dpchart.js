@@ -87,8 +87,6 @@
         this.events.fire('onFinish');
 
     }
-	
-	DPChart=mix(DPChart, window.DPChart);
 
     DPChart.prototype = {
         constructor:DPChart,
