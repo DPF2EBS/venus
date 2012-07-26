@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>	
 	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
 	<script type="text/javascript" src="../../src/svg/dpchart.dot.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.pie.js"></script>
 	
 	<script type="text/javascript">
 	var dt=document.getElementsByTagName('dt');
@@ -78,15 +79,15 @@
             options = {
                 axis:{
                     x:{
-						max:200,
+						max:100,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
                         tickWidth:40
 
                     },
                     y:{
                         min:0,
-                        max:100,
-                        tickWidth:30,
+                        max:40,
+                        tickWidth:20,
                         tickSize:10
                     }
                 }, dot:{
@@ -102,32 +103,13 @@
 		<dd style="height: 130px;">
 		<script type="text/javascript">
 		var container = dd[3],
-            data = [25,25,40,10],
+            data = [25,25,40,10,8,22],
             options = {
-                axis:{
-                    x:{
-						max:200,
-                        ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:100
-
-                    },
-                    y:{
-                        min:0,
-                        max:60,
-                        tickWidth:16,
-                        tickSize:10
-                    }
-                }, bar:{
-
-                },
-				dot:{
-				
-				},
 				pie:{
 				
 				}
             }
-    var bar = new DPChart(container, data, options);
+    var pie = new DPChart(container, data, options);
 		</script>
 		</dd>
 	</dl>

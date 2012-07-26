@@ -15,16 +15,30 @@
 	<script type="text/javascript" src="../../src/svg/dpchart.pie.js"></script>
 	
 	<script type="text/javascript">
-	var container = document.getElementById('chart_container'),
-            data = [25,30,40,10,60,15,9,20,25,33],
-            options = {
-                pie:{
-					/*x:220,
-					y:220,
-					radius:90*/
-                }
-            }
-    var pie = new DPChart(container, data, options);
+	var container = document.getElementById('chart_container');           
+    var paper= new Raphael(container);
+	var colors=DPChart.getColors(9);
+	
+	var offset={x:-20,y:-10}
+
+	//paper.circle(100,100,60).attr("fill",colors[0]);
+	var path=[
+		"M",120,120,
+		"A",60,60, 0, 0, 0, 180, 60 //direction is anticlockwise
+	];
+	
+	var path2=[
+		"M",220,220,
+		"A",60,60, 0, 0, 1, 280, 160 //direction is clockwise
+	];
+	
+	paper.path(path.join(','));	
+	paper.text(120+offset.x,120, 'start1');
+	paper.text(180,60+offset.y, 'end1');
+	
+	paper.path(path2.join(','));
+	paper.text(220+offset.x,220, 'start2');
+	paper.text(280,160+offset.y, 'end2');
 	</script>
 </body>
 </html>

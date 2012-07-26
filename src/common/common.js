@@ -44,11 +44,11 @@
      * @type {Array}
      */
     DPChart.getColors = function (colorCount) {
-        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;	
+        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
 		
 		//if colorCount is not provide, set colorCount default value 20
 		colorCount=parseInt(colorCount,10)||20;
-		L=Math.max(colorCount/5,6);		
+		L=Math.min(colorCount,Math.max(colorCount/S.length,12));
 		
 		for(var c=0;c<colorCount;c++){
 			colors.push('rgb(' + _hsv2rgb(c%L*360/L, S[Math.floor(c/L)], V[Math.floor(c/L)]).join(',') + ')');

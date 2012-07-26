@@ -107,7 +107,7 @@
                 yAxis = this.axises.y;
 
             var colors = DPChart.getColors(series.length);
-            console.log(colors);
+            // console.log(colors);
 
             // console.log('data series elements count: ', series.length);
 
