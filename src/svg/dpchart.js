@@ -87,6 +87,8 @@
         this.events.fire('onFinish');
 
     }
+	
+	DPChart=mix(DPChart, window.DPChart);
 
     DPChart.prototype = {
         constructor:DPChart,
@@ -161,7 +163,7 @@
             for (var chart in charts) {
                 if (this.options[chart]) {
                     //draw that chart
-                    charts[chart].draw && charts[chart].draw.call(this);
+                    charts[chart].draw && charts[chart].draw.call(this, this.options[chart]);
                 }
             }
         },
@@ -172,9 +174,6 @@
     DPChart.addChart = function (name, methods) {
         charts[name] = methods;
     }
-
-
-
 
     var Series = function (data) {
         var max , min , i , l
