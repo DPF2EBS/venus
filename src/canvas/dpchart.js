@@ -3,6 +3,8 @@
  * */
 
 (function (global, undefined) {
+    var _DPChart = global.DPChart;
+    var mix = _DPChart.mix;
     var mix = function (o1, o2) {
             for (var attr in o2) {
                 if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
@@ -80,6 +82,8 @@
 
     }
 
+    DPChart=mix(DPChart, window.DPChart);
+    
     DPChart.prototype = {
         constructor:DPChart,
         _initData:function () {

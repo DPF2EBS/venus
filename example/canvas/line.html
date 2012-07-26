@@ -4,12 +4,13 @@
     <title>test svg</title>
 </head>
 <body>
+<script type="text/javascript" src="../../src/common/lang.js"></script>
 <script type="text/javascript" src="../../lib/KineticJS/dist/kinetic-core.js">
 </script>
-<script type="text/javascript" src="customevent.js"></script>
-<script type="text/javascript" src="dpchart.js"></script>
-<script type="text/javascript" src="dpchart.bar.js"></script>
-<script type="text/javascript" src="dpchart.line.js"></script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+<script type="text/javascript" src="../../src/canvas/dpchart.js"></script>
+<script type="text/javascript" src="../../src/canvas/types/line.js"></script>
 <div id="chart_container" style="height: 1000px; width:1000px;"></div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
@@ -18,7 +19,7 @@
                 {data:60, label:"IE"},
                 {data:90, label: "Chrome"},
                 {data:60, label: "Safari"},
-				{data:40, label: "Other"}
+                {data:40, label: "Other"}
             ],
             options = {
                 axis:{
@@ -36,24 +37,20 @@
                 legend:{
                     position:"right-top",
                     itemType:"rect",
-					width: 200,
-					height: 150
+                    width: 200,
+                    height: 150
                 },
- 			   	grid: {
-	            	color: '#000000',
-					enableXGrid: true,
-					enableYGrid: true 
-				},
-				/*
-				bar: {
-					
-				},*/
+                grid: {
+                    color: '#000000',
+                    enableXGrid: true,
+                    enableYGrid: true 
+                },
                 line: {
-	              dot: {
-		          	 enable: true,
-					 radius: 6
-				  }
-				}
+                  dot: {
+                     enable: true,
+                     radius: 6
+                  }
+                }
             }
     new DPChart(container, data, options);
 </script>
