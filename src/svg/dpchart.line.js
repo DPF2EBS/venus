@@ -42,7 +42,7 @@
                 data = series.getSeries(),
                 self = this,
                 raphael = this.raphael,
-                colors = DPChart.getColors(data.length),//this.colors,
+                colors = this.colors,//this.colors,
                 elements = []
 
             function drawLine(arr, indexOfSeries, color, dotColor) {
