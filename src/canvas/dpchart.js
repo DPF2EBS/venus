@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Canvas Chart Lib of Venus
  * */
 
@@ -35,16 +35,7 @@
         this.events = new CustomEvent();
         var defaultOptions = {
             width:container.clientWidth,
-            height:container.clientHeight,
-            axis:{
-            },
-            legend: {
-                position:[0, 0],
-                format:""
-            },
-            grid: {
-                color:'#CCCCCC'
-            }
+            height:container.clientHeight
         };
         this.options = mix(defaultOptions, options || {});
 	    this.stage=new Kinetic.Stage({
@@ -288,6 +279,7 @@
 			legendWidth = legendOptions.width,
 			legendHeight = legendOptions.height,
 			positions = legendOptions.position,
+            pos,
 			positionTable = {
 				'left-top' : { x: 0, y:0 },
 				'right-top': { x: options.width - legendWidth, y: 0 },
@@ -297,7 +289,7 @@
 				'rect': 'Rect',
 				'circle': 'Circle'
 			};
-		for(var pos in positionTable) {
+		for(pos in positionTable) {
 			if(positions == pos) {
 				pos = positionTable[pos];
 				break;
@@ -319,6 +311,7 @@
 				break;
 			}
 		}
+        
 		var seriesLen = series.series.length,
 			labelTexts = [],
             lineHeight =  Math.ceil(legendHeight/seriesLen);
