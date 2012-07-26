@@ -1,35 +1,33 @@
 (function () {
 	var colors=["red","blue","green","orange","yellow"];
-    function VerticalLine(layer, x, y, ox, oy, w, h, color, d) {
-        var path, Line = {};
-        Line = {
-            x:x-ox/4,
-            y:y
-        };
+	/*
+	*@Todo: add Line to the Chart
+	*/
+    function VerticalLine(layer, x, y, ox, oy, color, d) {
         layer.add(new Kinetic.Line({
             points: [x, y, x + ox, y - oy],
 	        stroke: color,
-	        strokeWidth: 1,
+	        strokeWidth: 2,
 	        lineCap: "round",
 	        lineJoin: "round"
         }));
     }
-
     DPChart.addChart('line', {
         draw:function () {
 			var options = this.options;
+			
             var series = this.series.getSeries();
+
             var range = this.series.getRange();
 
             var layer = this.layer;
+
             var xAxis = this.axises.x,
                 yAxis = this.axises.y
 
             var xOrigin = xAxis.getOrigin();
             var yOrigin = yAxis.getOrigin();
 
-            console.log('data series elements count: ', series.length);
-			// 是否需要line中的dot
             var needDot = options.line.dot.enable , radius;
 			if(needDot) {
 				radius =  options.line.dot.radius;
@@ -92,7 +90,7 @@
 				})(data)
 				this.stage.add(tipLayer);
 				layer.add(dotTag);
-                (i < L - 1) && VerticalLine(layer, posX, posY, posOffset.x, posOffset.y, width, height, colors[i], data.data);
+                (i < L - 1) && VerticalLine(layer, posX, posY, posOffset.x, posOffset.y, colors[i], data.data);
             }
         }
     });

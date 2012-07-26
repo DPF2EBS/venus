@@ -1,44 +1,8 @@
 ﻿/*
- * SVG Chart Lib of Venus
+ * Canvas Chart Lib of Venus
  * */
 
 (function (global, undefined) {
-    /*
-     * Class DPChart
-     * @param container{HTMLElement} container of the svg element to draw the chart
-     * @param data{Array} Array of the data
-     * @param options{object}
-     * {
-     width:
-     height:
-     axis:{
-     ‘x’:{
-     enable:true
-     max:
-     min:
-     tickSize:
-     ticks:[],
-     minorTickNum: // 一个tick中有几个minor tick ，<0 就没有
-     rotate:逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
-     radius:弯曲半径
-
-     },
-     ‘y’:{}
-
-     },
-     legend:{
-     position：[left,top],
-     format:”{name}-{percent.2f}%”
-     itemType:’rect’ // circle
-     },
-     grid:{
-     ‘color’:’’
-     },
-     events:{
-     }
-     }
-     * */
-
     var mix = function (o1, o2) {
             for (var attr in o2) {
                 if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
@@ -72,12 +36,12 @@
             height:container.clientHeight,
             axis:{
             },
-            legend:{
+            legend: {
                 position:[0, 0],
                 format:"",
                 itemType:'rect'
             },
-            grid:{
+            grid: {
                 color:'#CCCCCC'
             }
         };
@@ -141,7 +105,7 @@
         _initGrid:function () {
             var options = this.options;
             if(options.grid){
-                this.grid = new Grid(options, this.series, this.layer);
+                this.grid = new Grid(options, this.layer);
             }
         },
         _initEvents:function () {
@@ -336,7 +300,6 @@
 		        });
 	    layer.add(legendBox);
 	 	// 根据具体的颜色来定义图例
-		console.log(legendOptions.itemType);
 		var showType; // 大写了。。。
 		for(var type in itemType) {
 			if(legendOptions.itemType == type) {
@@ -374,43 +337,53 @@
 				layer.add(itext);
 		}
     };
-	// not good
-    var Grid = function (options, series, layer) {
+	// Grid Function to achive Grid
+    var Grid = function (options, layer) {
+	
+		var defaultOption = {
+            'color':'#666666',
+            'columns': [],
+            'strokeWidth': 1,
+            'opacity': 0.4,
+			'lineCap': 'round'
+        };
+		options.grid = mix(defaultOption, options.grid);  // mix user's options to default options
+	     
         var beginX = this.beginX = 100,
         	beginY = this.beginY = 700,
 			xAxises = options.axis.x,
-			yAxises =  options.axis.y;
-			if(yAxises.enable) {
+			yAxises = options.axis.y,
+			enableXGrid = options.grid.enableXGrid,
+			enableYGrid =  options.grid.enableYGrid;
+			if(enableXGrid) {
 			   var yTickWidth = yAxises.tickWidth,
 				   yTickLength =  yAxises.ticks.length;
 			   for(var kk = 1; kk <= yTickLength; kk++) {
 	  			  var yAxis = new Kinetic.Line({
 				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
 				          stroke: options.grid.color,
-				          strokeWidth: 1,
-				          lineCap: "round",
-				          lineJoin: "round"
+				          strokeWidth: options.grid.strokeWidth,
+				          lineCap: options.grid.lineCap,
+						  alpha: options.grid.opacity
 				    });
 				 	layer.add(yAxis);
 			   } 
 			}
-			if(yAxises.enable) {
+			if(enableYGrid) {
 			   var xTickWidth = xAxises.tickWidth,
 			   	   xTickLength = xAxises.ticks.length;
 				for(var kk = 1; kk <= xTickLength; kk++) {
 		  			  var xAxis = new Kinetic.Line({
 					          points: [beginX + xTickWidth * kk, beginY, beginX + xTickWidth * kk, beginY - yTickWidth * yTickLength],
 					          stroke: options.grid.color,
-					          strokeWidth: 1,
-					          lineCap: "round",
-					          lineJoin: "round"
+					          strokeWidth: options.grid.strokeWidth,
+					          lineCap: options.grid.lineCap,
+							  alpha: options.grid.opacity
 					    });
 				 		layer.add(xAxis);
 			   }
 			}
     }
-
-
 //add to global
     global.DPChart = DPChart;
 
