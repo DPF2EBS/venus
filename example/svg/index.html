@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="example.svg.css" />
+	<style type="text/css">
+	body{background:#2d2d2d; font-size:14px; font-family:Georgia;}
+	input{margin:2px; border:#dfdfdf 1px solid; height:20px; width:25px;}
+	dl{width:960px; margin:0px auto; height:auto; overflow:hidden; margin-top:1px;}
+	dt{background:#9f9f9f; line-height:30px; height:30px; text-indent:1em; font-size:16px; border-bottom:#6f6f6f 1px solid; border-radius:4px 4px 0px 0px;}
+	dt a{margin-left:4px;}
+	dd{padding:10px 6px; background:#dfdfdf; border-top:#afafaf 2px solid; width:940px; margin:0px auto;}
+	</style>
+	<title>Bar-DPChart</title>
+</head>
+<body>	
+	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../../src/svg/customevent.js"></script>
+	<script type="text/javascript" src="../../src/common/common.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>	
+	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.dot.js"></script>
+	
+	<script type="text/javascript">
+	var dt=document.getElementsByTagName('dt');
+	var dd=document.getElementsByTagName('dd');
+	
+	</script>
+	
+	<dl>
+		<dt>[colors]<a href="getColors.html">Demo</a></dt>
+		<dd>
+		<script type="text/javascript">
+		var L=60;
+		var c=DPChart.getColors(L);
+		for(var i=0;i<L;i++){
+			var a=document.createElement('input');
+			a.type='text';
+			a.style.cssText='background-color:'+c[i];
+			dd[0].appendChild(a);
+		}
+		</script>
+		</dd>
+		
+		<dt>[bar]<a href="bar.html">Demo</a></dt>
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[1],
+            data = [25,25,40,10],
+            options = {
+                axis:{
+                    x:{
+						max:200,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:100
+
+                    },
+                    y:{
+                        min:0,
+                        max:60,
+                        tickWidth:16,
+                        tickSize:10
+                    }
+                }, bar:{
+
+                }
+
+            }
+    var bar = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dt>[dot]<a href="dot.html">Demo</a></dt>
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[2],
+            data = [25,25,40,10,5,10,22,33],
+            options = {
+                axis:{
+                    x:{
+						max:200,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:40
+
+                    },
+                    y:{
+                        min:0,
+                        max:100,
+                        tickWidth:30,
+                        tickSize:10
+                    }
+                }, dot:{
+
+                }
+
+            }
+    var dot = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dt>[pie]<a href="pie.html">Demo</a></dt>
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[3],
+            data = [25,25,40,10],
+            options = {
+                axis:{
+                    x:{
+						max:200,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:100
+
+                    },
+                    y:{
+                        min:0,
+                        max:60,
+                        tickWidth:16,
+                        tickSize:10
+                    }
+                }, bar:{
+
+                },
+				dot:{
+				
+				},
+				pie:{
+				
+				}
+            }
+    var bar = new DPChart(container, data, options);
+		</script>
+		</dd>
+	</dl>
+</body>
+</html>
