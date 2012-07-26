@@ -16,7 +16,7 @@
 
     var mix = _DPChart.mix
         , PI = Math.PI
-        , isArray =_DPChart.isArray
+        , isArray = _DPChart.isArray
         , isObject = function (obj) {
             return obj === Object(obj);
         }
@@ -174,7 +174,9 @@
     }
 
 
-
+    /*
+     * DPChart End
+     * */
 
     var Series = function (data) {
         var max , min , i , l
@@ -280,7 +282,8 @@
                 radius:0, //弯曲半径
                 pop:0, // 前面空掉几个刻度的位置
                 _svgWidth:0,
-                _svgHeight:0
+                _svgHeight:0,
+                enable:true
             }
             , axisElement
             , labelElements = []
@@ -323,6 +326,12 @@
 
         axisElement = this.axisElement = paper.path(pathString);
         this.labelElements = labelElements;
+        if (!opt.enable) {
+            axisElement.attr('opacity', 0);
+            labelElements.forEach(function (item) {
+                item.attr('opacity', 0);
+            })
+        }
         //rotate
         axisElement.rotate(rotate, beginX, beginY);
 
@@ -334,10 +343,16 @@
     Axis.prototype = {
         constructor:Axis,
         getX:function (index) {
-            //@param index{Number} index of the series
+            //@param index{Number or String} index of the series or Key of labels
             //return the x in svg coordinate
             var opt = this.options
-
+            if (typeof index == "string") {
+                opt.ticks.forEach(function (tick, i) {
+                    if (tick == index) {
+                        index = i;
+                    }
+                })
+            }
             return Math.cos(opt.rotate / 360 * 2 * PI) * (index + opt.pop) * opt.tickWidth + this.beginX;
         },
         getY:function (index, key) {
@@ -571,5 +586,5 @@
 
 //add to global
     global.DPChart = DPChart;
-mix(DPChart,_DPChart)
+    mix(DPChart, _DPChart);
 })(this);
