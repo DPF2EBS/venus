@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test svg</title>
+</head>
+<body>
+<script type="text/javascript" src="../../src/common/lang.js"></script>
+<script type="text/javascript" src="../../lib/KineticJS/dist/kinetic-core.js">
+</script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+<script type="text/javascript" src="../../src/canvas/dpchart.js"></script>
+<script type="text/javascript" src="../../src/canvas/types/bar.js"></script>
+<div id="chart_container" style="height: 1000px; width:1000px;"></div>
+<script type="text/javascript">
+    var container = document.getElementById('chart_container'),
+            data = [
+                {data:10, label:"FF"},
+                {data:60, label:"IE"},
+                {data:90, label: "Chrome"},
+                {data:60, label: "Safari"},
+                {data:40, label: "Other"}
+            ],
+            options = {
+                axis:{
+                    x: {
+                        ticks:['FF', 'IE', 'Chrome', 'Safari', 'Other'],
+                        tickWidth:100
+                    },
+                    y: {
+                        ticks:[10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                        rotate:90,
+                        tickWidth:60,
+                        tickSize:10
+                    }
+                     },
+                legend:{
+                    position:"right-top",
+                    itemType:"rect",
+                    width: 200,
+                    height: 150
+                },
+                grid: {
+                    color: '#000000',
+                    enableXGrid: true,
+                    enableYGrid: true 
+                },
+                bar: {
+                    
+                }
+            }
+    new DPChart(container, data, options);
+</script>
+</body>
+</html>

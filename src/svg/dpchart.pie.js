@@ -1,51 +1,62 @@
-(function () {	
-	function SectorChart(paper, x, y, r, startAngle, endAngle, color, d) {
-		var path,sector;
+(function (undefined) {	
+	function SectorChart(paper, x, y, r, startAngle, endAngle, color, d, dir) {
+		var path,sector,dir=dir||1;
 		
 		var rad = Math.PI / 180,
-            x1 = x + r * Math.cos(-startAngle * rad),
-			y1 = y + r * Math.sin(-startAngle * rad),
+			angleOffset=endAngle-startAngle;
+            x1 = x + r * Math.cos(dir*startAngle * rad),
+			y1 = y + r * Math.sin(dir*startAngle * rad),
 			
-            x2 = x + r * Math.cos(-endAngle * rad),  
-            y2 = y + r * Math.sin(-endAngle * rad),
+            x2 = x + r * Math.cos(dir*endAngle * rad),  
+            y2 = y + r * Math.sin(dir*endAngle * rad),
 			
-			xm = x + r / 2 * Math.cos(-(startAngle + (endAngle - startAngle) / 2) * rad),
-            ym = y + r / 2 * Math.sin(-(startAngle + (endAngle - startAngle) / 2) * rad),
+			xm = x + r / 2 * Math.cos(dir*(startAngle + angleOffset / 2) * rad),
+            ym = y + r / 2 * Math.sin(dir*(startAngle + angleOffset / 2) * rad),
             path = [
                 "M", x, y,
                 "L", x1, y1,
-                "A", r, r, 0, +(Math.abs(endAngle - startAngle) > 180), 1, x2, y2,
+                "A", r, r, 0, +(Math.abs(angleOffset) > 180), +(dir*(endAngle-startAngle)>0), x2, y2, //clockwise
                 "z"
             ];
-		
-		d&&paper.text(xm, ym, d);
-		
-		sector=paper.path(path.join(' '));
+			
+		sector=Math.abs(angleOffset)===360?paper.circle(x,y,r):paper.path(path.join(' '));
 		
 		color&&sector.attr({
 			'stroke' : 'none',
 			'fill' : color
-		});;
+		});
+		
+		// paper.text(x,y, 'P1');
+		// paper.text(x1,y1, 'P2');
+		// paper.text(x2,y2, 'P3');
+		
+		d&&(Math.abs(angleOffset)===360?paper.text(x, y, d):paper.text(xm, ym, d));
 	}
 	
 	DPChart.addChart('pie', {
-		draw : function () {
+		draw : function (options) {
+			// options=mix(options,{x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2});
+			
+			var defaultOptions={x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2.5};
+			for(var key in defaultOptions){
+				if(options[key]===undefined){
+					options[key]=defaultOptions[key];
+				}
+			}
+			
 			var series = this.series.getSeries(),
 				colors = DPChart.getColors(series.length),
-				xAxis = this.axises.x,
-				yAxis = this.axises.y;
+				data,total=0,
+				startAngle=-90,endAngle;
 			
-			var data,posX,posY,radius;
+			for (var i = 0, L = series.length; i < L; i++) {total+=series[i].data;}
+			
 			for (var i = 0, L = series.length; i < L; i++) {
-				data = series[i];
-				
-				posX = xAxis.getX(i);				
-				posY = yAxis.getY(i);
-				radius=yAxis.getRadius(i)||(Math.random()+1)*10;
-				startAngle=yAxis.getStartAngle(i)||360/series.length;
-				endAngle=yAxis.getEndAngle(i)||360/series.length;
+				endAngle=series[i].data/total*360+startAngle;
 
-				SectorChart(this.raphael, posX, posY, radius, startAngle, endAngle, colors[i], data.data);
+				SectorChart(this.raphael, options.x, options.y, options.radius, startAngle, endAngle, colors[i], series[i].data);
+				
+				startAngle=endAngle;
 			}
 		}
 	});

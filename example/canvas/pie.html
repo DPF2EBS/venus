@@ -4,12 +4,15 @@
     <title>test svg</title>
 </head>
 <body>
+<script type="text/javascript" src="../../src/common/lang.js"></script>
 <script type="text/javascript" src="../../lib/KineticJS/dist/kinetic-core.js">
 </script>
-<script type="text/javascript" src="customevent.js"></script>
-<script type="text/javascript" src="dpchart.js"></script>
-<script type="text/javascript" src="dpchart.bar.js"></script>
-<script type="text/javascript" src="dpchart.line.js"></script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+
+
+<script type="text/javascript" src="../../src/canvas/dpchart.js"></script>
+<script type="text/javascript" src="../../src/canvas/types/pie.js"></script>
 <div id="chart_container" style="height: 1000px; width:1000px;"></div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
@@ -17,43 +20,37 @@
                 {data:10, label:"FF"},
                 {data:50, label:"IE"},
                 {data:30, label: "Chrome"},
-                {data:80, label: "Ohter"}
+                {data:10, label: "Ohter"}
             ],
             options = {
                 axis:{
                     x:{ 
-						enable: true,
+						enable: false,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
                         tickWidth:100
                     },
                     y:{ 
-						enable: true,
+						enable: false,
                         ticks:[10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
                         rotate:90,
                         tickWidth:60,
                         tickSize:10
                     }
-                     },
-                legend:{
+                },
+                /*legend:{
                     position:"right-top",
                     itemType:"rect",
 					width:200,
 					height: 150
-                },
+                },*//*,
  			   	grid: {
 	            	color: '#EFEFEF'
-				}, 
-				/*
-				bar: {
-					
-				},
-				*/
-                line: {
-	              dot: {
-		          	 enable: true,
-					 radius: 6
-				  }
-				}
+				},*/
+                pie:{
+                    radius:200
+
+                }
+
             }
     new DPChart(container, data, options);
 </script>
