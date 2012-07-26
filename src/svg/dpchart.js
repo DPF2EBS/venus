@@ -23,9 +23,6 @@
             }
             return o1;
         }
-        , getNumber = function (obj) {
-
-        }
         , PI = Math.PI
         , toString = Object.prototype.toString
         , isArray = function (obj) {
@@ -129,7 +126,7 @@
                     if (axis == "x") {
                         (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1); //前面空一格
                         if (!thisAxisOption.ticks) {
-                            thisAxisOption.ticks = this.series.getSeries();
+                            thisAxisOption.ticks = this.series.getLabels();
                         }
                     }
 
@@ -228,15 +225,15 @@
      * @type {Array}
      */
     DPChart.getColors = function (colorCount) {
-        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;	
-		
-		//if colorCount is not provide, set colorCount default value 20
-		colorCount=parseInt(colorCount,10)||20;
-		L=colorCount>30?colorCount/5:6;
-		
-		for(var c=0;c<colorCount;c++){
-			colors.push('rgb(' + _hsv2rgb(c%L*360/L, S[Math.floor(c/L)], V[Math.floor(c/L)]).join(',') + ')');
-		}
+        var S = [0.75, 0.75, 0.45, 1, 0.35], V = [0.75, 0.45, 0.9, 0.6, 0.9], colors = [], L;
+
+        //if colorCount is not provide, set colorCount default value 20
+        colorCount = parseInt(colorCount, 10) || 20;
+        L = colorCount > 30 ? colorCount / 5 : 6;
+
+        for (var c = 0; c < colorCount; c++) {
+            colors.push('rgb(' + _hsv2rgb(c % L * 360 / L, S[Math.floor(c / L)], V[Math.floor(c / L)]).join(',') + ')');
+        }
 
         return colors;
     }
@@ -252,7 +249,16 @@
 
         if (isArray(data)) {
             for (i = 0, l = data.length; i < l; i++) {
-                if (isObject(data[i])) {
+                if (isArray(data[i])) {
+                    series.push({data:data[i]});
+                    //get the max of the array
+                    var iMax = Math.max.apply(Math, data[i]),
+                        iMin = Math.min.apply(Math, data[i]);
+
+                    (max === undefined || iMax > max) && (max = iMax);
+                    (min === undefined || iMin < min) && (min = iMin);
+                }
+                else if (isObject(data[i])) {
                     //item is {}
                     if (data[i].data) {
                         // item in format {data:something,otherThings...}
@@ -263,18 +269,8 @@
                     }
                 } else {
                     series.push({data:data[i]});
-                    if (isArray(data[i])) {
-                        //get the max of the array
-                        var iMax = Math.max.apply(Math, data[i]),
-                            iMin = Math.min.apply(Math, data[i]);
-
-                        (max === undefined || iMax > max) && (max = iMax);
-                        (min === undefined || iMin < min) && (min = iMin);
-                    } else {
-                        (max === undefined || data[i] > max ) && (max = data[i]);
-                        (min === undefined || data[i] < min ) && (min = data[i]);
-                    }
-
+                    (max === undefined || data[i] > max ) && (max = data[i]);
+                    (min === undefined || data[i] < min ) && (min = data[i]);
                 }
             }
         } else if (isObject(data)) {
@@ -304,7 +300,36 @@
             return this.series;
         },
         getLabels:function () {
-
+            var labels = [],
+                _labels = {},
+                isObj = false
+            this.series.forEach(function (item) {
+                if (item.name) {
+                    labels.push(item.name)
+                }
+                else {
+                    var data = item.data;
+                    if (isArray(data)) {
+                        labels.push('');
+                    }
+                    else if (isObject(data)) {
+                        for (var o in data) {
+                            isObj = true;
+                            _labels[o] = true;
+                        }
+                    } else {
+                        labels.push('');
+                    }
+                }
+            });
+            if (isObj) {
+                //convert _labels to array
+                labels = [];
+                for (var o in _labels) {
+                    labels.push(o);
+                }
+            }
+            return labels;
         }
     }
 
@@ -375,15 +400,22 @@
     Axis.prototype = {
         constructor:Axis,
         getX:function (index) {
+            //@param index{Number} index of the series
             //return the x in svg coordinate
             var opt = this.options
 
             return Math.cos(opt.rotate / 360 * 2 * PI) * (index + opt.pop) * opt.tickWidth + this.beginX;
         },
-        getY:function (index) {
+        getY:function (index, key) {
+            //@param index{Number} index of the series
+            //@param key{Number or String} index or key of data which is series[i].data
             //return the y in svg coordinate
             var opt = this.options
-            return this.beginY - Math.sin(opt.rotate / 360 * 2 * PI) * ( this.series.getSeries()[index].data - opt.ticks[0]) * opt.tickWidth / opt.tickSize;
+            if (key === undefined) {
+                return this.beginY - Math.sin(opt.rotate / 360 * 2 * PI) * ( this.series.getSeries()[index].data - opt.ticks[0] - opt.pop) * opt.tickWidth / opt.tickSize;
+            } else {
+                return this.beginY - Math.sin(opt.rotate / 360 * 2 * PI) * ( this.series.getSeries()[index].data[key] - opt.ticks[0] - opt.pop) * opt.tickWidth / opt.tickSize;
+            }
         },
         getOrigin:function () {
             return {
@@ -444,16 +476,28 @@
             , startY = 0
             , item
             , text
-            ,textWidth
+            , textWidth
             , totalWidth = []
             , totalHeight
             , itemSet // set of items
             , textSet // set of texts
             , margin = 10 // margin to svg boundary
             , padding = 10
+            , names = []
+            , labels = series.getLabels()
         this.options = mix(defaultOption, options);
         itemSet = paper.set();
         textSet = paper.set();
+
+        data.forEach(function (d, j) {
+            if (d.name !== undefined) {
+                names.push(d.name);
+            } else if (typeof d.data === 'number') {
+                names.push(labels[j]);
+            } else {
+                names.push('');
+            }
+        });
 
         for (i = 0, l = data.length; i < l; i++) {
             switch (this.options.itemType) {
@@ -475,9 +519,9 @@
                 'stroke-width':0,
                 'cursor':'pointer'
             });
-            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, data[i].data);
+            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]);
             textWidth = text.getBBox().width;
-            text.translate(textWidth/2,0)
+            text.translate(textWidth / 2, 0)
             itemSet.push(item);
             textSet.push(text)
             totalWidth.push(textWidth);
@@ -521,9 +565,18 @@
 
 
         //bind default click event
-        this.on('click', function (e, i) {
-            //console.log(e, i)
-        });
+        this.on('click', (function () {
+            var arr = new Array(data.length);
+            return function (e, i) {
+                if (arr[i] == true || arr[i] == undefined) {
+                    arr[i] = false;
+                    this.attr('fill', 'gray');
+                } else {
+                    arr[i] = true;
+                    this.attr('fill', colors[i]);
+                }
+            }
+        })());
     };
     Legend.prototype = {
         constructor:Legend,
@@ -535,6 +588,7 @@
         on:function (name, fn) {
             var event
             if ((event = this.itemSet[name] ) && typeof event == "function") {
+                //has function such as click, mouseover
                 this.itemSet.forEach(function (item, i) {
                     item[name](function (e) {
                         fn.call(item, e, i);
@@ -569,7 +623,11 @@
         }
         if (options.columns.length) {
             options.columns.forEach(function (value) {
-                paper.path('M' + value + "," + options._y + "v" + options.height)
+                paper.path('M' + value + "," + options._y + "v" + -options.height).attr({
+                    stroke:options.color,
+                    "stroke-width":options['stroke-width'],
+                    'opacity':options.opacity
+                })
             })
         }
 
@@ -579,5 +637,6 @@
 //add to global
     global.DPChart = DPChart;
     DPChart.mix = mix;
+    DPChart.isArray = isArray;
 
 })(this);
