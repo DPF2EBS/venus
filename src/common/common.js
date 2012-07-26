@@ -1,7 +1,7 @@
-(function(){
-	DPChart=window.DPChart||{};
-	
-	var _hsv2rgb = function (h, s, v) {
+(function () {
+    var DPChart = this.DPChart || {};
+
+    var _hsv2rgb = function (h, s, v) {
         var hi, f, p, q, t, result = [];
         hi = Math.floor(h / 60) % 6;
         f = hi % 2 ? h / 60 - hi : 1 - (h / 60 - hi);
@@ -56,4 +56,30 @@
 
         return colors;
     }
+
+
+    /*
+     * mix
+     * */
+    DPChart.mix = function (o1, o2) {
+        for (var attr in o2) {
+            if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
+                o1[attr] = o2[attr];
+            } else {
+                DPChart.mix(o1[attr], o2[attr]);
+            }
+        }
+        return o1;
+    }
+
+
+    /*
+    * isArray
+    * */
+
+   DPChart.isArray =  function (obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    }
+
+    this.DPChart = DPChart;
 })();
