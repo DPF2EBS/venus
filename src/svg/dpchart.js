@@ -582,7 +582,8 @@
                 side = side || 'top',
                 path = function (width, height, padding) {
                     var p = ['M', x, y],
-                        arrowWidth = 5
+                        arrowWidth = 5,
+                        left, top
 
                     height += (2 * padding || 0);
                     width += (2 * padding || 0);
@@ -593,9 +594,11 @@
                             p.push('l', arrowWidth, -arrowWidth);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('h', width);
-                            p.push('v', height, 'l', -width);
+                            p.push('v', height, 'h', -width);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('l', -arrowWidth, -arrowWidth);
+                            left = x + arrowWidth;
+                            top = y - height / 2;
                             break;
                         case 'top':
                             width = Math.max(arrowWidth * 2, width);
@@ -604,6 +607,8 @@
                             p.push('v', -height, 'h', width, 'v', height);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('l', -arrowWidth, arrowWidth);
+                            left = x - width / 2;
+                            top = y - arrowWidth - height;
                             break;
                         case 'left':
                             height = Math.max(arrowWidth * 2, height);
@@ -612,6 +617,8 @@
                             p.push('h', -width, 'v', -height, 'h', width);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('l', arrowWidth, arrowWidth);
+                            left = x - arrowWidth - width;
+                            top = y - height / 2;
                             break;
                         case 'bottom':
                             width = Math.max(arrowWidth * 2, width);
@@ -620,11 +627,21 @@
                             p.push('v', height, 'h', -width, 'v', -height);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('l', arrowWidth, -arrowWidth);
+                            left = x - width / 2;
+                            top = y + arrowWidth;
                             break;
 
                     }
                     p.push('z')
-                    return p;
+                    return {
+                        path:p,
+                        box:{
+                            left:left,
+                            top:top,
+                            width:width,
+                            height:height
+                        }
+                    };
                 }
 
             !DPChart.isArray(texts) && (texts = [texts]);
@@ -641,14 +658,15 @@
                 var width = [], height = 0,
                     bBox,
                     text,
-                    paddingToBorder = 10
+                    paddingToBorder = 10,
+                    p
 
 
                 texts.forEach(function (t, i) {
                     text = paper.text(x, -100, t)
                     labels.push(text);
                     bBox = text.getBBox();
-                    text.attr('y', y - (texts.length - i - 0.5) * bBox.height - paddingToBorder - 5).attr({
+                    text.attr({
                         'opacity':0
                     });
                     width.push(bBox.width);
@@ -656,15 +674,22 @@
                 labels.animate({'opacity':1}, 100);
                 if (this._dpchart_tooltip_show)
                     return;
+                p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder)
                 this._dpchart_tooltip = tip = paper.path().attr({
-                    path:path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder),
-                    fill:"#000",
+                    path:p.path,
+                    fill:"#000000",
                     stroke:"#666",
                     "stroke-width":5,
                     "fill-opacity":.2,
                     'stroke-linejoin':'round',
                     'opacity':'0'
                 }).animate({'opacity':1}, 100);
+                labels.forEach(function (la, i) {
+                    la.attr({
+                        'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
+                        'x':p.box.left + p.box.width / 2
+                    })
+                })
                 this._dpchart_tooltip_labels = labels;
             }
             return toolTip;
