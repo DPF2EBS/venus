@@ -133,7 +133,7 @@
                 legendOption._svgWidth = opt.width;
                 legendOption._svgHeight = opt.height;
                 legendOption.colors = this.colors;
-                this.axises.x && this.axises.options.ticks && ( legendOption._ticks = this.axises.x.options.ticks);
+                this.axises.x && this.axises.x.options.ticks && ( legendOption._ticks = this.axises.x.options.ticks);
                 this.legend = new Legend(this.series, legendOption, this.raphael);
 
             }
@@ -440,7 +440,7 @@
             if (d.name !== undefined) {
                 names.push(d.name);
             } else if (typeof d.data === 'number') {
-                names.push(labels[j] || (options._ticks ? options._ticks[j] : ""));
+                names.push(labels[j] || (options._ticks ? options._ticks[j]||'' : ""));
             } else {
                 names.push('');
             }
