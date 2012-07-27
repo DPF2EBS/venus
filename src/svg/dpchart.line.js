@@ -42,7 +42,7 @@
                 data = series.getSeries(),
                 self = this,
                 raphael = this.raphael,
-                colors = DPChart.getColors(data.length),//this.colors,
+                colors = this.colors,//this.colors,
                 elements = []
 
             function drawLine(arr, indexOfSeries, color, dotColor) {
@@ -147,7 +147,7 @@
                 if (typeof data[0].data === "number") {
                     //data is simple number
                     //TODO bug data.length<3
-                    drawLine(data, undefined, undefined, this.colors[4]);
+                    drawLine(data, undefined, this.colors[0], undefined);
                 } else if (DPChart.isArray(data[0].data)) {
                     data.forEach(function (item, i) {
                         //item is data[0],...which is an array and draws an line
