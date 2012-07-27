@@ -26,7 +26,7 @@
             }
 
             function bindLegendEvents() {
-                self.legend.on('click', (function () {
+             self.legend &&  self.legend.on('click', (function () {
                     var arr = new Array(series.length);
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
