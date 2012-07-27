@@ -4,12 +4,12 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="example.svg.css" />
 	<style type="text/css">
-	body{background:#2d2d2d; font-size:14px; font-family:Georgia;}
+	body{background:#ededed; font-size:14px; font-family:Georgia;}
 	input{margin:2px; border:#dfdfdf 1px solid; height:20px; width:25px;}
 	dl{width:960px; margin:0px auto; height:auto; overflow:hidden; margin-top:1px;}
-	dt{background:#9f9f9f; line-height:30px; height:30px; text-indent:1em; font-size:16px; border-bottom:#6f6f6f 1px solid; border-radius:4px 4px 0px 0px;}
+	dt{background:#afafaf; line-height:30px; height:30px; text-indent:1em; font-size:16px; border-bottom:#6f6f6f 1px solid; border-radius:4px 4px 0px 0px;}
 	dt a{margin-left:4px;}
-	dd{padding:10px 6px; background:#dfdfdf; border-top:#afafaf 2px solid; width:940px; margin:0px auto;}
+	dd{padding:10px 6px; background:#dfdfdf; border-color:#afafaf;border-width:2px 1px 0px; border-style:solid; width:940px; margin:0px auto;}
 	</style>
 	<title>Bar-DPChart</title>
 </head>
@@ -21,6 +21,7 @@
 	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
 	<script type="text/javascript" src="../../src/svg/dpchart.dot.js"></script>
 	<script type="text/javascript" src="../../src/svg/dpchart.pie.js"></script>
+	<script type="text/javascript" src="../../src/svg/dpchart.line.js"></script>
 	
 	<script type="text/javascript">
 	var dt=document.getElementsByTagName('dt');
@@ -75,16 +76,18 @@
 		<dd style="height: 130px;">
 		<script type="text/javascript">
 		var container = dd[2],
-            data = [25,25,40,10,5,10,22,33],
+            data = [35,30,10,5,10],
             options = {
                 axis:{
                     x:{
+						enable:false,
 						max:100,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
                         tickWidth:40
 
                     },
                     y:{
+						enable:false,
                         min:0,
                         max:40,
                         tickWidth:20,
@@ -103,13 +106,51 @@
 		<dd style="height: 130px;">
 		<script type="text/javascript">
 		var container = dd[3],
-            data = [25,25,40,10,8,22],
+            data = [25,25,40,10,8],
             options = {
 				pie:{
 				
 				}
             }
     var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dt>[line]<a href="line.html">Demo</a></dt>
+		<dd style="height: 260px;">
+		<script type="text/javascript">
+		var container = dd[4],
+            data = [],
+            options = {
+                axis:{
+                    x:{
+                        tickWidth:50,
+                        ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    },
+                    y:{
+                        min:0,
+                        max:100,
+                        tickWidth:20,
+                        tickSize:10
+                    }
+                },
+                line:{
+                    smooth:true
+                },
+                grid:{
+                    enableColumn:true
+                }
+
+            }
+    for (var i = 0, l = 5; i < l; i++) {
+        var arr = []
+        data.push({name:i, data:arr})
+        for (var j = 0; j < 12; j++) {
+            arr.push(parseInt(Math.random() * 100))
+        }
+
+    }
+    var line = new DPChart(container, data, options);
 		</script>
 		</dd>
 	</dl>

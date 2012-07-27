@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Canvas Chart Lib of Venus
  */
 
@@ -381,13 +381,28 @@
             }
         }
     }
-
+    /*
+    *@Todo: add Legend to the chart
+    */
     var Legend = function (options, series, layer) {
-        var defaultOptions={};
+        var defaultOptions={
+            legendWrap: {
+                fillColor: '#EFEFEF',
+                strokeColor: '#CCCCCC',
+                strokeWidth: '1'
+            },
+            itemType: 'Rect',
+            position: 'right-bottom',
+            width: '120',
+            height: '100'
+        };
+        options.legend = mix(defaultOptions, options.legend);
+
 		var legendOptions = options.legend,
 			legendWidth = legendOptions.width,
 			legendHeight = legendOptions.height,
 			positions = legendOptions.position,
+            pos,
 			positionTable = {
 				'left-top' : { x: 0, y:0 },
 				'right-top': { x: options.width - legendWidth, y: 0 },
@@ -397,41 +412,36 @@
 				'rect': 'Rect',
 				'circle': 'Circle'
 			};
-		var pos = {},
-			legendBox;
-		for(var pos in positionTable) {
+		for(pos in positionTable) {
 			if(positions == pos) {
 				pos = positionTable[pos];
 				break;
 			}
 		}
-	    // 可以画图了。
-	   	legendBox = new Kinetic.Rect({
-		          x: pos.x,
-		          y: pos.y,
-		          width: legendWidth - 2,
-		          height: legendHeight - 2,
-		          fill: "#EFEFEF",
-		          stroke: "#CCCCCC",
-		          strokeWidth: 1
-		        });
-	    layer.add(legendBox);
-	 	// 根据具体的颜色来定义图例
-		var showType; // 大写了。。。
+        layer.add(new Kinetic.Rect({
+            x: pos.x,
+            y: pos.y,
+            width: legendWidth - 2,
+            height: legendHeight - 2,
+            fill: options.legend.legendWrap.fillColor,
+            stroke: options.legend.legendWrap.strokeColor,
+            strokeWidth: options.legend.legendWrap.strokeWidth
+        }));
+		var showType;
 		for(var type in itemType) {
 			if(legendOptions.itemType == type) {
 				showType = itemType[type];
 				break;
 			}
 		}
+        
 		var seriesLen = series.series.length,
-			labelTexts = [];
-		var colors=["red","blue","green","orange"];
+			labelTexts = [],
+            lineHeight =  Math.ceil(legendHeight/seriesLen);
+		var colors=["red","blue","green","orange", "yellow"];
 	   	for(var ii = 0; ii < seriesLen; ii++) {
 			labelTexts.push(series.series[ii].label);
 		}
-		console.log(labelTexts); // ["FF", "IE", "Chrome", "Ohter"] 
-		var lineHeight =  Math.ceil(legendHeight/seriesLen);
 		for(var jj = 0; jj < seriesLen; jj++){
 			 var  itype =  new Kinetic[showType]({
 				          x: pos.x + 5,
@@ -472,9 +482,11 @@
 			yAxises = options.axis.y,
 			enableXGrid = options.grid.enableXGrid,
 			enableYGrid =  options.grid.enableYGrid;
+
 			if(enableXGrid) {
-			   var yTickWidth = yAxises.tickWidth,
-				   yTickLength =  yAxises.ticks.length;
+                var yTickWidth = yAxises.tickWidth,
+				    yTickLength =  yAxises.ticks.length;
+
 			   for(var kk = 1; kk <= yTickLength; kk++) {
 	  			  var yAxis = new Kinetic.Line({
 				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
@@ -501,7 +513,6 @@
 			   }
 			}
     }
-//add to global
     global.DPChart = DPChart;
 
     //for test

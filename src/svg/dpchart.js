@@ -3,25 +3,15 @@
  * */
 
 (function (global, undefined) {
-    //extend Array forEach
-    !Array.prototype.forEach && (Array.prototype.forEach = function (fn, context) {
-        for (var i = 0, l = this.length; i < l; i++) {
-            if (i in this) {
-                fn && fn.call(context, this[i], i, this);
-            }
-        }
-    });
     var _DPChart = global.DPChart;
-
-
     var mix = _DPChart.mix
         , PI = Math.PI
-        , isArray =_DPChart.isArray
+        , isArray = _DPChart.isArray
         , isObject = function (obj) {
             return obj === Object(obj);
         }
         , charts = {} // charts added by using DPChart.addChart
-        , colors = _DPChart.getColors();
+        , getColor = _DPChart.getColors;
 
     /*DPChart Begin*/
     /*
@@ -51,7 +41,6 @@
                 }
             },
             legend:{
-
             },
             grid:{
                 enableRow:true,
@@ -60,7 +49,7 @@
         };
         this.options = mix(defaultOptions, options || {});
         this.raphael = new Raphael(container, this.options.width, this.options.height);
-        this.colors = colors;
+        this.colors = getColor(data.length);
 
         //init data
         this._initData();
@@ -87,8 +76,6 @@
         this.events.fire('onFinish');
 
     }
-	
-	DPChart=mix(DPChart, window.DPChart);
 
     DPChart.prototype = {
         constructor:DPChart,
@@ -143,12 +130,14 @@
         _initLegend:function () {
             var opt = this.options,
                 legendOption = opt.legend;
-            legendOption._svgWidth = opt.width;
-            legendOption._svgHeight = opt.height;
+            if (legendOption && this.series.getSeries().length) {
 
-            this.legend = new Legend(this.series, legendOption, this.raphael);
+                legendOption._svgWidth = opt.width;
+                legendOption._svgHeight = opt.height;
+                legendOption.colors = this.colors;
+                this.legend = new Legend(this.series, legendOption, this.raphael);
 
-
+            }
         },
         _initGrid:function () {
             var gridOption = this.options.grid
@@ -237,7 +226,7 @@
                 _labels = {},
                 isObj = false
             this.series.forEach(function (item) {
-                if (item.name) {
+                if (item.name && typeof item.data == 'number') {
                     labels.push(item.name)
                 }
                 else {
@@ -279,7 +268,8 @@
                 radius:0, //弯曲半径
                 pop:0, // 前面空掉几个刻度的位置
                 _svgWidth:0,
-                _svgHeight:0
+                _svgHeight:0,
+                enable:true
             }
             , axisElement
             , labelElements = []
@@ -322,6 +312,12 @@
 
         axisElement = this.axisElement = paper.path(pathString);
         this.labelElements = labelElements;
+        if (!opt.enable) {
+            axisElement.attr('opacity', 0);
+            labelElements.forEach(function (item) {
+                item.attr('opacity', 0);
+            })
+        }
         //rotate
         axisElement.rotate(rotate, beginX, beginY);
 
@@ -333,14 +329,20 @@
     Axis.prototype = {
         constructor:Axis,
         getX:function (index) {
-            //@param index{Number} index of the series
+            //@param index{Number or String} index of the series or Name of labels
             //return the x in svg coordinate
             var opt = this.options
-
+            if (typeof index == "string") {
+                opt.ticks.forEach(function (tick, i) {
+                    if (tick == index) {
+                        index = i;
+                    }
+                })
+            }
             return Math.cos(opt.rotate / 360 * 2 * PI) * (index + opt.pop) * opt.tickWidth + this.beginX;
         },
         getY:function (index, key) {
-            //@param index{Number} index of the series
+            //@param index{Number or String} index of the series or Name of labels
             //@param key{Number or String} index or key of data which is series[i].data
             //return the y in svg coordinate
             var opt = this.options
@@ -399,6 +401,7 @@
         var defaultOption = {
                 position:['right', 'top'],
                 format:'{name}',
+                colors:[],
                 itemType:'rect'// circle
             }, i, l
             , data = series.getSeries()
@@ -418,10 +421,12 @@
             , margin = 10 // margin to svg boundary
             , padding = 10
             , names = []
+            , colors
             , labels = series.getLabels()
         this.options = mix(defaultOption, options);
         itemSet = paper.set();
         textSet = paper.set();
+        colors = this.options.colors;
 
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
@@ -472,6 +477,8 @@
         this.border = border;
         this.itemSet = itemSet;
         this.textSet = textSet;
+
+        border.attr('z-index', 999);
 
         //transform to position
         var left , top;
@@ -567,8 +574,109 @@
 
     }
 
+    var toolTip = function (paper, x, y, texts, side) {
+            //@param x , y position of the tip
+            //@texts{Array or String} each line of text
+            //@side{String} 'left','top','right' or 'bottom'
+            var tip, labels,
+                side = side || 'top',
+                path = function (width, height, padding) {
+                    var p = ['M', x, y],
+                        arrowWidth = 5
+
+                    height += (2 * padding || 0);
+                    width += (2 * padding || 0);
+                    switch (side) {
+                        case 'right':
+                            //arrow at the left side and content at right
+                            height = Math.max(arrowWidth * 2, height);
+                            p.push('l', arrowWidth, -arrowWidth);
+                            p.push('v', -(height / 2 - arrowWidth));
+                            p.push('h', width);
+                            p.push('v', height, 'l', -width);
+                            p.push('v', -(height / 2 - arrowWidth));
+                            p.push('l', -arrowWidth, -arrowWidth);
+                            break;
+                        case 'top':
+                            width = Math.max(arrowWidth * 2, width);
+                            p.push('l', -arrowWidth, -arrowWidth);
+                            p.push('h', -(width / 2 - arrowWidth));
+                            p.push('v', -height, 'h', width, 'v', height);
+                            p.push('h', -(width / 2 - arrowWidth));
+                            p.push('l', -arrowWidth, arrowWidth);
+                            break;
+                        case 'left':
+                            height = Math.max(arrowWidth * 2, height);
+                            p.push('l', -arrowWidth, arrowWidth);
+                            p.push('v', height / 2 - arrowWidth);
+                            p.push('h', -width, 'v', -height, 'h', width);
+                            p.push('v', height / 2 - arrowWidth);
+                            p.push('l', arrowWidth, arrowWidth);
+                            break;
+                        case 'bottom':
+                            width = Math.max(arrowWidth * 2, width);
+                            p.push('l', arrowWidth, arrowWidth);
+                            p.push('h', width / 2 - arrowWidth);
+                            p.push('v', height, 'h', -width, 'v', -height);
+                            p.push('h', width / 2 - arrowWidth);
+                            p.push('l', arrowWidth, -arrowWidth);
+                            break;
+
+                    }
+                    p.push('z')
+                    return p;
+                }
+
+            !DPChart.isArray(texts) && (texts = [texts]);
+            if (this._dpchart_tooltip) {
+                tip = this._dpchart_tooltip;
+                labels = this._dpchart_tooltip_labels;
+                texts.forEach(function (t, i) {
+                    labels[i] ? labels[i].attr('text', t) : labels.push(paper.text(0, 0, t))
+                })
+            } else {
+
+
+                labels = paper.set();
+                var width = [], height = 0,
+                    bBox,
+                    text,
+                    paddingToBorder = 10
+
+
+                texts.forEach(function (t, i) {
+                    text = paper.text(x, -100, t)
+                    labels.push(text);
+                    bBox = text.getBBox();
+                    text.attr('y', y - (texts.length - i - 0.5) * bBox.height - paddingToBorder - 5).attr({
+                        'opacity':0
+                    });
+                    width.push(bBox.width);
+                });
+                labels.animate({'opacity':1}, 100);
+                if (this._dpchart_tooltip_show)
+                    return;
+                this._dpchart_tooltip = tip = paper.path().attr({
+                    path:path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder),
+                    fill:"#000",
+                    stroke:"#666",
+                    "stroke-width":5,
+                    "fill-opacity":.2,
+                    'stroke-linejoin':'round',
+                    'opacity':'0'
+                }).animate({'opacity':1}, 100);
+                this._dpchart_tooltip_labels = labels;
+            }
+            return toolTip;
+        },
+        toolTipHide = function () {
+            this._dpchart_tooltip && (this._dpchart_tooltip.animate({'opacity':0}, 100)) && (this._dpchart_tooltip_labels.animate({'opacity':0}, 100)) && (this._dpchart_tooltip = false)
+        }
+    Raphael.el.toolTip = toolTip;
+    Raphael.el.toolTipHide = toolTipHide;
+
 
 //add to global
     global.DPChart = DPChart;
-mix(DPChart,_DPChart)
+    mix(DPChart, _DPChart);
 })(this);

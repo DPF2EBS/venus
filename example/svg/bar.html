@@ -1,42 +1,83 @@
-<!DOCTYPE HTML>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html>
 <head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="example.svg.css" />
-	<title>Bar-DPChart</title>
+    <title>test svg</title>
 </head>
-<body>
-	<div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-	
-	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../../src/svg/customevent.js"></script>
-	<script type="text/javascript" src="../../src/common/common.js"></script>
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
-	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
-	
-	<script type="text/javascript">
-	var container = document.getElementById('chart_container'),
-            data = [25,25,40,10],
+<body style="margin: 0;">
+<script type="text/javascript" src="../../lib/raphael/raphael-min.js">
+</script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
+<div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+<div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+<div id="chart_container3" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+
+<script type="text/javascript">
+    var container = document.getElementById('chart_container'),
+            data = [],
             options = {
                 axis:{
                     x:{
-						max:200,
-                        ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:40
-
+                        tickWidth:240,
+                        ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
                         min:0,
                         max:100,
-                        tickWidth:30,
+                        tickWidth:65,
                         tickSize:10
                     }
-                }, bar:{
-
+                },
+                bar:{
+                    radius:2
+                },
+                grid:{
+                    enableColumn:true
                 }
 
             }
+    for (var i = 0, l = 3; i < l; i++) {
+        var arr = {}
+        options.axis.x.ticks.forEach(function (month) {
+            arr[month] = parseInt(Math.random() * 100)
+        })
+        data.push({name:i, data:arr})
+
+    }
     var bar = new DPChart(container, data, options);
-	</script>
+</script>
+<script type="text/javascript">
+    var container2 = document.getElementById('chart_container2'),
+            data2 = [],
+            options2 = {
+                axis:{
+                    x:{
+                        tickWidth:90,
+                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    },
+                    y:{
+                        min:0,
+                        max:100,
+                        tickWidth:65,
+                        tickSize:10
+                    }
+                },
+                bar:{
+                    radius:2
+                },
+                grid:{
+                    enableColumn:true
+                }
+
+            };
+    options2.axis.x.ticks.forEach(function (month) {
+        data2.push({name:month, data:parseInt(Math.random()*100)})
+    })
+
+
+    var bar2 = new DPChart(container2, data2, options2);
+</script>
 </body>
 </html>

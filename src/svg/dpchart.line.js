@@ -42,53 +42,60 @@
                 data = series.getSeries(),
                 self = this,
                 raphael = this.raphael,
-                colors = this.colors,
+                colors = this.colors,//this.colors,
                 elements = []
 
             function drawLine(arr, indexOfSeries, color, dotColor) {
+                var points = []
+
+                //put all points in the point array, ignore some miss point
+                if (DPChart.isArray(arr)) {
+                    arr.forEach(function (d, i) {
+                        if (indexOfSeries == undefined) {
+                            points.push({
+                                x:axises.x.getX(i),
+                                y:axises.y.getY(i)
+                            })
+                        } else {
+                            points.push({
+                                x:axises.x.getX(i),
+                                y:axises.y.getY(indexOfSeries, i)
+                            });
+                        }
+                    })
+                } else {
+                    //arr is object
+                    for (var o in arr) {
+                        points.push({
+                            x:axises.x.getX(o),
+                            y:axises.y.getY(indexOfSeries, o)
+                        })
+                    }
+                }
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
                         pathString,
                         i, l,
                         x0, y0, x1, y1,
-                        points
-                    if (indexOfSeries == undefined) {
-                        x = axises.x.getX(0);
-                        y = axises.y.getY(0)
-                    } else {
-                        x = axises.x.getX(0);
-                        y = axises.y.getY(indexOfSeries, 0);
-                    }
-                    pathString = [ 'M' , x , y, 'C', x, y];
-
-                    for (i = 1, l = arr.length - 1; i < l; i++) {
-                        x0 = x;
-                        y0 = y;
-                        if (indexOfSeries === undefined) {
-                            x = axises.x.getX(i);
-                            y = axises.y.getY(i);
-                            x1 = axises.x.getX(i + 1);
-                            y1 = axises.y.getY(i + 1);
-                        }
-                        else {
-                            x = axises.x.getX(i);
-                            y = axises.y.getY(indexOfSeries, i);
-                            x1 = axises.x.getX(i + 1);
-                            y1 = axises.y.getY(indexOfSeries, i + 1);
-                        }
-
-                        points = getAnchors(x0, y0, x, y, x1, y1);
-
-                        pathString.push(points.x1, points.y1, x, y, points.x2, points.y2)
+                        p
+                    pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
+                    for (i = 1, l = points.length - 1; i < l; i++) {
+                        x0 = points[i - 1].x;
+                        y0 = points[i - 1].y;
+                        x = points[i].x;
+                        y = points[i].y;
+                        x1 = points[i + 1].x;
+                        y1 = points[i + 1].y;
+                        p = getAnchors(x0, y0, x, y, x1, y1);
+                        pathString.push(p.x1, p.y1, x, y, p.x2, p.y2)
                     }
                     pathString.push(x1, y1, x1, y1)
                 } else {
                     //straight line
-                    var pathString
-                    indexOfSeries === undefined ? pathString = ['M', axises.x.getX(0), axises.y.getY(0)] : pathString = ['M', axises.x.getX(indexOfSeries, 0), axises.y.getY(indexOfSeries, 0)]
-                    arr.forEach(function (d, i) {
-                        indexOfSeries === undefined ? (pathString.push('L', axises.x.getX(i), axises.y.getY(i))) : (pathString.push('L', axises.x.getX(indexOfSeries, i), axises.y.getY(indexOfSeries, i)))
+                    var pathString = ['M', points[0].x, points[0].y]
+                    points.forEach(function (d, i) {
+                        pathString.push('L', d.x, d.y)
                     });
                 }
                 var line = raphael.path().attr({
@@ -98,52 +105,63 @@
                     }),
                     dots = raphael.set()
                 if (lineOpt.dots) {
-                    arr.forEach(function (d, i) {
-                        var dot,
-                            x, y
-                        if (indexOfSeries === undefined) {
-                            x = axises.x.getX(i);
-                            y = axises.y.getY(i)
-                        } else {
-                            x = axises.x.getX(i);
-                            y = axises.y.getY(indexOfSeries, i);
-                        }
-                        dot = raphael.circle(x, y, lineOpt.dotRadius).attr({
+                    //draw dots
+                    points.forEach(function (d, i) {
+                        var dot = raphael.circle(d.x, d.y, lineOpt.dotRadius).attr({
                             'fill':dotColor || colors[i],
                             'stroke':'none'
-                        });
+                        }).mouseover(
+                            function () {
+                                this.animate({
+                                    r:lineOpt.dotRadius * 2
+                                }, 100)
+                            }).mouseout(function () {
+                                this.animate({
+                                    r:lineOpt.dotRadius
+                                }, 100)
+                            });
                         dots.push(dot);
                     })
                 }
                 elements.push({line:line, dots:dots});
             }
 
+            function bindLegendEvents() {
+                self.legend.on('click', (function () {
+                    var arr = new Array(data.length);
+                    return function (e, i) {
+                        if (arr[i] == true || arr[i] == undefined) {
+                            arr[i] = false;
+                            elements[i].line.attr('opacity', 0);
+                            elements[i].dots.attr('opacity', 0);
+                        } else {
+                            arr[i] = true;
+                            elements[i].line.attr('opacity', 1);
+                            elements[i].dots.attr('opacity', 1);
+                        }
+                    }
+                })())
+            }
 
             if (data[0]) {
                 if (typeof data[0].data === "number") {
                     //data is simple number
                     //TODO bug data.length<3
-                    drawLine(data, undefined, undefined, this.colors[4]);
+                    drawLine(data, undefined, this.colors[0], undefined);
                 } else if (DPChart.isArray(data[0].data)) {
                     data.forEach(function (item, i) {
                         //item is data[0],...which is an array and draws an line
                         drawLine(item.data, i, colors[i], colors[i]);
                     });
-                    self.legend.on('click',  (function () {
-                        var arr = new Array(data.length);
-                        return function (e, i) {
-                            if (arr[i] == true || arr[i] == undefined) {
-                                arr[i] = false;
-                                elements[i].line.attr('opacity',0);
-                                elements[i].dots.attr('opacity',0);
-                            } else {
-                                arr[i] = true;
-                                elements[i].line.attr('opacity',1);
-                                elements[i].dots.attr('opacity',1);
-                            }
-                        }
-                    })())
+                    bindLegendEvents();
+
                 } else {
+                    //is object
+                    data.forEach(function (item, i) {
+                        // item is an object ,..which is an array and draws an line
+                        drawLine(item.data, i, colors[i], colors[i])
+                    });
+                    bindLegendEvents();
 
                 }
             }
