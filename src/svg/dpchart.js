@@ -36,9 +36,6 @@
             height:container.clientHeight,
             colors:[],
             axis:{
-                y:{
-                    rotate:90
-                }
             },
             legend:{
             },
@@ -95,6 +92,7 @@
 
             for (axis in axisOption) {
                 if ((thisAxisOption = axisOption[axis])) {
+                    (axis == 'y' && thisAxisOption.rotate == undefined) && (thisAxisOption.rotate = 90);
                     if (axis == "y" && (!thisAxisOption.ticks || thisAxisOption.ticks.length == 0)) {
                         range = this.series.getRange();
                         if (thisAxisOption.max === undefined) {
@@ -135,6 +133,7 @@
                 legendOption._svgWidth = opt.width;
                 legendOption._svgHeight = opt.height;
                 legendOption.colors = this.colors;
+                this.axises.x && this.axises.x.options.ticks && ( legendOption._ticks = this.axises.x.options.ticks);
                 this.legend = new Legend(this.series, legendOption, this.raphael);
 
             }
@@ -165,36 +164,25 @@
     }
 
     var Series = function (data) {
-        var max , min , i , l
-            , series = []
-            , lables = []
-
+        var series = []
         if (isArray(data)) {
-            for (i = 0, l = data.length; i < l; i++) {
-                if (isArray(data[i])) {
-                    series.push({data:data[i]});
-                    //get the max of the array
-                    var iMax = Math.max.apply(Math, data[i]),
-                        iMin = Math.min.apply(Math, data[i]);
-
-                    (max === undefined || iMax > max) && (max = iMax);
-                    (min === undefined || iMin < min) && (min = iMin);
+            data.forEach(function (d, i) {
+                if (isArray(d)) {
+                    series.push({data:d});
                 }
-                else if (isObject(data[i])) {
+                else if (isObject(d)) {
                     //item is {}
-                    if (data[i].data) {
+                    if (d.data) {
                         // item in format {data:something,otherThings...}
-                        series.push(mix({}, data[i]));
+                        series.push(d);
                     } else {
                         //item is data
-                        series.push({data:mix({}, data[i])});
+                        series.push({data:d});
                     }
                 } else {
-                    series.push({data:data[i]});
-                    (max === undefined || data[i] > max ) && (max = data[i]);
-                    (min === undefined || data[i] < min ) && (min = data[i]);
+                    series.push({data:d});
                 }
-            }
+            })
         } else if (isObject(data)) {
             for (var o in data) {
                 series.push({
@@ -207,15 +195,33 @@
         }
         this.series = series
 
-        this._max = max;
-        this._min = min;
     };
     Series.prototype = {
         constructor:Series,
         getRange:function () {
+            //get the data range
+            var max , min
+            this.series.forEach(function (data) {
+                var d = data.data
+                if (isArray(d)) {
+                    var iMax = Math.max.apply(Math, d),
+                        iMin = Math.min.apply(Math, d);
+                    (max === undefined || iMax > max) && (max = iMax);
+                    (min === undefined || iMin < min) && (min = iMin);
+                } else if (isObject(d)) {
+                    for (var o in d) {
+                        (max === undefined || d[o] > max) && (max = d[o]);
+                        (min === undefined || d[o] < min) && (min = d[o]);
+                    }
+                } else {
+                    (max === undefined || d > max) && (max = d);
+                    (min === undefined || d < min) && (min = d);
+                }
+            });
+
             return {
-                max:this._max,
-                min:this._min
+                max:max,
+                min:min
             }
         },
         getSeries:function () {
@@ -369,7 +375,7 @@
             this.axisElement.transform('T' + left + ',' + top + "...");
             this.labelElements.forEach(function (label) {
                 label.transform('T' + left + ',' + top + "...");
-            })
+            });
         },
         getTicksPos:function () {
             //刻度的位置
@@ -402,6 +408,7 @@
                 position:['right', 'top'],
                 format:'{name}',
                 colors:[],
+                direction:'vertical',
                 itemType:'rect'// circle
             }, i, l
             , data = series.getSeries()
@@ -415,58 +422,72 @@
             , text
             , textWidth
             , totalWidth = []
-            , totalHeight
+            , totalHeight = []
             , itemSet // set of items
             , textSet // set of texts
             , margin = 10 // margin to svg boundary
             , padding = 10
             , names = []
             , colors
-            , labels = series.getLabels()
-        this.options = mix(defaultOption, options);
+            , isVertical
+            , labels = series.getLabels(),
+            opt = this.options = mix(defaultOption, options);
         itemSet = paper.set();
         textSet = paper.set();
-        colors = this.options.colors;
+        colors = opt.colors;
 
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
                 names.push(d.name);
             } else if (typeof d.data === 'number') {
-                names.push(labels[j]);
+                names.push(labels[j] || (options._ticks ? options._ticks[j]||'' : ""));
             } else {
                 names.push('');
             }
         });
-
+        isVertical = opt.direction == 'vertical';
+        isVertical ? totalWidth = [] : totalWidth = 0;
         for (i = 0, l = data.length; i < l; i++) {
-            switch (this.options.itemType) {
+            var _x , _y;
+            if (isVertical) {
+                _x = startX + padding;
+                _y = startY + padding + i * lineHeight;
+
+            } else {
+                _x = startX + padding;
+                _y = startY + padding;
+            }
+
+            switch (opt.itemType) {
                 case 'circle':
                     item = paper.circle(0, 0, width / 2).attr({
-                        cx:startX + padding,
-                        cy:startY + padding + i * lineHeight
+                        cx:_x,
+                        cy:_y
                     });
                     break;
                 case 'rect':
                     item = paper.rect(0, 0, width, width).attr({
-                        x:startX + padding,
-                        y:startY + padding + i * lineHeight
+                        x:_x,
+                        y:_y
                     });
                     break;
             }
+            text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i])
+            textWidth = text.getBBox().width;
+            text.translate(textWidth / 2, 0);
+            isVertical || (startX += (width + padding + span + textWidth))
+
             item.attr({
                 'fill':colors[i],
                 'stroke-width':0,
                 'cursor':'pointer'
             });
-            text = paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]);
-            textWidth = text.getBBox().width;
-            text.translate(textWidth / 2, 0)
             itemSet.push(item);
-            textSet.push(text)
-            totalWidth.push(textWidth);
+            textSet.push(text);
+            isVertical ? totalWidth.push(textWidth) : totalWidth += textWidth;
         }
-        totalWidth = Math.max.apply(Math, totalWidth) + width + span + padding * 2;
-        totalHeight = lineHeight * l + padding * 2;
+        totalWidth = isVertical ? Math.max.apply(Math, totalWidth) + width + span + padding * 2 : (width + span) * l + (l + 1) * padding + totalWidth;
+        totalHeight = isVertical ? lineHeight * l + padding * 2 : padding * 2 + lineHeight;
 
         //border
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
@@ -477,8 +498,6 @@
         this.border = border;
         this.itemSet = itemSet;
         this.textSet = textSet;
-
-        border.attr('z-index', 999);
 
         //transform to position
         var left , top;
@@ -574,6 +593,7 @@
 
     }
 
+
     var toolTip = function (paper, x, y, texts, side) {
             //@param x , y position of the tip
             //@texts{Array or String} each line of text
@@ -582,7 +602,8 @@
                 side = side || 'top',
                 path = function (width, height, padding) {
                     var p = ['M', x, y],
-                        arrowWidth = 5
+                        arrowWidth = 5,
+                        left, top
 
                     height += (2 * padding || 0);
                     width += (2 * padding || 0);
@@ -593,9 +614,11 @@
                             p.push('l', arrowWidth, -arrowWidth);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('h', width);
-                            p.push('v', height, 'l', -width);
+                            p.push('v', height, 'h', -width);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('l', -arrowWidth, -arrowWidth);
+                            left = x + arrowWidth;
+                            top = y - height / 2;
                             break;
                         case 'top':
                             width = Math.max(arrowWidth * 2, width);
@@ -604,6 +627,8 @@
                             p.push('v', -height, 'h', width, 'v', height);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('l', -arrowWidth, arrowWidth);
+                            left = x - width / 2;
+                            top = y - arrowWidth - height;
                             break;
                         case 'left':
                             height = Math.max(arrowWidth * 2, height);
@@ -612,6 +637,8 @@
                             p.push('h', -width, 'v', -height, 'h', width);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('l', arrowWidth, arrowWidth);
+                            left = x - arrowWidth - width;
+                            top = y - height / 2;
                             break;
                         case 'bottom':
                             width = Math.max(arrowWidth * 2, width);
@@ -620,11 +647,21 @@
                             p.push('v', height, 'h', -width, 'v', -height);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('l', arrowWidth, -arrowWidth);
+                            left = x - width / 2;
+                            top = y + arrowWidth;
                             break;
 
                     }
                     p.push('z')
-                    return p;
+                    return {
+                        path:p,
+                        box:{
+                            left:left,
+                            top:top,
+                            width:width,
+                            height:height
+                        }
+                    };
                 }
 
             !DPChart.isArray(texts) && (texts = [texts]);
@@ -641,14 +678,15 @@
                 var width = [], height = 0,
                     bBox,
                     text,
-                    paddingToBorder = 10
+                    paddingToBorder = 10,
+                    p
 
 
                 texts.forEach(function (t, i) {
                     text = paper.text(x, -100, t)
                     labels.push(text);
                     bBox = text.getBBox();
-                    text.attr('y', y - (texts.length - i - 0.5) * bBox.height - paddingToBorder - 5).attr({
+                    text.attr({
                         'opacity':0
                     });
                     width.push(bBox.width);
@@ -656,21 +694,32 @@
                 labels.animate({'opacity':1}, 100);
                 if (this._dpchart_tooltip_show)
                     return;
+                p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder)
                 this._dpchart_tooltip = tip = paper.path().attr({
-                    path:path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder),
-                    fill:"#000",
-                    stroke:"#666",
-                    "stroke-width":5,
-                    "fill-opacity":.2,
+                    path:p.path,
+                    fill:"#000000",
+                    "stroke-width":4,
+                    "fill-opacity":.1,
                     'stroke-linejoin':'round',
+                    'stroke':'#666',
                     'opacity':'0'
                 }).animate({'opacity':1}, 100);
+                labels.forEach(function (la, i) {
+                    la.attr({
+                        'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
+                        'x':p.box.left + p.box.width / 2
+                    })
+                })
                 this._dpchart_tooltip_labels = labels;
             }
             return toolTip;
         },
         toolTipHide = function () {
-            this._dpchart_tooltip && (this._dpchart_tooltip.animate({'opacity':0}, 100)) && (this._dpchart_tooltip_labels.animate({'opacity':0}, 100)) && (this._dpchart_tooltip = false)
+            var cb = function () {
+                this.hide();
+            }
+            var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
+            this._dpchart_tooltip && (this._dpchart_tooltip.animate(animate) ) && (this._dpchart_tooltip_labels.animate(animate) ) && (this._dpchart_tooltip = false);
         }
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;

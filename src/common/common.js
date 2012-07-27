@@ -75,9 +75,15 @@
     * isArray
     * */
 
-   DPChart.isArray =  function (obj) {
-        return Object.prototype.toString.call(obj) === "[object Array]";
+   DPChart.isArray =  function (arr) {
+        return Object.prototype.toString.call(arr) === "[object Array]";
     }
 
+    /*
+     * isObject
+     */
+    DPChart.isObject = function(obj){
+        return obj === Object(obj);
+    }
     this.DPChart = DPChart;
 })();
