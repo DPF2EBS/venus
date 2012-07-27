@@ -38,8 +38,8 @@
             axis:{
             },
             grid:{
-                enableRow:true,
-                enableColumn:false
+//                enableRow:true,
+//                enableColumn:false
             }
         };
         this.options = mix(defaultOptions, options || {});
