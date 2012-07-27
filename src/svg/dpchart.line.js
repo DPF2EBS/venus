@@ -137,12 +137,12 @@
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
                             arr[i] = false;
-                            elements[i].line.attr('opacity', 0);
-                            elements[i].dots.attr('opacity', 0);
+                            elements[i].line.hide();
+                            elements[i].dots.hide();
                         } else {
                             arr[i] = true;
-                            elements[i].line.attr('opacity', 1);
-                            elements[i].dots.attr('opacity', 1);
+                            elements[i].line.show();
+                            elements[i].dots.show();
                         }
                     }
                 })())

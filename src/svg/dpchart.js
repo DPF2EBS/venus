@@ -36,9 +36,6 @@
             height:container.clientHeight,
             colors:[],
             axis:{
-                y:{
-                    rotate:90
-                }
             },
             legend:{
             },
@@ -95,6 +92,7 @@
 
             for (axis in axisOption) {
                 if ((thisAxisOption = axisOption[axis])) {
+                    (axis == 'y' && thisAxisOption.rotate == undefined) && (thisAxisOption.rotate = 90);
                     if (axis == "y" && (!thisAxisOption.ticks || thisAxisOption.ticks.length == 0)) {
                         range = this.series.getRange();
                         if (thisAxisOption.max === undefined) {
@@ -135,7 +133,7 @@
                 legendOption._svgWidth = opt.width;
                 legendOption._svgHeight = opt.height;
                 legendOption.colors = this.colors;
-                legendOption._ticks = this.axises.x.options.ticks
+                this.axises.x && this.axises.options.ticks && ( legendOption._ticks = this.axises.x.options.ticks);
                 this.legend = new Legend(this.series, legendOption, this.raphael);
 
             }
@@ -377,7 +375,7 @@
             this.axisElement.transform('T' + left + ',' + top + "...");
             this.labelElements.forEach(function (label) {
                 label.transform('T' + left + ',' + top + "...");
-            })
+            });
         },
         getTicksPos:function () {
             //刻度的位置
@@ -595,6 +593,7 @@
 
     }
 
+
     var toolTip = function (paper, x, y, texts, side) {
             //@param x , y position of the tip
             //@texts{Array or String} each line of text
@@ -716,7 +715,11 @@
             return toolTip;
         },
         toolTipHide = function () {
-            this._dpchart_tooltip && (this._dpchart_tooltip.animate({'opacity':0}, 100)) && (this._dpchart_tooltip_labels.animate({'opacity':0}, 100)) && (this._dpchart_tooltip = false)
+            var cb = function () {
+                this.hide();
+            }
+            var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
+            this._dpchart_tooltip && (this._dpchart_tooltip.animate(animate) ) && (this._dpchart_tooltip_labels.animate(animate) ) && (this._dpchart_tooltip = false);
         }
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
