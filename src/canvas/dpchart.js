@@ -18,7 +18,7 @@
         },
         PI = Math.PI,
         charts = {}; // charts added by using DPChart.addChart
-
+        
     /*
      * Class DPChart
      * @param container{HTMLElement} container for Kinetic
@@ -123,19 +123,6 @@
             this.series = new Series(this.data);
         },
         _findDataRange: function(){
-            var range=this.series.getRange(),
-                yTickSize=DPChart.getTickSize(6, range.min, range.max),
-                yTicks=[],
-                start,
-                i;
-            console.log(yTickSize);
-            console.log(range);
-            start = Math.ceil(range.min/yTickSize) * yTickSize;
-
-            for (i = 0; (v = start + i * yTickSize) <= range.max; ++i){
-                yTicks.push(v);
-            }
-            console.log(yTicks, yTicks.length);
         },
         _calculateSpacing: function(){
         }, 
@@ -349,7 +336,7 @@
                         fontSize: 10,
                         textFill: "#000000",
 				    	align:"center"
-                    });
+                    }); 
                     layer.add(label);  		
                 } else {
                     label=new Kinetic.Text({
