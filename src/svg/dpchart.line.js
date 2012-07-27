@@ -75,6 +75,8 @@
                         })
                     }
                 }
+                if(!points.length){return;}
+                points.length<=2 && (lineOpt.smooth = false)
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
