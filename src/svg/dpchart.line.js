@@ -42,7 +42,7 @@
                 data = series.getSeries(),
                 self = this,
                 raphael = this.raphael,
-                colors = this.colors,//this.colors,
+                colors = this.colors, //this.colors,
                 elements = []
 
             function drawLine(arr, indexOfSeries, color, dotColor) {
@@ -54,12 +54,14 @@
                         if (indexOfSeries == undefined) {
                             points.push({
                                 x:axises.x.getX(i),
-                                y:axises.y.getY(i)
+                                y:axises.y.getY(i),
+                                value: arr[i].data
                             })
                         } else {
                             points.push({
                                 x:axises.x.getX(i),
-                                y:axises.y.getY(indexOfSeries, i)
+                                y:axises.y.getY(indexOfSeries, i),
+                                value: arr[indexOfSeries][i]
                             });
                         }
                     })
@@ -68,7 +70,8 @@
                     for (var o in arr) {
                         points.push({
                             x:axises.x.getX(o),
-                            y:axises.y.getY(indexOfSeries, o)
+                            y:axises.y.getY(indexOfSeries, o),
+                            value:arr[o]
                         })
                     }
                 }
@@ -110,15 +113,17 @@
                         var dot = raphael.circle(d.x, d.y, lineOpt.dotRadius).attr({
                             'fill':dotColor || colors[i],
                             'stroke':'none'
-                        }).mouseover(
+                        }).hover(
                             function () {
                                 this.animate({
                                     r:lineOpt.dotRadius * 2
-                                }, 100)
-                            }).mouseout(function () {
+                                }, 100);
+                                this.toolTip(raphael, this.attr('cx') , this.attr('cy') - 10, d.value);
+                            }, function () {
                                 this.animate({
                                     r:lineOpt.dotRadius
-                                }, 100)
+                                }, 100);
+                                this.toolTipHide()
                             });
                         dots.push(dot);
                     })
