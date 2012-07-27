@@ -29,9 +29,7 @@
                 break;
         }
 
-        for (var j = 0, L = result.length; j < L; j++) {
-            result[j] = Math.floor(result[j] * 255);
-        }
+        for (var j = 0, L = result.length; j < L; j++) {result[j] = Math.floor(result[j] * 255);}
 
         return result;
     }

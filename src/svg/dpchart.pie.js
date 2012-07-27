@@ -1,6 +1,6 @@
 (function (undefined) {	
 	function SectorChart(paper, x, y, r, startAngle, endAngle, color, d, dir) {
-		var path,sector,dir=dir||1;
+		var sector,text,dir=dir||1,strokeOpt={width:1,stroke:'#dedede'};
 		
 		var rad = Math.PI / 180,
 			angleOffset=endAngle-startAngle;
@@ -22,42 +22,93 @@
 		sector=Math.abs(angleOffset)===360?paper.circle(x,y,r):paper.path(path.join(' '));
 		
 		color&&sector.attr({
-			'stroke' : 'none',
+			'stroke' : strokeOpt.stroke,
+			'stroke-width':strokeOpt.width,
+			"stroke-linejoin": "round",
 			'fill' : color
-		});
+		});		
 		
-		// paper.text(x,y, 'P1');
-		// paper.text(x1,y1, 'P2');
-		// paper.text(x2,y2, 'P3');
+		d&&(text=Math.abs(angleOffset)===360?paper.text(x, y, d):paper.text(xm, ym, d)).attr({'font-size':Math.max(Math.round(r/10),10)});
 		
-		d&&(Math.abs(angleOffset)===360?paper.text(x, y, d):paper.text(xm, ym, d));
+		DPChart.mix(sector,{cx:x,cy:y,mx:xm,my:ym,text:text});
+		
+		return sector;
 	}
 	
 	DPChart.addChart('pie', {
 		draw : function (options) {
-			// options=mix(options,{x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2});
+			/**initialize chart options*/
+			options=DPChart.mix({x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2.5}, options);
 			
-			var defaultOptions={x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2.5};
-			for(var key in defaultOptions){
-				if(options[key]===undefined){
-					options[key]=defaultOptions[key];
-				}
-			}
-			
+			/**define variables needed*/
 			var series = this.series.getSeries(),
 				colors = this.colors,
-				data,total=0,
+				paper=this.raphael,
+				data,
+				total=0,
+				elements=[],
+				value,
 				startAngle=-90,endAngle;
 			
+			/**calculate summation of all data*/
 			for (var i = 0, L = series.length; i < L; i++) {total+=series[i].data;}
 			
+			/**draw each sector chart*/
 			for (var i = 0, L = series.length; i < L; i++) {
+				data=series[i].data;
 				endAngle=series[i].data/total*360+startAngle;
 
-				SectorChart(this.raphael, options.x, options.y, options.radius, startAngle, endAngle, colors[i], series[i].data);
+				elements.push(SectorChart(paper, options.x, options.y, options.radius, startAngle, endAngle, colors[i], data));
+				
+				
+				elements[i].hover(function(){
+						this.stop();
+						this.transform('s1.1,1.1,'+this.cx+','+this.cy);
+						
+						// this.transform('t'+(this.mx-this.cx)/5+','+(this.my-this.cy)/5);
+						
+						// this.text.stop();
+						// this.text.transform('t'+(this.mx-this.cx)/5+','+(this.my-this.cy)/5+',s1.1,1.1,'+this.cx+','+this.cy);
+					}, function () {
+						this.animate({
+							transform : 's1,1,'+this.cx+','+this.cy
+						}, 500, "bounce");
+				});
 				
 				startAngle=endAngle;
 			}
+			
+			/**Legend events*/
+			Array.prototype.forEach.call(this.legend.itemSet,function(item,i){
+				var el=elements[i];
+				item.hover(
+					function(){
+						this.rotate(45);
+						
+						el.stop();
+						el.transform('t'+(el.mx-el.cx)/5+','+(el.my-el.cy)/5);;
+					},
+					function(){
+						this.rotate(-45);
+						
+						el.animate({
+							transform : 's1,1,'+el.cx+','+el.cy
+						}, 500, "bounce");
+					}
+				);
+			});
+			this.legend.on('click', (function (){
+                var arr = new Array(series.length);
+                return function (e, i) {
+                    if (arr[i] == true || arr[i] == undefined) {
+                        arr[i] = false;
+                        elements[i].attr('opacity', 0).text.attr('opacity',0);
+                    } else {
+                        arr[i] = true;
+                        elements[i].attr('opacity', 1).text.attr('opacity',1);
+                    }
+                }
+            })());
 		}
 	});
 })();
