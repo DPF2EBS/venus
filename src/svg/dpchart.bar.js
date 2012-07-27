@@ -26,15 +26,15 @@
             }
 
             function bindLegendEvents() {
-                self.legend.on('click', (function () {
+             self.legend &&  self.legend.on('click', (function () {
                     var arr = new Array(series.length);
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
                             arr[i] = false;
-                            elements[i].attr('opacity', 0);
+                            elements[i].hide();
                         } else {
                             arr[i] = true;
-                            elements[i].attr('opacity', 1);
+                            elements[i].show();
                         }
                     }
                 })())

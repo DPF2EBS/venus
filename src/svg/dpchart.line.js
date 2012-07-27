@@ -35,14 +35,14 @@
                     'line-width':2,
                     smooth:false,
                     dots:true,
-                    dotRadius:3
+                    dotRadius:4
                 }, opt.line),
                 series = this.series,
                 axises = this.axises,
                 data = series.getSeries(),
                 self = this,
                 raphael = this.raphael,
-                colors = this.colors,//this.colors,
+                colors = this.colors, //this.colors,
                 elements = []
 
             function drawLine(arr, indexOfSeries, color, dotColor) {
@@ -54,12 +54,14 @@
                         if (indexOfSeries == undefined) {
                             points.push({
                                 x:axises.x.getX(i),
-                                y:axises.y.getY(i)
+                                y:axises.y.getY(i),
+                                value:arr[i].data
                             })
                         } else {
                             points.push({
                                 x:axises.x.getX(i),
-                                y:axises.y.getY(indexOfSeries, i)
+                                y:axises.y.getY(indexOfSeries, i),
+                                value:arr[i]
                             });
                         }
                     })
@@ -68,10 +70,15 @@
                     for (var o in arr) {
                         points.push({
                             x:axises.x.getX(o),
-                            y:axises.y.getY(indexOfSeries, o)
+                            y:axises.y.getY(indexOfSeries, o),
+                            value:arr[o]
                         })
                     }
                 }
+                if (!points.length) {
+                    return;
+                }
+                points.length <= 2 && (lineOpt.smooth = false)
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
@@ -110,15 +117,17 @@
                         var dot = raphael.circle(d.x, d.y, lineOpt.dotRadius).attr({
                             'fill':dotColor || colors[i],
                             'stroke':'none'
-                        }).mouseover(
+                        }).hover(
                             function () {
                                 this.animate({
                                     r:lineOpt.dotRadius * 2
-                                }, 100)
-                            }).mouseout(function () {
+                                }, 100);
+                                this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, d.value);
+                            }, function () {
                                 this.animate({
                                     r:lineOpt.dotRadius
-                                }, 100)
+                                }, 100);
+                                this.toolTipHide()
                             });
                         dots.push(dot);
                     })
@@ -127,17 +136,17 @@
             }
 
             function bindLegendEvents() {
-                self.legend.on('click', (function () {
+                self.legend && self.legend.on('click', (function () {
                     var arr = new Array(data.length);
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
                             arr[i] = false;
-                            elements[i].line.attr('opacity', 0);
-                            elements[i].dots.attr('opacity', 0);
+                            elements[i].line.hide();
+                            elements[i].dots.hide();
                         } else {
                             arr[i] = true;
-                            elements[i].line.attr('opacity', 1);
-                            elements[i].dots.attr('opacity', 1);
+                            elements[i].line.show();
+                            elements[i].dots.show();
                         }
                     }
                 })())

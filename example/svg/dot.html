@@ -9,9 +9,11 @@
 	<div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 	
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../../src/svg/customevent.js"></script>
+	<script type="text/javascript" src="../../src/common/lang.js"></script>
 	<script type="text/javascript" src="../../src/common/common.js"></script>
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>	
+	<script type="text/javascript" src="../../src/common/customevent.js"></script>	
+	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+	
 	<script type="text/javascript" src="../../src/svg/dpchart.dot.js"></script>
 	
 	<script type="text/javascript">
@@ -20,22 +22,32 @@
             options = {
                 axis:{
                     x:{
-						max:200,
+						max:400,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:40
+                        tickWidth:200
 
                     },
                     y:{
                         min:0,
                         max:100,
-                        tickWidth:30,
+                        tickWidth:60,
                         tickSize:10
                     }
-                }, dot:{
-
-                }
-
+                }, dot:{}
             }
+	
+	data=[];
+	for (var i = 0, l = 4; i < l; i++) {
+        var arr = []
+        options.axis.x.ticks.forEach(function (month) {
+            //arr[month] = parseInt(Math.random() * 100)
+			arr.push(parseInt(Math.random() * 40+20))
+        })
+        data.push({name:options.axis.x.ticks[i], data:arr})
+    }
+	
+	
+	//console.log(data);
     var dot = new DPChart(container, data, options);
 	</script>
 </body>

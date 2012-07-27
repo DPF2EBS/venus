@@ -15,9 +15,12 @@
 </head>
 <body>	
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../../src/svg/customevent.js"></script>
+	<script type="text/javascript" src="../../src/common/lang.js"></script>
 	<script type="text/javascript" src="../../src/common/common.js"></script>
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>	
+	<script type="text/javascript" src="../../src/common/customevent.js"></script>	
+	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+	
+	<!-- components -->
 	<script type="text/javascript" src="../../src/svg/dpchart.bar.js"></script>
 	<script type="text/javascript" src="../../src/svg/dpchart.dot.js"></script>
 	<script type="text/javascript" src="../../src/svg/dpchart.pie.js"></script>
@@ -73,24 +76,22 @@
 		</dd>
 		
 		<dt>[dot]<a href="dot.html">Demo</a></dt>
-		<dd style="height: 130px;">
+		<dd style="height: 230px;">
 		<script type="text/javascript">
 		var container = dd[2],
-            data = [35,30,10,5,10],
+            data = [{data:[35,30,10,5,10]},{data:[40,20,8,39,42]},{data:[20,30,15,22,12]},{data:[30,20,25,22,12]}],
             options = {
                 axis:{
                     x:{
-						enable:false,
-						max:100,
+						max:400,
                         ticks:['FF', 'IE', 'Chrome', 'other'],
-                        tickWidth:40
+                        tickWidth:180
 
                     },
                     y:{
-						enable:false,
                         min:0,
                         max:40,
-                        tickWidth:20,
+                        tickWidth:40,
                         tickSize:10
                     }
                 }, dot:{
@@ -108,6 +109,22 @@
 		var container = dd[3],
             data = [25,25,40,10,8],
             options = {
+				axis:{
+                    x:{
+						enable:false,
+						max:100,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:40
+
+                    },
+                    y:{
+						enable:false,
+                        min:0,
+                        max:40,
+                        tickWidth:20,
+                        tickSize:10
+                    }
+                },
 				pie:{
 				
 				}
