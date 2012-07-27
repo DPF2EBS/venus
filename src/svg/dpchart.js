@@ -37,11 +37,9 @@
             colors:[],
             axis:{
             },
-            legend:{
-            },
             grid:{
-                enableRow:true,
-                enableColumn:false
+//                enableRow:true,
+//                enableColumn:false
             }
         };
         this.options = mix(defaultOptions, options || {});
@@ -440,7 +438,7 @@
             if (d.name !== undefined) {
                 names.push(d.name);
             } else if (typeof d.data === 'number') {
-                names.push(labels[j] || (options._ticks ? options._ticks[j]||'' : ""));
+                names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
             } else {
                 names.push('');
             }
@@ -555,6 +553,7 @@
                     })
                 })
             }
+            return this;
         }
     }
 
@@ -687,7 +686,8 @@
                     labels.push(text);
                     bBox = text.getBBox();
                     text.attr({
-                        'opacity':0
+                        'opacity':0,
+                        'font-size':12
                     });
                     width.push(bBox.width);
                 });

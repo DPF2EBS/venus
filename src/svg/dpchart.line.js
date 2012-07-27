@@ -35,7 +35,7 @@
                     'line-width':2,
                     smooth:false,
                     dots:true,
-                    dotRadius:3
+                    dotRadius:4
                 }, opt.line),
                 series = this.series,
                 axises = this.axises,
@@ -55,13 +55,13 @@
                             points.push({
                                 x:axises.x.getX(i),
                                 y:axises.y.getY(i),
-                                value: arr[i].data
+                                value:arr[i].data
                             })
                         } else {
                             points.push({
                                 x:axises.x.getX(i),
                                 y:axises.y.getY(indexOfSeries, i),
-                                value: arr[i]
+                                value:arr[i]
                             });
                         }
                     })
@@ -75,8 +75,10 @@
                         })
                     }
                 }
-                if(!points.length){return;}
-                points.length<=2 && (lineOpt.smooth = false)
+                if (!points.length) {
+                    return;
+                }
+                points.length <= 2 && (lineOpt.smooth = false)
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
@@ -120,7 +122,7 @@
                                 this.animate({
                                     r:lineOpt.dotRadius * 2
                                 }, 100);
-                                this.toolTip(raphael, this.attr('cx') , this.attr('cy') - 10, d.value);
+                                this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, d.value);
                             }, function () {
                                 this.animate({
                                     r:lineOpt.dotRadius
@@ -134,7 +136,7 @@
             }
 
             function bindLegendEvents() {
-                self.legend.on('click', (function () {
+                self.legend && self.legend.on('click', (function () {
                     var arr = new Array(data.length);
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
