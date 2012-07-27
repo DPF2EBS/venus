@@ -67,7 +67,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
         var defaultOptions = {
             width: container.clientWidth,
-            height: container.clientHeight
+            height: container.clientHeight,
+            margin:10
         };
 
         this.container = container;
@@ -156,7 +157,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         //init asix
         _initAxis: function () {
             var opt = this.options,
-                axisOption = opt.axis || {},
+                axisOption = opt.axis,
                 axises = {},
                 axis,
                 thisAxisOption,
@@ -164,6 +165,10 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 beginX,
                 beginY;
 
+            if(typeof axisOption == "undefined"){
+                debugger;
+                return;
+            }
             for (axis in axisOption) {
                 if ((thisAxisOption = axisOption[axis])) {
                     thisAxisOption.axisType=axis;
@@ -184,6 +189,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
                     thisAxisOption.canvasWidth = this.options.width;
                     thisAxisOption.canvasHeight = this.options.height;
+                    thisAxisOption.margin=this.options.margin;
                     axises[axis] = new Axis(thisAxisOption, this.series, this.layer);
                 }
             }

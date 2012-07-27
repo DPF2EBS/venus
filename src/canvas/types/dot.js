@@ -16,22 +16,24 @@
 
             var circle;
 
-            var max = series.map(function(data){
+            var max = this.data.map(function(data){
                 return data[2];
             });
+
+            var scale=Math.min(xAxis.options.tickWidth, yAxis.options.tickWidth) / 2;
 
             max= Math.max.apply(Math, max);
 
             for (var i = 0, L = series.length; i < L; i++) {
-                data = series[i];
+                data = this.data[i];
                 //console.log(data);
-                x = xAxis.getX(data[1]);
-                y = yAxis.beginY - yAxis.options.tickWidth * (data[0]+1);
+                x = xAxis.getX(data[1]),
+                y = yAxis.options.beginY - data[0]* yAxis.options.tickWidth,
     
                 circle=new Kinetic.Circle({
                     x:x,
                     y:y,
-                    radius:data[2]/max*Math.min(xAxis.options.tickWidth, yAxis.options.tickWidth)/2,
+                    radius:data[2] / max * scale,
                     fill:"black"
                 });
 
