@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>test svg</title>
+    <title>test canvas</title>
 </head>
 <body>
 <script type="text/javascript" src="../../src/common/lang.js"></script>
@@ -22,32 +22,20 @@
                 {data:40, label: "Other"}
             ],
             options = {
+                width:800,
+                height:400,
                 axis:{
                     x: {
-                        ticks:['FF', 'IE', 'Chrome', 'Safari', 'Other'],
-                        tickWidth:100
+                        margin:60,
+                        ticks:['FF', 'IE', 'Chrome', 'Safari', 'Other']
                     },
                     y: {
-                        ticks:[10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-                        rotate:90,
-                        tickWidth:60,
-                        tickSize:10
+                        margin:60,
+                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
                     }
-                     },
-                legend:{
-                    position:"right-top",
-                    itemType:"rect",
-                    width: 200,
-                    height: 150
                 },
-                grid: {
-                    color: '#000000',
-                    enableXGrid: true,
-                    enableYGrid: true 
-                },
-                bar: {
-                    
-                }
+                bar: { 
+                }   
             }
     new DPChart(container, data, options);
 </script>

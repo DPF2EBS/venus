@@ -1,5 +1,4 @@
 (function () {
-	var colors=["red","blue","green","orange","yellow"];
 	/*
 	*@Todo: add Line to the Chart
 	*/
@@ -28,6 +27,9 @@
             var xOrigin = xAxis.getOrigin();
             var yOrigin = yAxis.getOrigin();
 
+
+            var colors=DPChart.getColors(series.length+1);
+
             var needDot = options.line.dot.enable , radius;
 			if(needDot) {
 				radius =  options.line.dot.radius;
@@ -38,7 +40,7 @@
 
                 posX = xAxis.getX(i);
 
-                posY = yAxis.getY(i);
+                posY = yAxis.options.beginY - yAxis.getY(series[i].data);
                 
 				var bai = (i < series.length - 1) && ((series[i + 1].data > series[i].data ) ? (series[i + 1].data - series[i].data)/10 : -(series[i].data - series[i+1].data)/10);
 
@@ -90,7 +92,7 @@
 				})(data)
 				this.stage.add(tipLayer);
 				layer.add(dotTag);
-                (i < L - 1) && VerticalLine(layer, posX, posY, posOffset.x, posOffset.y, colors[i], data.data);
+                (i < L - 1) && VerticalLine(layer, posX, posY, posOffset.x, posOffset.y, colors[colors.length - 1 ], data.data);
             }
         }
     });

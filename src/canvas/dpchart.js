@@ -1,7 +1,42 @@
-/*
- * Canvas Chart Lib of Venus
+///////////////////////////////////////////////////////////////////////
+//  Sector
+///////////////////////////////////////////////////////////////////////
+/**
+ * Sector constructor
+ * @constructor
+ * @augments Kinetic.Shape
+ * @param {Object} config
  */
 
+Kinetic.SimpleText = Kinetic.Shape.extend({
+    init: function(config) {
+        this.setDefaultAttrs({
+            text: "",
+            font: "12",
+            textAlign: "left",
+            textBaseline: "top"
+        });
+
+        this.shapeType = "SimpleText";
+
+        config.drawFunc = function(context) {
+            var text = this.attrs.text;
+            context.save();
+            context.font = this.attrs.font,
+            context.textAlign = this.attrs.textAlign;
+            context.textBaseline = this.attrs.textBaseline;
+            this.fillText(context, text);
+            this.stroke(context, text);
+            context.restore();
+        };
+        // call super constructor
+        this._super(config);
+    }
+});
+
+/*
+ * Canvas Chart Lib of Venus
+ */;
 (function (global, undefined) {
 
     var _DPChart = global.DPChart;
@@ -18,7 +53,7 @@
         },
         PI = Math.PI,
         charts = {}; // charts added by using DPChart.addChart
-        
+
     /*
      * Class DPChart
      * @param container{HTMLElement} container for Kinetic
@@ -31,11 +66,10 @@
         }
 
         var defaultOptions = {
-            width:container.clientWidth,
-            height:container.clientHeight,
-            axis:{
-            }
+            width: container.clientWidth,
+            height: container.clientHeight
         };
+
         this.container = container;
         this.data = data || [];
         this.events = new CustomEvent();
@@ -57,9 +91,6 @@
         this._initLegend();
         this.fire('onLegendInit', this.legend);
 
-        this._findDataRange();
-        this._calculateSpacing();
-
         //init grid
         this._initGrid();
         this.fire('onGridInit', this.grid);
@@ -80,81 +111,101 @@
 
     mix(DPChart, {
         //cut from flotr
-        getTickSize: function(noTicks, min, max, decimals){
+        getTickSize: function (noTicks, min, max, decimals) {
             var delta = (max - min) / noTicks,
                 magn = DPChart.getMagnitude(delta),
                 tickSize = 10,
                 norm = delta / magn; // Norm is between 1.0 and 10.0.
-                
-            if(norm < 1.5) tickSize = 1;
-            else if(norm < 2.25) tickSize = 2;
-            else if(norm < 3) tickSize = ((decimals === 0) ? 2 : 2.5);
-            else if(norm < 7.5) tickSize = 5;
-            
+
+            if (norm < 1.5) tickSize = 1;
+            else if (norm < 2.25) tickSize = 2;
+            else if (norm < 3) tickSize = ((decimals === 0) ? 2 : 2.5);
+            else if (norm < 7.5) tickSize = 5;
+
             return tickSize * magn;
         },
         /**
-        * Returns the magnitude of the input value.
-        * @param {Integer, Float} x - integer or float value
-        * @return {Integer, Float} returns the magnitude of the input value
-        */
-        getMagnitude: function(x){
+         * Returns the magnitude of the input value.
+         * @param {Integer, Float} x - integer or float value
+         * @return {Integer, Float} returns the magnitude of the input value
+         */
+        getMagnitude: function (x) {
             return Math.pow(10, Math.floor(Math.log(x) / Math.LN10));
         },
 
-        isInteger: function(number){
+        isInteger: function (number) {
             return typeof n === 'number' && parseFloat(n) == parseInt(n, 10) && !isNaN(n);
         }
     });
-    
-    DPChart.prototype = {
-        
-        constructor:DPChart,
 
-        _initCanvas: function(){
-            this.stage=new Kinetic.Stage({
-                container:container,
-                width:this.options.width,
-                height:this.options.height      
+    DPChart.prototype = {
+
+        constructor: DPChart,
+
+        _initCanvas: function () {
+            this.stage = new Kinetic.Stage({
+                container: container,
+                width: this.options.width,
+                height: this.options.height
             });
-            this.layer=new Kinetic.Layer();
+            this.layer = new Kinetic.Layer();
         },
-        _initData:function () {
+        _initData: function () {
             this.series = new Series(this.data);
         },
-        _findDataRange: function(){
-        },
-        _calculateSpacing: function(){
-        }, 
-
         //init asix
-        _initAxis:function () {
-            var axisOption = this.options.axis,
-                axises = {};
-            for (var axis in axisOption) {
-                if (axisOption[axis]) {
-                    axises[axis] = new Axis(axis, axisOption[axis], this.series, this.layer);
+        _initAxis: function () {
+            var opt = this.options,
+                axisOption = opt.axis || {},
+                axises = {},
+                axis,
+                thisAxisOption,
+                range,
+                beginX,
+                beginY;
+
+            for (axis in axisOption) {
+                if ((thisAxisOption = axisOption[axis])) {
+                    thisAxisOption.axisType=axis;
+                    if (axis == "y" && (!thisAxisOption.ticks || thisAxisOption.ticks.length == 0)) {
+                        range = this.series.getRange();
+                        if (thisAxisOption.max === undefined) {
+                            thisAxisOption.max = range.max
+                        }
+                        if (thisAxisOption.min === undefined) {
+                            thisAxisOption.min = range.min;
+                        }
+                    }
+                    if (axis == "x") {
+                        if (!thisAxisOption.ticks) {
+                            thisAxisOption.ticks = this.series.getLabels();
+                        }   
+                    }
+
+                    thisAxisOption.canvasWidth = this.options.width;
+                    thisAxisOption.canvasHeight = this.options.height;
+                    axises[axis] = new Axis(thisAxisOption, this.series, this.layer);
                 }
             }
             this.axises = axises;
         },
-        _initLegend:function () {
+        _initLegend: function () {
             var options = this.options;
-            if(options.legend){
+            if (options.legend) {
                 //TODO maybe delete this.series
                 this.legend = new Legend(options, this.series, this.layer);
             }
         },
-        _initGrid:function () {
+        _initGrid: function () {
             var options = this.options;
-            if(options.grid){
+            if (options.grid) {
                 this.grid = new Grid(options, this.layer);
             }
         },
-        _initEvents:function () {
+        _initEvents: function () {
 
         },
-        draw:function () {
+        draw: function () {
             for (var chart in charts) {
                 if (this.options[chart]) {
                     //draw that chart
@@ -163,14 +214,14 @@
             }
             this.stage.add(this.layer);
         },
-        update:function () {
+        update: function () {
 
         },
         //event
-        fire: function(){
+        fire: function () {
             this.events.fire.apply(this.events, arguments);
         },
-        on: function(){
+        on: function () {
             this.events.on.apply(this.events, arguments);
         }
     };
@@ -208,184 +259,177 @@
 
     Series.prototype = {
 
-        constructor:Series,
+        constructor: Series,
 
-        __prepareData: function(){
+        __prepareData: function () {
             var series = this.series = [],
                 tempArr,
                 data = this.data;
 
-            if(DPChart.isArray(data)){
-                data.forEach(function(item){
-                    if(DPChart.isArray(item)){
+            if (DPChart.isArray(data)) {
+                data.forEach(function (item) {
+                    if (DPChart.isArray(item)) {
                         //[[1,3],[2,3],[3,3],[4,2]]
                         series.push({
-                            label:item[0],
-                            data:item[1]
+                            label: item[0],
+                            data: item[1]
                         });
-                    }else if(DPChart.isObject(item)){
+                    } else if (DPChart.isObject(item)) {
                         //[{data:12,label:"chrome"},{data:12,label:"ff"},{data:150,label:"ie"}]
                         series.push({
-                            label:(typeof item.name === "undefined" ? item.label : item.name),
-                            data:item.data
+                            label: (typeof item.name === "undefined" ? item.label : item.name),
+                            data: item.data
                         });
-                    }else{
+                    } else {
                         //[1,2,3,4,5,6,7]
                         series.push({
-                            data:item
+                            data: item
                         });
 
                         //nolabel for getLabels method
-                        this.__nolabel=true;
+                        this.__nolabel = true;
                     }
                 });
-            }else if(DPChart.isObject(obj)){
-                Object.keys(obj).forEach(function(key){
+            } else if (DPChart.isObject(obj)) {
+                Object.keys(obj).forEach(function (key) {
                     //{chrome:20,ie:45,ff:70}
                     series.push({
-                        label:key,
-                        data:obj[key]
+                        label: key,
+                        data: obj[key]
                     });
                 });
-            }else{
+            } else {
                 //do nothing
             }
 
-            tempArr=series.map(function(item){
+            tempArr = series.map(function (item) {
                 return item.data;
             });
 
-            this._range={
+            this._range = {
                 min: Math.min.apply(Math, tempArr),
                 max: Math.max.apply(Math, tempArr)
             };
 
         },
-        getRange:function () {
+        getRange: function () {
             return this._range;
         },
-        getSeries:function () {
+        getSeries: function () {
             return this.series;
         },
-        getLabels:function(){
-            if(!!this.__nolabel){
+        getLabels: function () {
+            if ( !! this.__nolabel) {
                 return;
-            }else{
-                return this.series.forEach(function(item){
+            } else {
+                return this.series.forEach(function (item) {
                     return item.label;
                 });
             }
         }
     }
 
-
-    var Axis = function (axis, options, series, layer) {
+    var Axis = function (options, series, layer) {
         var defaultOptions = {
-                max:0,
-                min:0,
-                tickSize:1,
-                tickWidth:30,
-                ticks:[],
-                minorTickNum:0, // 一个tick中有几个minor tick ，<0 就没有
-                rotate:0, //逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
-                radius:0 //弯曲半径
-            }
-            , axisElement
-            , labelElements = []
-            , pathString = ""
-            , beginX, beginY //start point of axis
-            , opt = this.options = mix(defaultOptions, options)
-            , i, l
-            , labelMarginTop = 10
-            , tickHeight = 3
-            , rotate = 360 - opt.rotate
-            ,label;
+                axisType:"x",
+                max: 0,
+                min: 0,
+                tickSize: 1,
+                tickWidth: 30,
+                ticks: []
+            }, 
+            axisElement, 
+            labelElements = [], 
+            opt = this.options = mix(defaultOptions, options),
+            i, l,
+            label;
 
-        //hard code beginX,beginY ,TODO
-        beginX = this.beginX = 100;
-        beginY = this.beginY = 700;
-        this.series = series;
+        if(opt.axisType == "x"){
+            opt.beginX = opt.margin;
+            opt.beginY = opt.canvasHeight - opt.margin;
+            opt.endX = opt.canvasWidth - opt.margin;
+            opt.endY = opt.margin;
+            opt.length = opt.canvasWidth - 2 * opt.margin;
+            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length -1] - opt.ticks[0]) ;
+            opt.tickWidth = opt.length / opt.ticks.length;
+        }else if(opt.axisType == "y"){
+            opt.beginX = opt.margin;
+            opt.beginY = opt.canvasHeight - opt.margin;
+            opt.endX = opt.margin;
+            opt.endY = opt.margin;
+            opt.length = opt.canvasHeight - 2 * opt.margin;
+            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length -1] - opt.ticks[0]) ;
+            opt.tickWidth = opt.length / (opt.ticks.length -1);
+        }
 
-        //if get ticks, use ticks
-        pathString += ("M" + beginX + " " + beginY);
-        if (opt.ticks.length) {
-            this.useTicks = true;
-			// 画坐标轴
-			var xAxis = new Kinetic.Line({
-			          points: [beginX, beginY, opt.tickWidth * opt.ticks.length, beginY],
-			          stroke: "#CCCCCC",
-			          strokeWidth: 1,
-			          lineCap: "round",
-			          lineJoin: "round"
-			        }),
-			yAxis = new Kinetic.Line({
-					   points: [beginX, beginY,beginX, beginY - opt.tickWidth * opt.ticks.length],
-					   stroke: "#CCCCCC",
-					   strokeWidth: 1,
-					   lineCap: "round",
-					   lineJoin: "round"
-				 });
-		   	layer.add(xAxis);
-			layer.add(yAxis); 
+        //如果是X轴的话 画X轴
+        if (opt.axisType == "x") {
+            layer.add(new Kinetic.Line({
+                points: [opt.beginX, opt.beginY, opt.endX, opt.beginY],
+                stroke: "#CCCCCC",
+                strokeWidth: 1,
+                lineCap: "round",
+                lineJoin: "round"
+            }));
             for (i = 0, l = opt.ticks.length; i < l; i++) {
-                if(axis=="x"){
-                    label=new Kinetic.Text({
-                        x:beginX + (i + 1) * opt.tickWidth,
-                        y:beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1),
-                        text:opt.ticks[i] + "",
-                        fontSize: 10,
-                        textFill: "#000000",
-				    	align:"center"
-                    }); 
-                    layer.add(label);  		
-                } else {
-                    label=new Kinetic.Text({
-                        x:beginX + labelMarginTop * (opt.rotate > 0 ? -1 : 1),
-                        y:beginY - (i + 1) * opt.tickWidth,
-                        text:opt.ticks[i]+"",
-                        fontSize: 10,
-                        textFill: "#000000",
-				    	align:"right"
-                    });
-                    layer.add(label);
-                }
+                label = new Kinetic.SimpleText({
+                    x: opt.beginX + (i+.5) * opt.tickWidth,
+                    y: opt.beginY + 5,
+                    text: opt.ticks[i] + "",
+                    textFill: "#000000",
+                    textAlign : "center"
+                });
+                layer.add(label);
+            }
+
+            //画Y轴
+        } else if (opt.axisType == "y") {
+            layer.add(new Kinetic.Line({
+                points: [opt.beginX, opt.beginY, opt.beginX, opt.endY],
+                stroke: "#CCCCCC",
+                strokeWidth: 1,
+                lineCap: "round",
+                lineJoin: "round"
+            }));
+            for (i = 0, l = opt.ticks.length; i < l; i++) {
+                label = new Kinetic.SimpleText({
+                    x: opt.beginX-10,
+                    y: opt.beginY - i * opt.tickWidth,
+                    text: opt.ticks[i] + "",
+                    textFill: "#000000",
+                    textBaseline: "middle",
+                    textAlign: "right"
+                });
+                layer.add(label);
             }
         }
     };
     Axis.prototype = {
-        constructor:Axis,
-        getX:function (index) {
+        constructor: Axis,
+        getX: function (index) {
             //return the x in svg coordinate
-            var opt = this.options
+            var opt = this.options;
 
-            if (this.useTicks) {
-                return Math.cos(opt.rotate / 360 * 2 * PI) * (index + 1) * opt.tickWidth + this.beginX;
-            } else {
-
-            }
+            return opt.beginX + (index+.5) * opt.tickWidth;
         },
-        getY:function (index) {
+        getY: function (data) {
             //return the y in svg coordinate
-            var opt = this.options
+            var opt = this.options;
 
-            if (this.useTicks) {
-                return this.beginY - Math.sin(opt.rotate / 360 * 2 * PI) * this.series.getSeries()[index].data * opt.tickWidth / opt.tickSize;
-            } else {
-
-            }
+            return data * opt.scaleSize;
         },
-        getOrigin:function () {
+        getOrigin: function () {
             return {
-                x:this.beginX,
-                y:this.beginY
+                x: this.beginX,
+                y: this.beginY
             }
         }
     }
     /*
-    *@Todo: add Legend to the chart
-    */
+     *@Todo: add Legend to the chart
+     */
     var Legend = function (options, series, layer) {
-        var defaultOptions={
+        var defaultOptions = {
             legendWrap: {
                 fillColor: '#EFEFEF',
                 strokeColor: '#CCCCCC',
@@ -398,26 +442,35 @@
         };
         options.legend = mix(defaultOptions, options.legend);
 
-		var legendOptions = options.legend,
-			legendWidth = legendOptions.width,
-			legendHeight = legendOptions.height,
-			positions = legendOptions.position,
+        var legendOptions = options.legend,
+            legendWidth = legendOptions.width,
+            legendHeight = legendOptions.height,
+            positions = legendOptions.position,
             pos,
-			positionTable = {
-				'left-top' : { x: 0, y:0 },
-				'right-top': { x: options.width - legendWidth, y: 0 },
-				'right-bottom': { x: options.width - legendWidth, y: options.height - legendHeight }
-			},
-			itemType = {
-				'rect': 'Rect',
-				'circle': 'Circle'
-			};
-		for(pos in positionTable) {
-			if(positions == pos) {
-				pos = positionTable[pos];
-				break;
-			}
-		}
+            positionTable = {
+                'left-top': {
+                    x: 0,
+                    y: 0
+                },
+                'right-top': {
+                    x: options.width - legendWidth,
+                    y: 0
+                },
+                'right-bottom': {
+                    x: options.width - legendWidth,
+                    y: options.height - legendHeight
+                }
+            },
+            itemType = {
+                'rect': 'Rect',
+                'circle': 'Circle'
+            };
+        for (pos in positionTable) {
+            if (positions == pos) {
+                pos = positionTable[pos];
+                break;
+            }
+        }
         layer.add(new Kinetic.Rect({
             x: pos.x,
             y: pos.y,
@@ -427,91 +480,91 @@
             stroke: options.legend.legendWrap.strokeColor,
             strokeWidth: options.legend.legendWrap.strokeWidth
         }));
-		var showType;
-		for(var type in itemType) {
-			if(legendOptions.itemType == type) {
-				showType = itemType[type];
-				break;
-			}
-		}
-        
-		var seriesLen = series.series.length,
-			labelTexts = [],
-            lineHeight =  Math.ceil(legendHeight/seriesLen);
-		var colors=["red","blue","green","orange", "yellow"];
-	   	for(var ii = 0; ii < seriesLen; ii++) {
-			labelTexts.push(series.series[ii].label);
-		}
-		for(var jj = 0; jj < seriesLen; jj++){
-			 var  itype =  new Kinetic[showType]({
-				          x: pos.x + 5,
-				          y: pos.y + jj * lineHeight,
-				          width: legendWidth/2,
-				          height: lineHeight - 10,
-				          fill: colors[jj],
-				          stroke: "#FF0000",
-				          strokeWidth: 1
-				        }),
-				itext = new Kinetic.Text({
-					 x: pos.x + legendWidth/2 + 10,
-					 y: pos.y + (jj-1) * lineHeight + lineHeight + 5,
-					 text: labelTexts[jj]+"",
-					 fontSize: 16,
-					 fontFamily: "Arial",
-					 textFill: "green"
-				});
-				layer.add(itype); 
-				layer.add(itext);
-		}
+        var showType;
+        for (var type in itemType) {
+            if (legendOptions.itemType == type) {
+                showType = itemType[type];
+                break;
+            }
+        }
+
+        var seriesLen = series.series.length,
+            labelTexts = [],
+            lineHeight = Math.ceil(legendHeight / seriesLen);
+        var colors = ["red", "blue", "green", "orange", "yellow"];
+        for (var ii = 0; ii < seriesLen; ii++) {
+            labelTexts.push(series.series[ii].label);
+        }
+        for (var jj = 0; jj < seriesLen; jj++) {
+            var itype = new Kinetic[showType]({
+                x: pos.x + 5,
+                y: pos.y + jj * lineHeight,
+                width: legendWidth / 2,
+                height: lineHeight - 10,
+                fill: colors[jj],
+                stroke: "#FF0000",
+                strokeWidth: 1
+            }),
+                itext = new Kinetic.Text({
+                    x: pos.x + legendWidth / 2 + 10,
+                    y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
+                    text: labelTexts[jj] + "",
+                    fontSize: 16,
+                    fontFamily: "Arial",
+                    textFill: "green"
+                });
+            layer.add(itype);
+            layer.add(itext);
+        }
     };
-	// Grid Function to achive Grid
+    // Grid Function to achive Grid
     var Grid = function (options, layer) {
-	
-		var defaultOption = {
-            'color':'#666666',
+
+        var defaultOption = {
+            'color': '#666666',
             'columns': [],
             'strokeWidth': 1,
             'opacity': 0.4,
-			'lineCap': 'round'
+            'lineCap': 'round'
         };
-		options.grid = mix(defaultOption, options.grid);  // mix user's options to default options
-	     
+        options.grid = mix(defaultOption, options.grid); // mix user's options to default options
+
         var beginX = this.beginX = 100,
-        	beginY = this.beginY = 700,
-			xAxises = options.axis.x,
-			yAxises = options.axis.y,
-			enableXGrid = options.grid.enableXGrid,
-			enableYGrid =  options.grid.enableYGrid;
+            beginY = this.beginY = 700,
+            xAxises = options.axis.x,
+            yAxises = options.axis.y,
+            enableXGrid = options.grid.enableXGrid,
+            enableYGrid = options.grid.enableYGrid;
 
-			if(enableXGrid) {
-                var yTickWidth = yAxises.tickWidth,
-				    yTickLength =  yAxises.ticks.length;
+        if (enableXGrid) {
+            var yTickWidth = yAxises.tickWidth,
+                yTickLength = yAxises.ticks.length;
 
-			   for(var kk = 1; kk <= yTickLength; kk++) {
-	  			  var yAxis = new Kinetic.Line({
-				          points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
-				          stroke: options.grid.color,
-				          strokeWidth: options.grid.strokeWidth,
-				          lineCap: options.grid.lineCap,
-						  alpha: options.grid.opacity
-				    });
-				 	layer.add(yAxis);
-			   } 
-			}
-			if(enableYGrid) {
-			   var xTickWidth = xAxises.tickWidth,
-			   	   xTickLength = xAxises.ticks.length;
-				for(var kk = 1; kk <= xTickLength; kk++) {
-		  			  var xAxis = new Kinetic.Line({
-					          points: [beginX + xTickWidth * kk, beginY, beginX + xTickWidth * kk, beginY - yTickWidth * yTickLength],
-					          stroke: options.grid.color,
-					          strokeWidth: options.grid.strokeWidth,
-					          lineCap: options.grid.lineCap,
-							  alpha: options.grid.opacity
-					    });
-				 		layer.add(xAxis);
-			   }
-			}
+            for (var kk = 1; kk <= yTickLength; kk++) {
+                var yAxis = new Kinetic.Line({
+                    points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
+                    stroke: options.grid.color,
+                    strokeWidth: options.grid.strokeWidth,
+                    lineCap: options.grid.lineCap,
+                    alpha: options.grid.opacity
+                });
+                layer.add(yAxis);
+            }
+        }
+        if (enableYGrid) {
+            var xTickWidth = xAxises.tickWidth,
+                xTickLength = xAxises.ticks.length;
+            for (var kk = 1; kk <= xTickLength; kk++) {
+                var xAxis = new Kinetic.Line({
+                    points: [beginX + xTickWidth * kk, beginY, beginX + xTickWidth * kk, beginY - yTickWidth * yTickLength],
+                    stroke: options.grid.color,
+                    strokeWidth: options.grid.strokeWidth,
+                    lineCap: options.grid.lineCap,
+                    alpha: options.grid.opacity
+                });
+                layer.add(xAxis);
+            }
+        }
     }
     global.DPChart = DPChart;
 
