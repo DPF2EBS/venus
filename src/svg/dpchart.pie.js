@@ -79,6 +79,7 @@
 			}
 			
 			/**Legend events*/
+			if(this.legend){
 			Array.prototype.forEach.call(this.legend.itemSet,function(item,i){
 				var el=elements[i];
 				item.hover(
@@ -97,6 +98,7 @@
 					}
 				);
 			});
+			
 			this.legend.on('click', (function (){
                 var arr = new Array(series.length);
                 return function (e, i) {
@@ -109,6 +111,7 @@
                     }
                 }
             })());
+			}
 		}
 	});
 })();
