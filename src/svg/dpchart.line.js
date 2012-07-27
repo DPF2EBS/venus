@@ -61,7 +61,7 @@
                             points.push({
                                 x:axises.x.getX(i),
                                 y:axises.y.getY(indexOfSeries, i),
-                                value: arr[indexOfSeries][i]
+                                value: arr[i]
                             });
                         }
                     })
