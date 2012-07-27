@@ -1,76 +1,68 @@
 ﻿/*
  * Canvas Chart Lib of Venus
- * */
+ */
 
 (function (global, undefined) {
+
     var _DPChart = global.DPChart;
-    var mix = _DPChart.mix;
-    var mix = function (o1, o2) {
-            for (var attr in o2) {
-                if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
-                    o1[attr] = o2[attr];
-                } else {
-                    mix(o1[attr], o2[attr]);
-                }
-            }
-            return o1;
-        }
-        , indexOf = function (array, value) {
+
+    //todo del
+    var mix = _DPChart.mix,
+        indexOf = function (array, value) {
             for (var i = 0, l = array.length; i < l; i++) {
                 if (array[i] === value) {
                     return i;
                 }
             }
             return -1;
-        }
-        , PI = Math.PI
-        , charts = {} // charts added by using DPChart.addChart
+        },
+        PI = Math.PI,
+        charts = {}; // charts added by using DPChart.addChart
 
+    /*
+     * Class DPChart
+     * @param container{HTMLElement} container for Kinetic
+     * @param data{Array} Array of the data to draw
+     * @param options{object}
+     */
     function DPChart(container, data, options) {
         if (!container || !container.nodeType) {
             return;
         }
-        this.container = container;
-        this.data = data || [];
-        this.events = new CustomEvent();
+
         var defaultOptions = {
             width:container.clientWidth,
             height:container.clientHeight,
             axis:{
-            },
-            legend: {
-                position:[0, 0],
-                format:"",
-                itemType:'rect'
-            },
-            grid: {
-                color:'#CCCCCC'
             }
         };
+        this.container = container;
+        this.data = data || [];
+        this.events = new CustomEvent();
+
         this.options = mix(defaultOptions, options || {});
-	    this.stage=new Kinetic.Stage({
-	    	container:container,
-	      	width:this.options.width,
-	    	height:this.options.height		
-    	});
 
-        this.layer=new Kinetic.Layer();
-
+        //initCanvas
+        this._initCanvas();
+        this.fire('onCanvasInit', this.stage, this.layer);
         //init data
         this._initData();
-        this.events.fire('onDataInit', this.series);
+        this.fire('onDataInit', this.series);
 
         // init axis
         this._initAxis();
-        this.events.fire('onAxisInit', {});
+        this.fire('onAxisInit', {});
 
         //init legend
         this._initLegend();
-        this.events.fire('onLegendInit', this.legend);
+        this.fire('onLegendInit', this.legend);
+
+        this._findDataRange();
+        this._calculateSpacing();
 
         //init grid
         this._initGrid();
-        this.events.fire('onGridInit', this.grid);
+        this.fire('onGridInit', this.grid);
 
         // draw
         this.draw();
@@ -82,14 +74,73 @@
 
     }
 
-    DPChart=mix(DPChart, window.DPChart);
+    //see src/common/commm.js
+    mix(DPChart, _DPChart);
+
+
+    mix(DPChart, {
+        //cut from flotr
+        getTickSize: function(noTicks, min, max, decimals){
+            var delta = (max - min) / noTicks,
+                magn = DPChart.getMagnitude(delta),
+                tickSize = 10,
+                norm = delta / magn; // Norm is between 1.0 and 10.0.
+                
+            if(norm < 1.5) tickSize = 1;
+            else if(norm < 2.25) tickSize = 2;
+            else if(norm < 3) tickSize = ((decimals === 0) ? 2 : 2.5);
+            else if(norm < 7.5) tickSize = 5;
+            
+            return tickSize * magn;
+        },
+        /**
+        * Returns the magnitude of the input value.
+        * @param {Integer, Float} x - integer or float value
+        * @return {Integer, Float} returns the magnitude of the input value
+        */
+        getMagnitude: function(x){
+            return Math.pow(10, Math.floor(Math.log(x) / Math.LN10));
+        },
+
+        isInteger: function(number){
+            return typeof n === 'number' && parseFloat(n) == parseInt(n, 10) && !isNaN(n);
+        }
+    });
     
     DPChart.prototype = {
+        
         constructor:DPChart,
-        _initData:function () {
-            var data = this.data;
-            this.series = new Series(data);
+
+        _initCanvas: function(){
+            this.stage=new Kinetic.Stage({
+                container:container,
+                width:this.options.width,
+                height:this.options.height      
+            });
+            this.layer=new Kinetic.Layer();
         },
+        _initData:function () {
+            this.series = new Series(this.data);
+        },
+        _findDataRange: function(){
+            var range=this.series.getRange(),
+                yTickSize=DPChart.getTickSize(6, range.min, range.max),
+                yTicks=[],
+                start,
+                i;
+            console.log(yTickSize);
+            console.log(range);
+            start = Math.ceil(range.min/yTickSize) * yTickSize;
+
+            for (i = 0; (v = start + i * yTickSize) <= range.max; ++i){
+                yTicks.push(v);
+            }
+            console.log(yTicks, yTicks.length);
+        },
+        _calculateSpacing: function(){
+        }, 
+
+        //init asix
         _initAxis:function () {
             var axisOption = this.options.axis,
                 axises = {};
@@ -103,6 +154,7 @@
         _initLegend:function () {
             var options = this.options;
             if(options.legend){
+                //TODO maybe delete this.series
                 this.legend = new Legend(options, this.series, this.layer);
             }
         },
@@ -126,40 +178,116 @@
         },
         update:function () {
 
+        },
+        //event
+        fire: function(){
+            this.events.fire.apply(this.events, arguments);
+        },
+        on: function(){
+            this.events.on.apply(this.events, arguments);
         }
     };
-    DPChart.addChart = function (name, methods) {
-        charts[name] = methods;
+
+    /*
+     * add graph type in types
+     * @params  name{String} graph name
+     * @params  graphType{Object} graphType
+     */
+    DPChart.addChart = function (name, graphType) {
+        charts[name] = graphType;
     }
-
-
     /*DPChart End*/
 
-
+    /*
+     *Series Class Start
+     * data format
+     * @params data
+     * example
+     * [1,2,3,4,5,6,7]
+     * [[1,3],[2,3],[3,3],[4,2]]
+     * [{data:12,label:"chrome"},{data:12,label:"ff"},{data:150,label:"ie"}]
+     * {chrome:20,ie:45,ff:70}
+     * =====================>
+     * [{data:1},{data:2}..........]
+     * [{data:3,label:1}.......]
+     * [{data:50,label:"chrome"}.......]
+     * [{data:12,label:'chrome'........}]
+     * [{data:20,label:"ie"},{data:45,label:"ie"}........]
+     */
     var Series = function (data) {
-        var max = 0, min = 0, i , l
-            , series
-
-        series = this.series = data;
-
-        for (i = 0, l = series.length; i < l; i++) {
-            series[i] > max && (max = series[i]);
-            series[i] < min && (min = series[i]);
-        }
-
-        this._max = max;
-        this._min = min;
+        this.data = data;
+        this.__prepareData();
     };
+
     Series.prototype = {
+
         constructor:Series,
-        getRange:function () {
-            return {
-                max:this._max,
-                min:this._min
+
+        __prepareData: function(){
+            var series = this.series = [],
+                tempArr,
+                data = this.data;
+
+            if(DPChart.isArray(data)){
+                data.forEach(function(item){
+                    if(DPChart.isArray(item)){
+                        //[[1,3],[2,3],[3,3],[4,2]]
+                        series.push({
+                            label:item[0],
+                            data:item[1]
+                        });
+                    }else if(DPChart.isObject(item)){
+                        //[{data:12,label:"chrome"},{data:12,label:"ff"},{data:150,label:"ie"}]
+                        series.push({
+                            label:(typeof item.name === "undefined" ? item.label : item.name),
+                            data:item.data
+                        });
+                    }else{
+                        //[1,2,3,4,5,6,7]
+                        series.push({
+                            data:item
+                        });
+
+                        //nolabel for getLabels method
+                        this.__nolabel=true;
+                    }
+                });
+            }else if(DPChart.isObject(obj)){
+                Object.keys(obj).forEach(function(key){
+                    //{chrome:20,ie:45,ff:70}
+                    series.push({
+                        label:key,
+                        data:obj[key]
+                    });
+                });
+            }else{
+                //do nothing
             }
+
+            tempArr=series.map(function(item){
+                return item.data;
+            });
+
+            this._range={
+                min: Math.min.apply(Math, tempArr),
+                max: Math.max.apply(Math, tempArr)
+            };
+
+        },
+        getRange:function () {
+            return this._range;
         },
         getSeries:function () {
             return this.series;
+        },
+        getLabels:function(){
+            if(!!this.__nolabel){
+                return;
+            }else{
+                return this.series.forEach(function(item){
+                    return item.label;
+                });
+            }
         }
     }
 
@@ -264,8 +392,6 @@
                 x:this.beginX,
                 y:this.beginY
             }
-        },
-        getAngel:function () {
         }
     }
 
@@ -332,7 +458,7 @@
 				itext = new Kinetic.Text({
 					 x: pos.x + legendWidth/2 + 10,
 					 y: pos.y + (jj-1) * lineHeight + lineHeight + 5,
-					 text: labelTexts[jj],
+					 text: labelTexts[jj]+"",
 					 fontSize: 16,
 					 fontFamily: "Arial",
 					 textFill: "green"
@@ -390,5 +516,8 @@
     }
 //add to global
     global.DPChart = DPChart;
+
+    //for test
+    global.Series = Series;
 
 })(this);
