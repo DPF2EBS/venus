@@ -1,4 +1,26 @@
 (function () {
+	function getAnchors(p1x, p1y, p2x, p2y, p3x, p3y) {
+        var l1 = (p2x - p1x) / 2,
+            l2 = (p3x - p2x) / 2,
+            a = Math.atan((p2x - p1x) / Math.abs(p2y - p1y)),
+            b = Math.atan((p3x - p2x) / Math.abs(p2y - p3y));
+
+        a = p1y < p2y ? Math.PI - a : a;
+        b = p3y < p2y ? Math.PI - b : b;
+
+        var alpha = Math.PI / 2 - ((a + b) % (Math.PI * 2)) / 2,
+            dx1 = l1 * Math.sin(alpha + a),
+            dy1 = l1 * Math.cos(alpha + a),
+            dx2 = l2 * Math.sin(alpha + b),
+            dy2 = l2 * Math.cos(alpha + b);
+
+        return {
+            x1:p2x - dx1,
+            y1:p2y + dy1,
+            x2:p2x + dx2,
+            y2:p2y + dy2
+        };
+    }
 	/*
 	*@Todo: add Line to the Chart
 	*/
@@ -12,8 +34,20 @@
         }));
     }
     DPChart.addChart('line', {
+
         draw:function () {
-			var options = this.options;
+
+			var options = this.options,
+                lineOptions,
+				points = [];
+
+			lineOptions = DPChart.mix({
+				smooth: false,
+				lineStroke: '#F48307',
+                hasDot: false,
+                dotRadius: 8,
+                dotFill: '#F74D8B'
+            }, options.line);
 			
             var series = this.series.getSeries();
 
@@ -22,77 +56,106 @@
             var layer = this.layer;
 
             var xAxis = this.axises.x,
-                yAxis = this.axises.y
+
+                yAxis = this.axises.y;
 
             var xOrigin = xAxis.getOrigin();
+
             var yOrigin = yAxis.getOrigin();
 
 
             var colors=DPChart.getColors(series.length+1);
 
-            var needDot = options.line.dot.enable , radius;
-			if(needDot) {
-				radius =  options.line.dot.radius;
-			}
             var data, posOffset = {x:0, y:0}, posX, posY, width, height;
-            for (var i = 0, L = series.length; i < L; i++) {
-                data = series[i];
 
-                posX = xAxis.getX(i);
+			series.forEach(function(item, index) {
+			   	points.push({
+	                x: xAxis.getX(index),
+	                y: yAxis.options.beginY - yAxis.getY(item.data),  
+	                val: item.data,
+					label: item.label
+	            });
+			});
+			
+			var beginPiont = {
+				
+			    x: xAxis.getX(0), 
+			
+				y: yAxis.options.beginY - yAxis.getY(series[0].data)  
+				
+		   	},
+		    pathString = [];
+			
+            (points.length <= 2) && (lineOptions.smooth = false);
+            
+            if(lineOptions.smooth) {
+            	// 曲线
+            	var i, l,
+            		x0, y0,
+            		x, y,
+            		x1, y1,
+ 					p;
 
-                posY = yAxis.options.beginY - yAxis.getY(series[i].data);
+				pathString = [ 'M' , beginPiont.x , beginPiont.y, 'C', beginPiont.x, beginPiont.y];
+				
+            	for (i = 1, l = points.length - 1; i < l; i++) {
+
+            			x0 = points[i-1].x;
+
+                		y0 = points[i-1].y;
+
+                		x = points[i].x;
+
+                		y = points[i].y;
+
+                		x1 = points[i+1].x;
+
+                		y1 = points[i+1].y;
+
+                        p = getAnchors(x0, y0, x, y, x1, y1);
+						                                     
+						pathString.push(p.x1, p.y1, x, y, p.x2, p.y2); 
+                        
+                    }
+					pathString.push(x1, y1, x1, y1);
+					
+            } else {
+	
+			   	pathString = ['M', beginPiont.x, beginPiont.y];
+				
+                points.forEach(function (d, i) {
+                    pathString.push('L', d.x, d.y);
+                });
+            }
+
+			pathString =  pathString.join(',');
+			
+			var path = new Kinetic.Path({
+			          data: pathString,
+			          stroke: lineOptions.lineStroke,
+			          scale: 1,
+		   			  draggable: true
+			});
+            layer.add(path);
+
+            // if the line has dot
+
+            if(lineOptions.hasDot) {
                 
-				var bai = (i < series.length - 1) && ((series[i + 1].data > series[i].data ) ? (series[i + 1].data - series[i].data)/10 : -(series[i].data - series[i+1].data)/10);
-
-                posOffset.x = xAxis.options.tickWidth;
-
-				posOffset.y = Math.ceil(yAxis.options.tickWidth * bai);
-
-                width =  yOrigin.x-posX;
-                height =  xOrigin.y-posY; 
-
-                var dotTag = new Kinetic.Circle({
-		          	x: posX,
-				  	y: posY,
-   		          	radius: radius,
-	  	          	fill: colors[i]
-				}),
-				tipBox,
-			   	tipLayer = new Kinetic.Layer();
-				(function(data) {
-				   	dotTag.on('mouseover', function(evt) {
-					   var xtip = evt.offsetX,
-						   ytip = evt.offsetY,
-						   wtip = 100,
-						   htip =  30;
-					   tipBox = new Kinetic.Rect({
-						      x: xtip - wtip/2,
-						      y: ytip - htip - 10,
-						      width: wtip,
-						      height: htip,
-						      fill: "#EFEFEF",
-						      stroke: "#CCCCCC",
-						      strokeWidth: 1
-						 });
-						tipWord = new Kinetic.Text({
-						          x: xtip - wtip/2 + 10,
-						          y: ytip - htip - 5,
-						          text: data.label + ':' + data.data,
-						          fontSize: 14,
-						          textFill: "#333333"
-						});
-						tipLayer.removeChildren();
-						tipLayer.add(tipBox);
-						tipLayer.add(tipWord);
-						tipLayer.draw();
-					});
-					dotTag.on('mouseout', function(evt) {
-						tipLayer.clear(); 
-					}); 
-				})(data)
-				this.stage.add(tipLayer);
-				layer.add(dotTag);
-                (i < L - 1) && VerticalLine(layer, posX, posY, posOffset.x, posOffset.y, colors[colors.length - 1 ], data.data);
+                points.forEach(function (d, i) {
+                   var dot = new Kinetic.Circle({
+                        x: d.x,
+                        y: d.y,
+                        radius: lineOptions.dotRadius,
+                        fill: lineOptions.dotFill,
+                        draggable: true
+                    });
+                    dot.on('mouseover', function(evt) {
+                        // console.log(evt.shape);
+                    });
+                    layer.add(dot);
+                });
+                
             }
         }
     });
