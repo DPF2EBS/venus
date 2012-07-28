@@ -16,10 +16,15 @@
     var container = document.getElementById('chart_container'),
             data = [
                 {data:10, label:"FF"},
-                {data:60, label:"IE"},
-                {data:90, label: "Chrome"},
-                {data:60, label: "Safari"},
-                {data:40, label: "Other"}
+                {data:50, label:"IE"},
+                {data:30, label: "Chrome"},
+                {data:40, label: "Safari"},
+                {data:5, label: "Opera"},
+                {data:3, label: "SouGou"},
+                {data:90, label: "BaiDu"},
+                {data:60, label: "TaoBao"},
+                {data:70, label: "QQ"},
+                {data:10, label: "Ohter"}
             ],
             options = {
                 width:800,
@@ -27,7 +32,7 @@
                 margin:100,
                 axis:{
                     x: {
-                        ticks:['FF', 'IE', 'Chrome', 'Safari', 'Other']
+                        ticks:['FF', 'IE', 'Chrome', 'Safari', "Opera", "SouGou", "BaiDu", "TaoBao", "QQ" , 'Other']
                     },
                     y: {
                         ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
