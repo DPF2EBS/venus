@@ -53,7 +53,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var series = this.series.getSeries().sort(function(a,b){
                 return a.data - b.data;
             });
-            
+
             var colors;
 
             var layer = this.layer,
@@ -79,7 +79,6 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var startAngle = 0,
                 endAngle = 0,
                 sector;
-            colors= DPChart.getColors(series.length);
 
             for (var i = 0, L = series.length; i < L; i++) {
                 data = series[i];
@@ -90,21 +89,24 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                     radius:options.pie.radius,
                     startAngle:startAngle,
                     endAngle:endAngle,
-                    fill:colors[i]
+                    fill:data.color
                 });
-                (function(data){
-                    sector.on("mouseover", function(){
-                        this.setRadius(this.getRadius()*1.1);
-                        this.getLayer().draw();
-                    });
-                    sector.on("mouseout",function(){
-                        this.setRadius(options.pie.radius);
-                        this.getLayer().draw();
-                    });
-                    layer.add(sector);
-                })(data);
+                sector.on("mouseover", function(){
+                    this.transitionTo({
+                        radius: options.pie.radius*1.1,
+                        duration: 0.2,
+                        easing:"ease-in"
+                      });
+                });
+                sector.on("mouseout",function(){
+                        this.transitionTo({
+                        radius: options.pie.radius,
+                        duration: 0.2,
+                        easing:"ease-out"
+                      });
+                });
 
-
+                layer.add(sector);
                 startAngle = endAngle;
 
             }

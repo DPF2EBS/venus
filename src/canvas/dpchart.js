@@ -270,7 +270,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         __prepareData: function () {
             var series = this.series = [],
                 tempArr,
-                data = this.data;
+                data = this.data,
+                colors;
 
             if (DPChart.isArray(data)) {
                 data.forEach(function (item) {
@@ -307,6 +308,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             } else {
                 //do nothing
             }
+
+            colors=DPChart.getColors(series.length);
+
+            series.forEach(function(item, index){
+                item.color=colors[index];
+            });
 
             tempArr = series.map(function (item) {
                 return item.data;
@@ -442,8 +449,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 strokeWidth: '1'
             },
             itemType: 'Rect',
-            position: 'right-bottom',
-            width: '120',
+            position: 'right-top',
+            width: '80',
             height: '100'
         };
         options.legend = mix(defaultOptions, options.legend);
@@ -477,15 +484,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 break;
             }
         }
-        layer.add(new Kinetic.Rect({
-            x: pos.x,
-            y: pos.y,
-            width: legendWidth - 2,
-            height: legendHeight - 2,
-            fill: options.legend.legendWrap.fillColor,
-            stroke: options.legend.legendWrap.strokeColor,
-            strokeWidth: options.legend.legendWrap.strokeWidth
-        }));
         var showType;
         for (var type in itemType) {
             if (legendOptions.itemType == type) {
@@ -497,27 +495,34 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         var seriesLen = series.series.length,
             labelTexts = [],
             lineHeight = Math.ceil(legendHeight / seriesLen);
-        var colors = ["red", "blue", "green", "orange", "yellow"];
         for (var ii = 0; ii < seriesLen; ii++) {
             labelTexts.push(series.series[ii].label);
         }
         for (var jj = 0; jj < seriesLen; jj++) {
-            var itype = new Kinetic[showType]({
-                x: pos.x + 5,
-                y: pos.y + jj * lineHeight,
-                width: legendWidth / 2,
-                height: lineHeight - 10,
-                fill: colors[jj],
-                stroke: "#FF0000",
-                strokeWidth: 1
-            }),
-                itext = new Kinetic.Text({
-                    x: pos.x + legendWidth / 2 + 10,
+            var itype;
+            if(showType == "Circle"){
+                itype = new Kinetic[showType]({
+                    x: pos.x + 5,
+                    y: pos.y + jj * lineHeight+10,
+                    radius: 7.5,
+                    fill: series.series[jj].color
+                })
+            }else if(showType == "Rect"){
+                itype = new Kinetic[showType]({
+                    x: pos.x + 5,
+                    y: pos.y + jj * lineHeight,
+                    width: 15,
+                    height: 15,
+                    fill: series.series[jj].color
+                })
+            }
+            var itext = new Kinetic.Text({
+                    x: pos.x + 12 + 10,
                     y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
                     text: labelTexts[jj] + "",
-                    fontSize: 16,
+                    fontSize: 12,
                     fontFamily: "Arial",
-                    textFill: "green"
+                    textFill: "gray"
                 });
             layer.add(itype);
             layer.add(itext);
@@ -572,6 +577,134 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
         }
     }
+
+    function tooltips(x, y, texts, side){
+
+        var tooltipslayer = new Kinetic.Layer();
+        
+        (side == undefined) && (side = 'top');
+
+        (side == 'top') && (y = y - 10);
+
+        (side == 'left') && (x = x - 10);
+
+        (side == 'right') && (x = x + 10);
+
+        (side == 'bottom') && (y = y + 10);
+
+        var path = function (width, height, padding) {
+                    var p = ['M', x, y],
+                        arrowWidth = 5,
+                        left, top
+
+                    height += (2 * padding || 0);
+                    width += (2 * padding || 0);
+                    switch (side) {
+                        case 'right':
+                            //arrow at the left side and content at right
+                            height = Math.max(arrowWidth * 2, height);
+                            p.push('l', arrowWidth, -arrowWidth);
+                            p.push('v', -(height / 2 - arrowWidth));
+                            p.push('h', width);
+                            p.push('v', height, 'h', -width);
+                            p.push('v', -(height / 2 - arrowWidth));
+                            p.push('l', -arrowWidth, -arrowWidth);
+                            left = x + arrowWidth;
+                            top = y - height / 2;
+                            break;
+                        case 'top':
+                            width = Math.max(arrowWidth * 2, width);
+                            p.push('l', -arrowWidth, -arrowWidth);
+                            p.push('h', -(width / 2 - arrowWidth));
+                            p.push('v', -height, 'h', width, 'v', height);
+                            p.push('h', -(width / 2 - arrowWidth));
+                            p.push('l', -arrowWidth, arrowWidth);
+                            left = x - width / 2;
+                            top = y - arrowWidth - height;
+                            break;
+                        case 'left':
+                            height = Math.max(arrowWidth * 2, height);
+                            p.push('l', -arrowWidth, arrowWidth);
+                            p.push('v', height / 2 - arrowWidth);
+                            p.push('h', -width, 'v', -height, 'h', width);
+                            p.push('v', height / 2 - arrowWidth);
+                            p.push('l', arrowWidth, arrowWidth);
+                            left = x - arrowWidth - width;
+                            top = y - height / 2;
+                            break;
+                        case 'bottom':
+                            width = Math.max(arrowWidth * 2, width);
+                            p.push('l', arrowWidth, arrowWidth);
+                            p.push('h', width / 2 - arrowWidth);
+                            p.push('v', height, 'h', -width, 'v', -height);
+                            p.push('h', width / 2 - arrowWidth);
+                            p.push('l', arrowWidth, -arrowWidth);
+                            left = x - width / 2;
+                            top = y + arrowWidth;
+                            break;
+
+                    }
+                    p.push('z')
+                    return {
+                        path:p,
+                        box:{
+                            left:left,
+                            top:top,
+                            width:width,
+                            height:height
+                        }
+                    };
+                };
+                var preWord = new Kinetic.Text({
+                        x: x,
+                        y: -200,
+                        fontSize: 12,
+                        text: '' + texts
+                    }),
+                    wd = preWord.getTextWidth(),
+                    hd = preWord.getTextHeight();
+
+
+                var pathObj = path(wd, hd, 10),
+                    pathString = pathObj.path,
+                    boxInfo = pathObj.box;
+
+                    pathString =  pathString.join(',');
+                
+                if (texts) {
+                    var tipWord = new Kinetic.Text({
+                        x: boxInfo.left + 10,
+                        y: boxInfo.top + 10,
+                        text: '' + texts,
+                        align: 'center',
+                        fontSize: 12,
+                        textFill: "#FF7018"
+                    });
+                }
+                var path = new Kinetic.Path({
+                      data: pathString,
+                      stroke: '#FF7018',
+                      scale: 1,
+                      fill: '#EFEFEF',
+                      draggable: true
+                });
+
+                tooltipslayer.removeChildren();
+
+                tooltipslayer.add(path);
+
+                tooltipslayer.add(tipWord);
+
+                return tooltipslayer;
+
+            }
+            function toolTipHide(newLayer){
+                newLayer.clear();
+            }
+    DPChart.tooltips = tooltips;
+
+    DPChart.toolTipHide = toolTipHide;
+
     global.DPChart = DPChart;
 
     //for test

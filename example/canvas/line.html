@@ -15,10 +15,16 @@
 <script type="text/javascript">
 var container = document.getElementById('chart_container'),
             data = [
-                {data:10, label:"FF"},
-                {data:60, label:"IE"},
-                {data:30, label:"chrome"},
-                {data:60, label:"Safari"}
+              {data:10, label:"FF"},
+                {data:50, label:"IE"},
+                {data:30, label: "Chrome"},
+                {data:40, label: "Safari"},
+                {data:100, label: "Opera"},
+                {data:44, label: "SouGou"},
+                {data:9, label: "BaiDu"},
+                {data:80, label: "TaoBao"},
+                {data:20, label: "QQ"},
+                {data:10, label: "Ohter"}
             ],
             options = {
                 width:800,
@@ -26,7 +32,7 @@ var container = document.getElementById('chart_container'),
                 margin:60,
                 axis:{
                     x: {
-                        ticks:['FF', 'IE', 'chrome', 'Safari']
+                        ticks:['FF', 'IE', 'Chrome', 'Safari', "Opera", "SouGou", "BaiDu", "TaoBao", "QQ" , 'Other']
                     },
                     y: {
                         ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -34,7 +40,13 @@ var container = document.getElementById('chart_container'),
                 },
                 line: {
                     hasDot: true,
-                    smooth: false
+                    smooth: true,
+                    dotRadius:5
+                },
+                legend:{
+                    position:"right-top",
+                    height: 200,
+                    itemType:"circle"
                 }
             }
     new DPChart(container, data, options);

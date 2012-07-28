@@ -138,6 +138,7 @@
 			});
             layer.add(path);
 
+            var stage = this.stage;
             // if the line has dot
 
             if(lineOptions.hasDot) {
@@ -147,25 +148,39 @@
                         x: d.x,
                         y: d.y,
                         radius: lineOptions.dotRadius,
-                        fill: lineOptions.dotFill,
+                        fill: series[i].color,
                         draggable: true
-                    });
-                    layer.add(dot);
-                    dot.on("mouseover", function(){
-                        this.setFill("#89FF3B");
-                        this.setStroke("#DDDDDD");
-                        this.setRadius(12);
-                        layer.draw();
-                        console.log(this);
-                    });
-                    dot.on("mouseout",function(){
-                        this.setFill(lineOptions.dotFill);
-                        this.setStroke("");
-                        this.setRadius(8);
-                        layer.draw();
+                    }),
+                    newLayer;
+                    dot.on('mouseover', function(evt) {
+                    this.transitionTo({
+                        radius:{
+                            x:lineOptions.dotRadius * 1.5,
+                            y:lineOptions.dotRadius * 1.5
+                        },
+                        duration:0.2
                     });
                     
+                    newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
+
+                    stage.add(newLayer);
+
+                    });
+                    dot.on('mouseout', function(evt) {
+                        this.transitionTo({
+                            radius:{
+                                x:lineOptions.dotRadius,
+                                y:lineOptions.dotRadius
+                            },
+                            duration:0.2
+                        });
+                        DPChart.toolTipHide(newLayer);
+                    });
+                    
+                    
+                    layer.add(dot);
                 });
+                
                 
             }
         }
