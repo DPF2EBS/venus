@@ -150,10 +150,21 @@
                         fill: lineOptions.dotFill,
                         draggable: true
                     });
-                    dot.on('mouseover', function(evt) {
-                        // console.log(evt.shape);
-                    });
                     layer.add(dot);
+                    dot.on("mouseover", function(){
+                        this.setFill("#89FF3B");
+                        this.setStroke("#DDDDDD");
+                        this.setRadius(12);
+                        layer.draw();
+                        console.log(this);
+                    });
+                    dot.on("mouseout",function(){
+                        this.setFill(lineOptions.dotFill);
+                        this.setStroke("");
+                        this.setRadius(8);
+                        layer.draw();
+                    });
+                    
                 });
                 
             }
