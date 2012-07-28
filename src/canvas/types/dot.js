@@ -28,7 +28,7 @@
                 data = this.data[i];
                 //console.log(data);
                 x = xAxis.getX(data[1]),
-                y = yAxis.options.beginY - data[0]* yAxis.options.tickWidth,
+                y = yAxis.options.beginY - (data[0]+1)* yAxis.options.tickWidth,
     
                 circle=new Kinetic.Circle({
                     x:x,
