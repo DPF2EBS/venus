@@ -147,11 +147,26 @@
                         x: d.x,
                         y: d.y,
                         radius: lineOptions.dotRadius,
-                        fill: lineOptions.dotFill,
+                        fill: series[i].color,
                         draggable: true
                     });
                     dot.on('mouseover', function(evt) {
-                        // console.log(evt.shape);
+                        this.transitionTo({
+                        	radius:{
+                        		x:lineOptions.dotRadius * 1.5,
+                        		y:lineOptions.dotRadius * 1.5
+                        	},
+                        	duration:0.2
+                        });
+                    });
+                    dot.on('mouseout', function(evt) {
+                        this.transitionTo({
+                        	radius:{
+                        		x:lineOptions.dotRadius,
+                        		y:lineOptions.dotRadius
+                        	},
+                        	duration:0.2
+                        });
                     });
                     layer.add(dot);
                 });

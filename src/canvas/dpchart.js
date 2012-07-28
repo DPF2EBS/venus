@@ -270,7 +270,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         __prepareData: function () {
             var series = this.series = [],
                 tempArr,
-                data = this.data;
+                data = this.data,
+                colors;
 
             if (DPChart.isArray(data)) {
                 data.forEach(function (item) {
@@ -307,6 +308,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             } else {
                 //do nothing
             }
+
+            colors=DPChart.getColors(series.length);
+
+            series.forEach(function(item, index){
+                item.color=colors[index];
+            });
 
             tempArr = series.map(function (item) {
                 return item.data;
@@ -442,8 +449,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 strokeWidth: '1'
             },
             itemType: 'Rect',
-            position: 'right-bottom',
-            width: '120',
+            position: 'right-top',
+            width: '80',
             height: '100'
         };
         options.legend = mix(defaultOptions, options.legend);
@@ -477,15 +484,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 break;
             }
         }
-        layer.add(new Kinetic.Rect({
-            x: pos.x,
-            y: pos.y,
-            width: legendWidth - 2,
-            height: legendHeight - 2,
-            fill: options.legend.legendWrap.fillColor,
-            stroke: options.legend.legendWrap.strokeColor,
-            strokeWidth: options.legend.legendWrap.strokeWidth
-        }));
         var showType;
         for (var type in itemType) {
             if (legendOptions.itemType == type) {
@@ -497,27 +495,34 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         var seriesLen = series.series.length,
             labelTexts = [],
             lineHeight = Math.ceil(legendHeight / seriesLen);
-        var colors = ["red", "blue", "green", "orange", "yellow"];
         for (var ii = 0; ii < seriesLen; ii++) {
             labelTexts.push(series.series[ii].label);
         }
         for (var jj = 0; jj < seriesLen; jj++) {
-            var itype = new Kinetic[showType]({
-                x: pos.x + 5,
-                y: pos.y + jj * lineHeight,
-                width: legendWidth / 2,
-                height: lineHeight - 10,
-                fill: colors[jj],
-                stroke: "#FF0000",
-                strokeWidth: 1
-            }),
-                itext = new Kinetic.Text({
-                    x: pos.x + legendWidth / 2 + 10,
+            var itype;
+            if(showType == "Circle"){
+                itype = new Kinetic[showType]({
+                    x: pos.x + 5,
+                    y: pos.y + jj * lineHeight+10,
+                    radius: 7.5,
+                    fill: series.series[jj].color
+                })
+            }else if(showType == "Rect"){
+                itype = new Kinetic[showType]({
+                    x: pos.x + 5,
+                    y: pos.y + jj * lineHeight,
+                    width: 15,
+                    height: 15,
+                    fill: series.series[jj].color
+                })
+            }
+            var itext = new Kinetic.Text({
+                    x: pos.x + 12 + 10,
                     y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
                     text: labelTexts[jj] + "",
-                    fontSize: 16,
+                    fontSize: 12,
                     fontFamily: "Arial",
-                    textFill: "green"
+                    textFill: "gray"
                 });
             layer.add(itype);
             layer.add(itext);
@@ -571,6 +576,10 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 layer.add(xAxis);
             }
         }
+    }
+
+    function tooltips(stage, x, y, text){
+        var tooltipslayer=new Kinetic.Layer();
     }
     global.DPChart = DPChart;
 
