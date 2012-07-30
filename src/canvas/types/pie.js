@@ -57,7 +57,13 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var layer = this.layer,
                 stage=this.stage;
 
-            var options=this.options;
+            var options=this.options,
+                pieOptions;
+
+            pieOptions = DPChart.mix({
+                easing:false,
+                radius:50
+            }, options.pie);
 
             //计算饼图的圆心
             var centerX=this.options.width/2;
@@ -83,7 +89,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                 sector = new Kinetic.Sector({
                     x:centerX,
                     y:centerY,
-                    radius:options.pie.radius,
+                    radius:(pieOptions.easing ? 0 : pieOptions.radius),
                     startAngle:startAngle,
                     endAngle:endAngle,
                     fill:data.color
@@ -104,6 +110,16 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                 });
 
                 layer.add(sector);
+
+                if(!!pieOptions.easing){
+                    sector.transitionTo({
+                        radius:options.pie.radius,
+                        duration:1,
+                        easing:pieOptions.easing
+                    });    
+                }
+                
+                
                 startAngle = endAngle;
 
             }
