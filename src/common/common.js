@@ -42,7 +42,7 @@
      * @type {Array}
      */
     DPChart.getColors = function (colorCount) {
-        var S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
+        var S=[0.5,0.75,0.45,1,0.35], V=[0.9,0.45,0.9,0.6,0.9], colors = [], L;
 		
 		//if colorCount is not provide, set colorCount default value 20
 		colorCount=parseInt(colorCount,10)||20;
