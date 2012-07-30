@@ -46,7 +46,8 @@
 				lineStroke: '#F48307',
                 hasDot: false,
                 dotRadius: 8,
-                dotFill: '#F74D8B'
+                dotFill: '#F74D8B',
+                shadow:false
             }, options.line);
 			
             var series = this.series.getSeries();
@@ -84,7 +85,7 @@
 				y: yAxis.options.beginY - yAxis.getY(series[0].data)  
 				
 		   	},
-		    pathString = [];
+		    pathString = [], fillPathString;
 			
             (points.length <= 2) && (lineOptions.smooth = false);
             
@@ -122,20 +123,44 @@
             } else {
 	
 			   	pathString = ['M', beginPiont.x, beginPiont.y];
+
 				
                 points.forEach(function (d, i) {
                     pathString.push('L', d.x, d.y);
                 });
             }
 
-			pathString =  pathString.join(',');
+            fillPathString=pathString;
+            pathString =  pathString.join(',');
+
+            var endPoint= points[points.length - 1 ];
+            fillPathString.push("L", endPoint.x, xAxis.options.beginY-1);
+            fillPathString.push("L", beginPiont.x, xAxis.options.beginY-1);
+
+            fillPathString = fillPathString.join(",");
+
+            console.log(fillPathString);
+            console.log(pathString);
 			
-			var path = new Kinetic.Path({
-			          data: pathString,
-			          stroke: lineOptions.lineStroke,
-			          scale: 1,
-		   			  draggable: true
-			});
+
+            if(!!lineOptions.shadow){
+                var path = new Kinetic.Path({
+                          data: fillPathString,
+                          scale: 1,
+                          draggable: true,
+                          fill:lineOptions.lineStroke,
+                          alpha:0.5
+                });
+                layer.add(path);    
+            }
+            
+            var path = new Kinetic.Path({
+                      data: pathString,
+                      stroke: lineOptions.lineStroke,
+                      scale: 1,
+                      strokeWidth:4,
+                      draggable: true
+            });
             layer.add(path);
 
             var stage = this.stage;
