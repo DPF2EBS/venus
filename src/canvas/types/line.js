@@ -47,7 +47,8 @@
                 hasDot: false,
                 dotRadius: 8,
                 dotFill: '#F74D8B',
-                shadow:false
+                shadow:false,
+                autoMouseOut: false
             }, options.line);
 			
             var series = this.series.getSeries();
@@ -137,11 +138,7 @@
             fillPathString.push("L", endPoint.x, xAxis.options.beginY-1);
             fillPathString.push("L", beginPiont.x, xAxis.options.beginY-1);
 
-            fillPathString = fillPathString.join(",");
-
-            console.log(fillPathString);
-            console.log(pathString);
-			
+            fillPathString = fillPathString.join(",");			
 
             if(!!lineOptions.shadow){
                 var path = new Kinetic.Path({
@@ -163,7 +160,8 @@
             });
             layer.add(path);
 
-            var stage = this.stage;
+            var stage = this.stage,
+                newLayer;
             // if the line has dot
 
             if(lineOptions.hasDot) {
@@ -175,9 +173,9 @@
                         radius: lineOptions.dotRadius,
                         fill: series[i].color,
                         draggable: true
-                    }),
-                    newLayer;
+                    });
                     dot.on('mouseover', function(evt) {
+                    if(newLayer) { DPChart.toolTipHide(newLayer); }
                     this.transitionTo({
                         radius:{
                             x:lineOptions.dotRadius * 1.5,
@@ -191,17 +189,19 @@
                     stage.add(newLayer);
 
                     });
-                    dot.on('mouseout', function(evt) {
-                        this.transitionTo({
-                            radius:{
-                                x:lineOptions.dotRadius,
-                                y:lineOptions.dotRadius
-                            },
-                            duration:0.2
+                    console.log(lineOptions.autoMouseOut);
+                    if(!!lineOptions.autoMouseOut) {
+                        dot.on('mouseout', function(evt) {
+                            this.transitionTo({
+                                radius:{
+                                    x:lineOptions.dotRadius,
+                                    y:lineOptions.dotRadius
+                                },
+                                duration:0.2
+                            });
+                            DPChart.toolTipHide(newLayer);
                         });
-                        DPChart.toolTipHide(newLayer);
-                    });
-                    
+                    }
                     
                     layer.add(dot);
                 });
