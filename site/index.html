@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<style>
+/* CSS reset */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;}
+body {line-height:1;}
+:focus {outline: 1;}
+article,aside,canvas,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section,summary {display:block;}
+nav ul {list-style:none;}
+blockquote, q {quotes:none;}
+blockquote:before, blockquote:after,q:before, q:after {content:'';content:none;}
+a {margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent;}
+ins {background-color:#ff9;color:#000;text-decoration:none;}
+mark {background-color:#ff9;color:#000;font-style:italic;font-weight:bold;}
+del {text-decoration: line-through;}
+abbr[title], dfn[title] {border-bottom:1px dotted #000;cursor:help;}
+table {border-collapse:collapse;border-spacing:0;}
+hr {display:block;height:1px;border:0;border-top:1px solid #cccccc;margin:1em 0;padding:0;}
+input, select {vertical-align:middle;}
+/* CSS page */
+.header {width:100%;height:120px;background-color:#3E3E3E;text-align:center;}
+.header-cont {width:960px;height:120px;margin:0 auto;}
+.header-cont .header-logo {text-align:lefe;width:208px;height:63px;}
+.header-cont .header-nav {width:400px;margin-left:300px;margin-top:20px;}
+.header-cont .header-nav li {float:left;height:30px;line-height:30px;width:100px;text-align:center;}
+.header-cont .header-nav a {display:inline-block;width:100%;text-decoration:none;color:#FFFFFF;}
+.header-cont .header-nav a:hover {background-color:#CCC;border-radius:5px;text-decoration:none;color:#333;}
+
+.main {background-color:#EFEFEF;}
+.main-cont {width:960px;height:auto;margin:0 auto;}
+.main-cont h2 {height:40px;padding:20px 50px 5px;font-size:20px;color:#3D3D3D;font-weight:normal;}
+.main-cont .main-profile {padding:0 65px;}
+.main-cont .main-item {padding: 20px 65px;}
+.main-cont .main-profile p,.main-cont .main-item p{line-height:30px;color:#666666;}
+#chart_container,#chart_container1, #chart_container2, #chart_container3 {border:1px dotted #999;background-color:#FFF;}
+</style>
+</head>
+<body>
+	<header class="header">
+    	<section class="header-cont">
+        	<div class="header-logo">
+            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
+            </div>
+            <nav class="header-nav">
+            	<ul>
+                	<li><a href="#index">首页</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="demo.html">DEMO</a></li>
+                    <li><a href="#OURS">关于我们</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+    <div class="main">
+    	<section class="main-cont">
+        	<h2>基本简介</h2>
+           	<section class="main-profile">
+            	<p>Venus是由点评商务前端团队开发的一种前端数据可视化解决方案，基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库，基于Raphael开发适合交互性强的图形库。<p>
+            </section>
+            <h2>快速入门</h2>
+            	<textarea name="code" class="js" rows="50" cols="100">
+                    var container = document.getElementById('chart_container'),
+                        data = [25,25,40,10],
+                        options = {
+                            axis:{
+                                x:{
+                                    max:200,
+                                    ticks:['FF', 'IE', 'Chrome', 'other'],
+                                    tickWidth:40
+                                },
+                                y:{
+                                    min:0,
+                                    max:100,
+                                    tickWidth:30,
+                                    tickSize:10
+                                }
+                            }, bar:{
+                            }
+                    }
+                    var bar = new DPChart(container, data, options);
+                    /*DPChart Begin*/
+                    /*
+                     * Class DPChart
+                     * @param container{HTMLElement} container of the svg element to draw the chart
+                     * @param data{Array} Array of the data
+                     * @param options{object}
+                     */
+                    function DPChart(container, data, options) {
+                        if (!container || !container.nodeType) {
+                            return;
+                        }
+                        this.container = container;
+                        this.data = data || [];
+                        this.events = new CustomEvent();
+                        var defaultOptions = {
+                            /**
+                             *maybe here will cause a bug when a html element size is autosize or it is invisible.
+                             *chart size may provide from other way.
+                             */
+                            width:container.clientWidth,
+                            height:container.clientHeight,
+                            colors:[],
+                            axis:{
+                                y:{
+                                    rotate:90
+                                }
+                            },
+                            legend:{
+                
+                            },
+                            grid:{
+                                enableRow:true,
+                                enableColumn:false
+                            }
+                        };
+                        this.options = mix(defaultOptions, options || {});
+                        this.raphael = new Raphael(container, this.options.width, this.options.height);
+                        this.colors = colors;
+                
+                        //init data
+                        this._initData();
+                        this.events.fire('onDataInit', this.series);
+                
+                        // init axis
+                        this._initAxis();
+                        this.events.fire('onAxisInit', {});
+                
+                        //init legend
+                        this._initLegend();
+                        this.events.fire('onLegendInit', this.legend);
+                
+                        //init grid
+                        this._initGrid();
+                        this.events.fire('onGridInit', this.grid);
+                
+                        // draw
+                        this.draw();
+                
+                        //init events
+                        this._initEvents();
+                
+                        this.events.fire('onFinish');
+                
+                    }
+                </textarea>
+            <h2>基本展示</h2>
+           	<section class="main-item">
+            	<p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
+            </section>
+            <div id="chart_container" style="height:400px; width:960px;"></div>
+            <section class="main-item">
+            	<p>基于Raphael开发适合交互性强的图形库。<p>
+            </section>
+            <div id="chart_container1" style="height:400px; width:960px;"></div>
+            <section class="main-item">
+                <p>基于Raphael开发适合交互性强的图形库。<p>
+            </section>
+            <div id="chart_container2" style="height:500px; width:960px;"></div>
+            <section class="main-item">
+                <p>基于Raphael开发适合交互性强的图形库。<p>
+            </section>
+            <div id="chart_container3" style="height:400px; width:960px;"></div>
+        </section>
+    </div>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>    
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>
+    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/pie.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/line.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/dot.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/bar.js"></script>
+    <script type="text/javascript">
+    var container = document.getElementById('chart_container'),
+        container1 = document.getElementById('chart_container1'),
+        container2 = document.getElementById('chart_container2'),
+        container3 = document.getElementById('chart_container3'),
+            data = [
+                {data:10, label:"FF"},
+                {data:40, label:"IE"},
+                {data:60, label: "Chrome"},
+                {data:10, label: "Ohter"},
+                {data:40, label: "Safari"},
+                {data:78, label: "Opera"},
+                {data:40, label: "SouGou"},
+                {data:90, label: "BaiDu"},
+                {data:40, label: "TaoBao"},
+                {data:20, label: "QQ"}
+            ],
+            dotData = [[0,0,0],[0,1,0],[0,2,0],[0,3,1],[-0,4,6],[0,5,3],[0,6,2],[0,7,0],[0,8,0],[0,9,0],[0,10,0],[0,11,0],[0,12,0],[0,13,1],[0,14,11],[0,15,8],[0,16,0],[0,17,1],[0,18,0],[0,19,3],[0,20,13],[0,21,1],[0,22,0],[0,23,2],[1,0,0],[1,1,13],[1,2,0],[1,3,0],[1,4,0],[1,5,0],[1,6,0],[1,7,0],[1,8,0],[1,9,0],[1,10,0],[1,11,0],[1,12,0],[1,13,0],[1,14,3],[1,15,5],[1,16,0],[1,17,0],[1,18,2],[1,19,0],[1,20,1],[1,21,1],[1,22,3],[1,23,1],[2,0,1],[2,1,1],[2,2,0],[2,3,0],[2,4,0],[2,5,0],[2,6,0],[2,7,10],[2,8,0],[2,9,0],[2,10,0],[2,11,0],[2,12,0],[2,13,4],[2,14,2],[2,15,0],[2,16,8],[2,17,4],[2,18,4],[2,19,0],[2,20,2],[2,21,1],[2,22,1],[2,23,0],[3,0,1],[3,1,2],[3,2,0],[3,3,0],[3,4,0],[3,5,0],[3,6,0],[3,7,0],[3,8,1],[3,9,1],[3,10,0],[3,11,1],[3,12,0],[3,13,1],[3,14,4],[3,15,3],[3,16,2],[3,17,3],[3,18,0],[3,19,0],[3,20,1],[3,21,0],[3,22,0],[3,23,0],[4,0,1],[4,1,3],[4,2,11],[4,3,2],[4,4,5],[4,5,5],[4,6,2],[4,7,0],[4,8,0],[4,9,1],[4,10,0],[4,11,0],[4,12,0],[4,13,2],[4,14,4],[4,15,6],[4,16,2],[4,17,2],[4,18,2],[4,19,0],[4,20,1],[4,21,0],[4,22,0],[4,23,0],[5,0,0],[5,1,0],[5,2,0],[5,3,0],[5,4,1],[5,5,0],[5,6,0],[5,7,0],[5,8,0],[5,9,1],[5,10,0],[5,11,0],[5,12,1],[5,13,15],[5,14,4],[5,15,14],[5,16,6],[5,17,1],[5,18,3],[5,19,2],[5,20,0],[5,21,5],[5,22,2],[5,23,2],[6,0,2],[6,1,2],[6,2,0],[6,3,0],[6,4,1],[6,5,1],[6,6,0],[6,7,0],[6,8,0],[6,9,1],[6,10,0],[6,11,0],[6,12,2],[6,13,1],[6,14,0],[6,15,0],[6,16,0],[6,17,1],[6,18,4],[6,19,0],[6,20,0],[6,21,1],[6,22,0],[6,23,0]],
+            options = {
+                width: 930,
+                height: 400,
+                margin:100,
+                pie:{
+                    radius:180
+                },
+                legend:{
+                    height: 200,
+                    itemType:"circle"
+                }
+            },
+            options1 = {
+                    width:930,
+                    height:400,
+                    margin:100,
+                    axis:{
+                        x: {
+                            ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
+                        },
+                        y: {
+                            ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+                        }
+                    },
+                    line: {
+                        hasDot: true,
+                        smooth: true,
+                        dotRadius:5
+                    },
+                    legend:{
+                        position:"right-top",
+                        height: 200,
+                        itemType:"circle"
+                    },
+                    grid: {
+                        enableXGrid: true,
+                        enableYGrid: false
+                    } 
+            },
+            options2 = {
+                width: 800,
+                height: 500,
+                margin: 70,
+                axis:{
+                    x:{ 
+                        ticks:['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p','11p']
+                    },
+                    y:{ 
+                        ticks:["",'Saturday','Friday','Thursday','Wednesday','Tuesday','Monday','Sunday']
+                    }
+                },
+                dot:{
+                    radius:1
+                }
+
+            },
+            options3 = {
+                width:800,
+                height:400,
+                margin:100,
+                axis:{
+                    x: {
+                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
+                    },
+                    y: {
+                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+                    }
+                },
+                bar: { 
+                },
+                grid: {
+                    enableXGrid: true,
+                    enableYGrid: false
+                }
+            };
+    new DPChart(container, data, options);
+
+    new DPChart(container1, data, options1);
+
+    new DPChart(container2, dotData, options2);
+
+    new DPChart(container3, data, options3);
+    </script>
+    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.pie.js"></script>
+    
+    <script class="javascript" src="Scripts/shCore.js"></script>
+    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
+    <script class="javascript" src="Scripts/shBrushCss.js"></script>
+
+    <script class="javascript">
+    	dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+</body>
+</html>

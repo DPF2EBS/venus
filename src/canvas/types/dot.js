@@ -14,38 +14,50 @@
 
             var x,y;
 
-            var circle;
+            var circle, data;
 
-            var max = series.map(function(data){
+            var max = this.data.map(function(data){
                 return data[2];
             });
+
+            var scale=Math.min(xAxis.options.tickWidth, yAxis.options.tickWidth) / 2;
 
             max= Math.max.apply(Math, max);
 
             for (var i = 0, L = series.length; i < L; i++) {
-                data = series[i];
+                data = this.data[i];
                 //console.log(data);
-                x = xAxis.getX(data[1]);
-                y = yAxis.beginY - yAxis.options.tickWidth * (data[0]+1);
+                x = xAxis.getX(data[1]),
+                y = yAxis.options.beginY - (1+data[0])* yAxis.options.tickWidth,
     
                 circle=new Kinetic.Circle({
                     x:x,
                     y:y,
-                    radius:data[2]/max*Math.min(xAxis.options.tickWidth, yAxis.options.tickWidth)/2,
-                    fill:"black"
+                    radius:data[2] / max * scale,
+                    fill:DPChart.getColors(data[2])[data[2]-1]
                 });
 
                 layer.add(circle);
 
                 circle.on("mouseover", function(){
-                    this.setFill("green");
-                    this.setStroke("#ddd");
-                    layer.draw();
+                    var radius= this.getRadius();
+                    this.transitionTo({
+                        radius:{
+                            x:radius.x * 1.4,
+                            y:radius.y * 1.4
+                        },
+                        duration:0.2
+                    });
                 });
                 circle.on("mouseout",function(){
-                    this.setFill("black");
-                    this.setStroke("");
-                    layer.draw();
+                    var radius= this.getRadius();
+                    this.transitionTo({
+                        radius:{
+                            x:radius.x / 1.4,
+                            y:radius.y / 1.4
+                        },
+                        duration:0.2
+                    });
                 });
 
             }

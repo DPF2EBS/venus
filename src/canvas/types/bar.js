@@ -1,38 +1,4 @@
 (function () {
-	var colors=["red","blue","green","orange","yellow"];
-    function VerticalBar(layer, x, y, ox, oy, w, h, color, d) {
-        var path, rect = {};
-
-        path = [
-            'M', x, y - h,
-            'L', x, y, x + (ox - x) / 2, y, x + (ox - x) / 2, y - h,
-            'z'
-        ];
-
-        rect = {
-            x:x-ox/4,
-            y:y,
-            w:ox/ 2,
-            h:h
-        };
-
-        // paper.path(path.join(''));
-		
-		layer.add(new Kinetic.Text({
-            x:x,
-            y:y-10,
-            text:d+""
-        }));
-
-        layer.add(new Kinetic.Rect({
-            x:rect.x,
-            y:rect.y,
-            width:rect.w,
-            height:rect.h,
-            fill:color
-        }));
-    }
-
     DPChart.addChart('bar', {
         draw:function () {
             var series = this.series.getSeries();
@@ -40,27 +6,50 @@
 
             var layer = this.layer;
             var xAxis = this.axises.x,
-                yAxis = this.axises.y
+                yAxis = this.axises.y;
 
-            var xOrigin = xAxis.getOrigin();
-            var yOrigin = yAxis.getOrigin();
+            var colors=DPChart.getColors(series.length);
 
-            console.log('data series elements count: ', series.length);
+            var options, stage = this.stage;
 
-            var data, posOffset = {x:0, y:0}, posX, posY, width, height;
-            for (var i = 0, L = series.length; i < L; i++) {
-				console.log('------------------');         
-                data = series[i];
-                posX = xAxis.getX(i);
-                posY = yAxis.getY(i);
-                console.log(posX ,posY);
-                posOffset.x = xAxis.options.tickWidth
+            var data, posOffset = {x:0, y:0}, posX, posY, width, height, points = [];
+            series.forEach(function(item, index) {
+                points.push({
+                    x: xAxis.getX(index),
+                    y: yAxis.options.beginY - yAxis.getY(item.data),  
+                    val: item.data,
+                    label: item.label
+                });
+            });
+            points.forEach(function(d, i) {
+                options = {
+                    x:points[i].x - xAxis.options.tickWidth * 0.618/2,
+                    y:points[i].y,
+                    width:xAxis.options.tickWidth * 0.618,
+                    height:yAxis.getY(points[i].val),
+                    fill:colors[i]
+                };
+                var newRect = new Kinetic.Rect(options),
+                    newLayer;
+                (function(opt) {
+                    
+                    newRect.on('mouseover', function(evt) {
 
-                width =  yOrigin.x-posX;
-                height =  xOrigin.y-posY;
-                console.log('------------------');
-                VerticalBar(layer, posX, posY, posOffset.x, posOffset.y, width, height, colors[i], data.data);
-            }
+                    newLayer = DPChart.tooltips(opt.x + opt.width/2, opt.y, points[i].val, 'top');
+
+                    stage.add(newLayer);
+
+                    });
+                    newRect.on('mouseout', function(evt) {
+                        
+                        DPChart.toolTipHide(newLayer);
+
+                    });
+                })(options);
+                
+                layer.add(newRect);
+
+            });
         }
     });
 })();
