@@ -145,7 +145,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
         _initCanvas: function () {
             this.stage = new Kinetic.Stage({
-                container: container,
+                container: this.container,
                 width: this.options.width,
                 height: this.options.height
             });
@@ -166,12 +166,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 beginY;
 
             if(typeof axisOption == "undefined"){
-                debugger;
                 return;
             }
-            for (axis in axisOption) {
+            for (var axis in axisOption) {
                 if ((thisAxisOption = axisOption[axis])) {
-                    thisAxisOption.axisType=axis;
+
+                    thisAxisOption.axisType = axis;
+
                     if (axis == "y" && (!thisAxisOption.ticks || thisAxisOption.ticks.length == 0)) {
                         range = this.series.getRange();
                         if (thisAxisOption.max === undefined) {
@@ -190,7 +191,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                     thisAxisOption.canvasWidth = this.options.width;
                     thisAxisOption.canvasHeight = this.options.height;
                     thisAxisOption.margin=this.options.margin;
-                    axises[axis] = new Axis(thisAxisOption, this.series, this.layer);
+
+                    axises[axis] = new Axis(this.options, thisAxisOption, this.series, this.layer);
                 }
             }
             this.axises = axises;
@@ -297,12 +299,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                         this.__nolabel = true;
                     }
                 });
-            } else if (DPChart.isObject(obj)) {
-                Object.keys(obj).forEach(function (key) {
+            } else if (DPChart.isObject(data)) {
+                Object.keys(data).forEach(function (key) {
                     //{chrome:20,ie:45,ff:70}
                     series.push({
                         label: key,
-                        data: obj[key]
+                        data: data[key]
                     });
                 });
             } else {
@@ -342,7 +344,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         }
     }
 
-    var Axis = function (options, series, layer) {
+    var Axis = function (globalOptions, options, series, layer) {
         var defaultOptions = {
                 axisType:"x",
                 max: 0,
@@ -356,7 +358,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             opt = this.options = mix(defaultOptions, options),
             i, l,
             label;
-
         if(opt.axisType == "x"){
             opt.beginX = opt.margin;
             opt.beginY = opt.canvasHeight - opt.margin;
@@ -374,12 +375,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length -1] - opt.ticks[0]) ;
             opt.tickWidth = opt.length / (opt.ticks.length -1);
         }
-
+        globalOptions = mix(globalOptions, { originX: opt.beginX, originY: opt.beginY });
         //如果是X轴的话 画X轴
         if (opt.axisType == "x") {
+            globalOptions.axis.x = mix(globalOptions.axis.x, opt);
             layer.add(new Kinetic.Line({
                 points: [opt.beginX, opt.beginY, opt.endX, opt.beginY],
-                stroke: "#CCCCCC",
+                stroke: "red",
                 strokeWidth: 1,
                 lineCap: "round",
                 lineJoin: "round"
@@ -394,12 +396,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 });
                 layer.add(label);
             }
-
             //画Y轴
         } else if (opt.axisType == "y") {
+            globalOptions.axis.y = mix(globalOptions.axis.y, opt);
             layer.add(new Kinetic.Line({
                 points: [opt.beginX, opt.beginY, opt.beginX, opt.endY],
-                stroke: "#CCCCCC",
+                stroke: "red",
                 strokeWidth: 1,
                 lineCap: "round",
                 lineJoin: "round"
@@ -491,7 +493,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 break;
             }
         }
-
         var seriesLen = series.series.length,
             labelTexts = [],
             lineHeight = Math.ceil(legendHeight / seriesLen);
@@ -503,8 +504,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             if(showType == "Circle"){
                 itype = new Kinetic[showType]({
                     x: pos.x + 5,
-                    y: pos.y + jj * lineHeight+10,
-                    radius: 7.5,
+                    y: pos.y + jj * lineHeight + 12,
+                    radius: 8,
                     fill: series.series[jj].color
                 })
             }else if(showType == "Rect"){
@@ -517,12 +518,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 })
             }
             var itext = new Kinetic.Text({
-                    x: pos.x + 12 + 10,
+                    x: pos.x + 12 + 5,
                     y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
                     text: labelTexts[jj] + "",
                     fontSize: 12,
-                    fontFamily: "Arial",
-                    textFill: "gray"
+                    fontFamily: "Curier",
+                    textFill: "#666"
                 });
             layer.add(itype);
             layer.add(itext);
@@ -532,7 +533,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
     var Grid = function (options, layer) {
 
         var defaultOption = {
-            'color': '#666666',
+            'color': '#CCCCCC',
             'columns': [],
             'strokeWidth': 1,
             'opacity': 0.4,
@@ -540,20 +541,21 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         };
         options.grid = mix(defaultOption, options.grid); // mix user's options to default options
 
-        var beginX = this.beginX = 100,
-            beginY = this.beginY = 700,
+        var beginX = this.beginX = options.originX,
+            beginY = this.beginY = options.originY,
             xAxises = options.axis.x,
             yAxises = options.axis.y,
             enableXGrid = options.grid.enableXGrid,
             enableYGrid = options.grid.enableYGrid;
 
+        var yTickWidth = yAxises.tickWidth,
+            yTickLength = yAxises.ticks.length,
+            xTickWidth = xAxises.tickWidth,
+            xTickLength = xAxises.ticks.length;
         if (enableXGrid) {
-            var yTickWidth = yAxises.tickWidth,
-                yTickLength = yAxises.ticks.length;
-
-            for (var kk = 1; kk <= yTickLength; kk++) {
+            for (var kk = 1; kk < yTickLength; kk++) {
                 var yAxis = new Kinetic.Line({
-                    points: [beginX, beginY - yTickWidth * kk, yAxises.tickWidth * yAxises.ticks.length, beginY - yTickWidth * kk],
+                    points: [beginX, beginY - yTickWidth * kk, xTickWidth * (xTickLength + 1), beginY - yTickWidth * kk],
                     stroke: options.grid.color,
                     strokeWidth: options.grid.strokeWidth,
                     lineCap: options.grid.lineCap,
@@ -563,11 +565,9 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
         }
         if (enableYGrid) {
-            var xTickWidth = xAxises.tickWidth,
-                xTickLength = xAxises.ticks.length;
-            for (var kk = 1; kk <= xTickLength; kk++) {
+            for (var k = 1; k <= xTickLength; k++) {
                 var xAxis = new Kinetic.Line({
-                    points: [beginX + xTickWidth * kk, beginY, beginX + xTickWidth * kk, beginY - yTickWidth * yTickLength],
+                    points: [beginX + xTickWidth * k, beginY, beginX + xTickWidth * k, beginY - yTickWidth * (yTickLength - 1)],
                     stroke: options.grid.color,
                     strokeWidth: options.grid.strokeWidth,
                     lineCap: options.grid.lineCap,
@@ -685,7 +685,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                       data: pathString,
                       stroke: '#FF7018',
                       scale: 1,
-                      fill: '#EFEFEF',
+                      fill: '#FFFFFF',
                       draggable: true
                 });
 

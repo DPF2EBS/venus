@@ -14,7 +14,7 @@
 
             var x,y;
 
-            var circle;
+            var circle, data;
 
             var max = this.data.map(function(data){
                 return data[2];

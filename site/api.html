@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<style>
+/* CSS reset */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;}
+body {line-height:1;}
+:focus {outline: 1;}
+article,aside,canvas,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section,summary {display:block;}
+nav ul {list-style:none;}
+blockquote, q {quotes:none;}
+blockquote:before, blockquote:after,q:before, q:after {content:'';content:none;}
+a {margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent;}
+ins {background-color:#ff9;color:#000;text-decoration:none;}
+mark {background-color:#ff9;color:#000;font-style:italic;font-weight:bold;}
+del {text-decoration: line-through;}
+abbr[title], dfn[title] {border-bottom:1px dotted #000;cursor:help;}
+table {border-collapse:collapse;border-spacing:0;}
+hr {display:block;height:1px;border:0;border-top:1px solid #cccccc;margin:1em 0;padding:0;}
+input, select {vertical-align:middle;}
+/* CSS page */
+.header {width:100%;height:120px;background-color:#3E3E3E;text-align:center;}
+.header-cont {width:960px;height:120px;margin:0 auto;}
+.header-cont .header-logo {text-align:lefe;width:208px;height:63px;}
+.header-cont .header-nav {width:400px;margin-left:300px;margin-top:20px;}
+.header-cont .header-nav li {float:left;height:30px;line-height:30px;width:100px;text-align:center;}
+.header-cont .header-nav a {display:inline-block;width:100%;text-decoration:none;color:#FFFFFF;}
+.header-cont .header-nav a:hover {background-color:#CCC;border-radius:5px;text-decoration:none;color:#333;}
+
+.main {background-color:#EFEFEF;}
+.main-cont {width:960px;height:auto;margin:0 auto;}
+.main-cont h2 {height:40px;padding:20px 50px 5px;font-size:20px;color:#3D3D3D;font-weight:normal;}
+.main-cont h3 {height:40px;padding:20px 50px 5px;font-size:16px;color:#3D3D3D;font-weight:normal;}
+.main-cont .main-profile {padding:0 65px;}
+.main-cont .main-item {padding: 20px 65px;}
+.main-cont .main-profile p,.main-cont .main-item p{line-height:30px;color:#666666;}
+#chart_container,#chart_container1,#chart_container2,#chart_container3 {border:1px dotted #999;background-color:#FFF;}
+</style>
+</head>
+<body>
+	<header class="header">
+    	<section class="header-cont">
+        	<div class="header-logo">
+            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
+            </div>
+            <nav class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="demo.html">DEMO</a></li>
+                    <li><a href="ours.html">关于我们</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+    <div class="main">
+    	<section class="main-cont">
+        	<h2>API大概如下：</h2>
+			<textarea name="code" class="js" rows="50" cols="100">
+				function DPChart(container, data, options) {
+					if (!container || !container.nodeType) {
+						return;
+					}
+					this.container = container;
+					this.data = data || [];
+					this.events = new CustomEvent();
+					var defaultOptions = {
+						/**
+						 *maybe here will cause a bug when a html element size is autosize or it is invisible.
+						 *chart size may provide from other way.
+						 */
+						width:container.clientWidth,
+						height:container.clientHeight,
+						colors:[],
+						axis:{
+							y:{
+								rotate:90
+							}
+						},
+						legend:{
+
+						},
+						grid:{
+							enableRow:true,
+							enableColumn:false
+						}
+					};
+					this.options = mix(defaultOptions, options || {});
+					this.raphael = new Raphael(container, this.options.width, this.options.height);
+					this.colors = colors;
+
+					//init data
+					this._initData();
+					this.events.fire('onDataInit', this.series);
+
+					// init axis
+					this._initAxis();
+					this.events.fire('onAxisInit', {});
+
+					//init legend
+					this._initLegend();
+					this.events.fire('onLegendInit', this.legend);
+
+					//init grid
+					this._initGrid();
+					this.events.fire('onGridInit', this.grid);
+
+					// draw
+					this.draw();
+
+					//init events
+					this._initEvents();
+
+					this.events.fire('onFinish');
+				}     
+            </textarea>
+        </section>
+    </div>
+    <script type="text/javascript" src="src/common/lang.js"></script>
+	<script type="text/javascript" src="lib/KineticJS/dist/kinetic-core.js"></script>    
+    <script type="text/javascript" src="src/common/customevent.js"></script>
+    <script type="text/javascript" src="src/common/common.js"></script>
+    <script type="text/javascript" src="src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="src/canvas/types/pie.js"></script>
+    <script type="text/javascript" src="src/canvas/types/line.js"></script>
+
+
+    <script type="text/javascript" src="lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="src/svg/dpchart.pie.js"></script>
+	<script type="text/javascript" src="src/svg/dpchart.bar.js"></script>
+	<script type="text/javascript" src="src/svg/dpchart.dot.js"></script>
+	<script type="text/javascript" src="src/svg/dpchart.line.js"></script>
+    
+    <script class="javascript" src="Scripts/shCore.js"></script>
+    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
+    <script class="javascript" src="Scripts/shBrushCss.js"></script>
+
+    <script class="javascript">
+    	dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+</body>
+</html>

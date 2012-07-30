@@ -42,7 +42,6 @@ Kinetic.Sector = Kinetic.Shape.extend({
 // add getters setters
 Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngle", "counterclockwise"]);
 
-
 (function () {
 	var colors;
     DPChart.addChart('pie', {
@@ -53,7 +52,6 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var series = this.series.getSeries().sort(function(a,b){
                 return a.data - b.data;
             });
-
             var colors;
 
             var layer = this.layer,
@@ -65,7 +63,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var centerX=this.options.width/2;
             var centerY=this.options.height/2;
 
-            var sum=0,path;
+            var sum=0,path,data;
             for (var i = 0, L = series.length; i < L; i++) {
                 data = series[i];
                 sum+=data.data;
@@ -75,7 +73,6 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                 data = series[i];
                 data.percent=data.data/sum;
             }
-
             var startAngle = 0,
                 endAngle = 0,
                 sector;
