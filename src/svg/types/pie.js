@@ -41,7 +41,7 @@
 			options=DPChart.mix({x:this.options.width/2,y:this.options.height/2,radius:Math.min(this.options.width,this.options.height)/2.5}, options);
 			
 			/**define variables needed*/
-			var series = this.series.getSeries(),
+			var series = this.series.getSeries().sort(function(a,b){return b.data-a.data}),
 				colors = this.colors,
 				paper=this.raphael,
 				data,

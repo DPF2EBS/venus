@@ -728,4 +728,12 @@
 //add to global
     global.DPChart = DPChart;
     mix(DPChart, _DPChart);
+
+
+    //for unit test , temporary bind Classes on DPChart
+    DPChart.Series = Series;
+    DPChart.Axis = Axis;
+    DPChart.Legend = Legend;
+    DPChart.Grid = Grid;
+
 })(this);
