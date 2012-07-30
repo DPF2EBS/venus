@@ -35,14 +35,31 @@
                     
                     newRect.on('mouseover', function(evt) {
 
+
                     newLayer = DPChart.tooltips(opt.x + opt.width/2, opt.y, points[i].val, 'top');
 
                     stage.add(newLayer);
+                    this.setStrokeWidth(2);
+                    this.setStroke("#FFF");
+
+                    this.setShadow({
+                        color:"#000",
+                        blur: 8,
+                        alpha: 0.4,
+                        offset: [2, -2]
+                    });
 
                     });
                     newRect.on('mouseout', function(evt) {
                         
                         DPChart.toolTipHide(newLayer);
+                        this.transitionTo({
+                            alpha: 1,
+                            duration: 0.2
+                        });
+                        this.setStrokeWidth(0);
+                        this.setStroke("");
+                        this.setShadow(null);
 
                     });
                 })(options);
