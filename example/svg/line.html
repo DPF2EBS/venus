@@ -4,17 +4,16 @@
     <title>test svg</title>
 </head>
 <body style="margin: 0;">
-	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../../src/common/lang.js"></script>
-	<script type="text/javascript" src="../../src/common/common.js"></script>
-	<script type="text/javascript" src="../../src/common/customevent.js"></script>	
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
-	
-	<script type="text/javascript" src="../../src/svg/types/bar.js"></script>
+<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
+<script type="text/javascript" src="../../src/common/lang.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+
+<script type="text/javascript" src="../../src/svg/types/line.js"></script>
 
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-<div id="chart_container3" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
@@ -22,8 +21,8 @@
             options = {
                 axis:{
                     x:{
-                        tickWidth:240,
-                        ticks:['Q1', 'Q2', 'Q3', 'Q4']
+                        tickWidth:70,
+                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
                         min:0,
@@ -32,17 +31,14 @@
                         tickSize:10
                     }
                 },
-                bar:{
-                    radius:2
+                line:{
+                    smooth:true
                 },
                 grid:{
                     enableRow:true,
                     enableColumn:true
                 },
-                legend:{
-                    direction:'horizontal',
-                    position:['center','bottom']
-                }
+                legend:{}
 
             }
     for (var i = 0, l = 3; i < l; i++) {
@@ -52,7 +48,6 @@
         })
         data.push({name:i, data:arr})
     }
-	console.log(data);
     var bar = new DPChart(container, data, options);
 </script>
 <script type="text/javascript">
@@ -67,11 +62,11 @@
                     y:{
                         min:0,
                         max:100,
-                        tickWidth:65,
+                        tickWidth:60,
                         tickSize:10
                     }
                 },
-                bar:{
+                line:{
                     radius:2
                 },
                 grid:{
@@ -79,13 +74,12 @@
                     enableRow:true
                 },
                 legend:{
-                    direction:'horizontal',
-                    position:['center','top']
+                    direction:'horizontal'
                 }
 
             };
     options2.axis.x.ticks.forEach(function (month) {
-        data2.push({name:month, data:parseInt(Math.random()*100)})
+        data2.push({name:month, data:parseInt(Math.random() * 100)})
     })
 
 
