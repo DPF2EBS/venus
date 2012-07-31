@@ -78,7 +78,7 @@
                     x: xAxis.getX(index),
                     y: yAxis.options.beginY - yAxis.getY(item.data),
                     val: item.data,
-                    label: item.label
+                    label: item.name
                 });
             });
 

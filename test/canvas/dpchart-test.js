@@ -5,14 +5,15 @@ test("common", function(){
 	ok(DPChart.isArray([]));
 	ok(!DPChart.isArray({}));
 	ok(!DPChart.isArray(function(){}));
+
+	ok(DPChart.isNumber(1));
+	ok(!DPChart.isNumber("1"));
+	ok(DPChart.isNumber(1.1));
+	ok(DPChart.isNumber(0));
+	ok(!DPChart.isNumber(function(){}));
+
 });
 
-test("DPChart", function(){
-	ok(true, DPChart.getTickSize(5, 0.1, 0.4));
-	ok(true, DPChart.getTickSize(3, 0.1, 0.4));
-	ok(true, DPChart.getTickSize(6, 63, 1000));
-	ok(true, DPChart.getTickSize(6, 800, 1000));
-});
 
 test("Series", function(){
 	var series = new Series([{data:12,label:"chrome"},{data:12,label:"ff"},{data:150,label:"ie"}]);

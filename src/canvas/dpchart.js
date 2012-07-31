@@ -43,14 +43,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
     //todo del
     var mix = _DPChart.mix,
-        indexOf = function (array, value) {
-            for (var i = 0, l = array.length; i < l; i++) {
-                if (array[i] === value) {
-                    return i;
-                }
-            }
-            return -1;
-        },
         PI = Math.PI,
         charts = {}; // charts added by using DPChart.addChart
 
@@ -108,36 +100,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
     //see src/common/commm.js
     mix(DPChart, _DPChart);
-
-
-    mix(DPChart, {
-        //cut from flotr
-        getTickSize: function (noTicks, min, max, decimals) {
-            var delta = (max - min) / noTicks,
-                magn = DPChart.getMagnitude(delta),
-                tickSize = 10,
-                norm = delta / magn; // Norm is between 1.0 and 10.0.
-
-            if (norm < 1.5) tickSize = 1;
-            else if (norm < 2.25) tickSize = 2;
-            else if (norm < 3) tickSize = ((decimals === 0) ? 2 : 2.5);
-            else if (norm < 7.5) tickSize = 5;
-
-            return tickSize * magn;
-        },
-        /**
-         * Returns the magnitude of the input value.
-         * @param {Integer, Float} x - integer or float value
-         * @return {Integer, Float} returns the magnitude of the input value
-         */
-        getMagnitude: function (x) {
-            return Math.pow(10, Math.floor(Math.log(x) / Math.LN10));
-        },
-
-        isInteger: function (number) {
-            return typeof n === 'number' && parseFloat(n) == parseInt(n, 10) && !isNaN(n);
-        }
-    });
 
     DPChart.prototype = {
 
@@ -280,13 +242,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                     if (DPChart.isArray(item)) {
                         //[[1,3],[2,3],[3,3],[4,2]]
                         series.push({
-                            label: item[0],
+                            name: item[0],
                             data: item[1]
                         });
                     } else if (DPChart.isObject(item)) {
                         //[{data:12,label:"chrome"},{data:12,label:"ff"},{data:150,label:"ie"}]
                         series.push({
-                            label: (typeof item.name === "undefined" ? item.label : item.name),
+                            name: (typeof item.name === "undefined" ? item.label : item.name),
                             data: item.data
                         });
                     } else {
@@ -303,7 +265,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 Object.keys(data).forEach(function (key) {
                     //{chrome:20,ie:45,ff:70}
                     series.push({
-                        label: key,
+                        name: key,
                         data: data[key]
                     });
                 });
@@ -338,7 +300,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 return;
             } else {
                 return this.series.forEach(function (item) {
-                    return item.label;
+                    return item.name;
                 });
             }
         }
@@ -453,8 +415,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 strokeColor: '#CCCCCC',
                 strokeWidth: '1'
             },
-            itemType: 'Rect',
-            position: 'right-top',
+            itemType: 'rect',
+            position: ["right", "top"],
             width: '80',
             height: '100'
         };
@@ -483,11 +445,20 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 'rect': 'Rect',
                 'circle': 'Circle'
             };
-        for (pos in positionTable) {
-            if (positions == pos) {
-                pos = positionTable[pos];
-                break;
+        if(DPChart.isNumber(positions[0])){
+            pos = {
+                x:positions[0],
+                y:positions[1]
             }
+        }else{
+            positions = positions.join("-");
+            for (pos in positionTable) {
+                if (positions == pos) {
+                    pos = positionTable[pos];
+                    break;
+                }
+            }
+                
         }
         var showType;
         for (var type in itemType) {
@@ -500,7 +471,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             labelTexts = [],
             lineHeight = Math.ceil(legendHeight / seriesLen);
         for (var ii = 0; ii < seriesLen; ii++) {
-            labelTexts.push(series.series[ii].label);
+            labelTexts.push(series.series[ii].name);
         }
         for (var jj = 0; jj < seriesLen; jj++) {
             var itype;
