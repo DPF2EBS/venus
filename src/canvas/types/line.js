@@ -43,7 +43,7 @@
 
 			lineOptions = DPChart.mix({
 				smooth: false,
-				lineStroke: '#F48307',
+				lineStroke: '#4FEE30',
                 hasDot: false,
                 dotRadius: 8,
                 dotFill: '#F74D8B',
@@ -135,6 +135,7 @@
             pathString =  pathString.join(',');
 
             var endPoint= points[points.length - 1 ];
+
             fillPathString.push("L", endPoint.x, xAxis.options.beginY-1);
             fillPathString.push("L", beginPiont.x, xAxis.options.beginY-1);
 
@@ -146,7 +147,7 @@
                           scale: 1,
                           draggable: true,
                           fill:lineOptions.lineStroke,
-                          alpha:0.5
+                          alpha:0.2
                 });
                 layer.add(path);    
             }
@@ -155,7 +156,7 @@
                       data: pathString,
                       stroke: lineOptions.lineStroke,
                       scale: 1,
-                      strokeWidth:4,
+                      strokeWidth:2,
                       draggable: true
             });
             layer.add(path);
@@ -189,23 +190,18 @@
                     stage.add(newLayer);
 
                     });
-                    console.log(lineOptions.autoMouseOut);
-                    if(!!lineOptions.autoMouseOut) {
-                        dot.on('mouseout', function(evt) {
-                            this.transitionTo({
-                                radius:{
-                                    x:lineOptions.dotRadius,
-                                    y:lineOptions.dotRadius
-                                },
-                                duration:0.2
-                            });
-                            DPChart.toolTipHide(newLayer);
+                    dot.on('mouseout', function(evt) {
+                        this.transitionTo({
+                            radius:{
+                                x:lineOptions.dotRadius,
+                                y:lineOptions.dotRadius
+                            },
+                            duration:0.2
                         });
-                    }
-                    
+                        !!lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
+                    });
                     layer.add(dot);
                 });
-                
                 
             }
         }

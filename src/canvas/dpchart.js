@@ -686,7 +686,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                       stroke: '#FF7018',
                       scale: 1,
                       fill: '#FFFFFF',
-                      draggable: true
+                      draggable: true,
+                      shadow: {
+                        color:"#000",
+                        blur: 5,
+                        alpha: 0.4,
+                        offset: [2, 2]
+                      }
                 });
 
                 tooltipslayer.removeChildren();
