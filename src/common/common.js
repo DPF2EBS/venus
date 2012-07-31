@@ -1,4 +1,4 @@
-(function () {
+;(function () {
     var DPChart = this.DPChart || {};
 
     var _hsv2rgb = function (h, s, v) {
@@ -74,9 +74,6 @@
         return o1;
     }
 	
-	
-	
-
 
     /*
     * isArray
@@ -93,6 +90,9 @@
         return __type(obj, "object");
     }
 
+    DPChart.isNumber = function(nub){
+        return __type(nub, "number");
+    }
 
     this.DPChart = DPChart;
 
