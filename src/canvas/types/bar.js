@@ -22,16 +22,29 @@
                 });
             });
             points.forEach(function(d, i) {
+                var y;
+                y=points[i].y;
                 options = {
                     x:points[i].x - xAxis.options.tickWidth * 0.618/2,
-                    y:points[i].y,
+                    y:xAxis.options.beginY,
                     width:xAxis.options.tickWidth * 0.618,
                     height:yAxis.getY(points[i].val),
                     fill:colors[i]
                 };
-                var newRect = new Kinetic.Rect(options),
-                    newLayer;
-                (function(opt) {
+                
+                (function(opt,y) {
+                    var height=opt.height;
+                    opt.height=0;
+                    var newRect = new Kinetic.Rect(opt),
+                        newLayer;
+
+                    layer.add(newRect);
+
+                    newRect.transitionTo({
+                        height:height,
+                        y:y,
+                        duration:0.5
+                    });
                     
                     newRect.on('mouseover', function(evt) {
 
@@ -62,9 +75,10 @@
                         this.setShadow(null);
 
                     });
-                })(options);
+                    
+                })(options,y);
                 
-                layer.add(newRect);
+                
 
             });
         }
