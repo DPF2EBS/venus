@@ -26,7 +26,7 @@
         }
         this.container = container;
         this.data = data || [];
-        this.events = new CustomEvent();
+        this.events = new _DPChart.CustomEvent();
         var defaultOptions = {
             /**
              *maybe here will cause a bug when a html element size is autosize or it is invisible.
