@@ -51,7 +51,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var series = this.series.getSeries().sort(function (a, b) {
                 return a.data - b.data;
             });
-            var colors;
+            var colors = ["orangered", "skyblue", "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
 
             var layer = this.layer,
                 stage = this.stage;
@@ -95,7 +95,14 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         radius: (pieOptions.easing ? 0 : pieOptions.radius),
                         startAngle: (pieOptions.easing ? 0 : pieOptions.radius),
                         endAngle: (pieOptions.easing ? 0 : pieOptions.radius),
-                        fill: data.color
+                        fill: colors[i],
+                        stroke:"white",
+                        strokeWidth:1,
+                        shadow: {
+                            color: "#000",
+                            blur: 6,
+                            alpha: 0.2
+                        }
                     });
                     layer.add(sector);
 

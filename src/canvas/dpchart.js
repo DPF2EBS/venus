@@ -422,6 +422,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         };
         options.legend = mix(defaultOptions, options.legend);
 
+        var colors = ["orangered", "skyblue", "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
+
         var legendOptions = options.legend,
             legendWidth = legendOptions.width,
             legendHeight = legendOptions.height,
@@ -480,7 +482,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                     x: pos.x + 5,
                     y: pos.y + jj * lineHeight + 12,
                     radius: 8,
-                    fill: series.series[jj].color
+                    fill: colors[jj]
                 })
             } else if (showType == "Rect") {
                 itype = new Kinetic[showType]({
@@ -488,7 +490,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                     y: pos.y + jj * lineHeight,
                     width: 15,
                     height: 15,
-                    fill: series.series[jj].color
+                    fill: colors[jj]
                 })
             }
             var itext = new Kinetic.Text({

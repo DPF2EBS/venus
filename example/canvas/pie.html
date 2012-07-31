@@ -13,27 +13,41 @@
 <script type="text/javascript" src="../../src/canvas/dpchart.js"></script>
 
 <script type="text/javascript" src="../../src/canvas/types/pie.js"></script>
-<div id="chart_container" style="height: 1000px; width:1000px;"></div>
+<div id="chart_container_index" style="height: 400px; width:600px;"></div>
+<div id="chart_container_tuangou" style="height: 400px; width:600px;"></div>
 <script type="text/javascript">
-    var container = document.getElementById('chart_container'),
-            data = [
-                {data:10, label:"FF"},
-                {data:50, label:"IE"},
-                {data:30, label: "Chrome"},
-                {data:10, label: "Ohter"},
-                {data:40, label: "Safari"},
-                {data:5, label: "Opera"},
-                {data:3, label: "SouGou"},
-                {data:90, label: "BaiDu"},
-                {data:60, label: "TaoBao"},
-                {data:70, label: "QQ"}
+    var container_tuangou = document.getElementById('chart_container_tuangou'),
+        container_index = document.getElementById('chart_container_index'),
+
+            //主站的数据
+            data_tuangou = [
+                {data:0.1693, label:"IE-6"},
+                {data:0.0605, label:"IE-7"},
+                {data:0.4124, label: "IE-8"},
+                {data:0.1046, label: "IE-9"},
+                {data:0.145, label: "Chrome"},
+                {data:0.02, label: "Firefox"},
+                {data:0.035, label: "Safari"},
+                {data:0.0532, label: "Others"}
             ],
+
+            data_index = [
+                {data:0.1461, label:"IE-6"},
+                {data:0.0534, label:"IE-7"},
+                {data:0.3644, label: "IE-8"},
+                {data:0.1051, label: "IE-9"},
+                {data:0.17, label: "Chrome"},
+                {data:0.032, label: "Firefox"},
+                {data:0.06, label: "Safari"},
+                {data:0.069, label: "Others"}
+            ],
+
             options = {
                 width: 600,
                 height: 400,
                 margin:30,
                 pie:{
-                    radius:150,
+                    radius:100,
                     easing:"back-ease-out"
                 },
                 legend:{
@@ -42,7 +56,8 @@
                 }
 
             };
-    new DPChart(container, data, options);
+    new DPChart(container_tuangou, data_tuangou, options);
+    new DPChart(container_index, data_index, options);
 </script>
 </body>
 </html>
