@@ -1,4 +1,4 @@
-(function (undefined) {
+;(function (undefined) {
 	/**
 	*get sector path string and position parameters
 	*@param {Object} options {
@@ -14,10 +14,7 @@
 	*@type {Object} an object contain path and positions
 	*/
 	function getSectorPath(options){
-		var opt=options||{}, dir=opt.dir||1, rotate=opt.rotate||0;
-		
-		opt.endAngle+=rotate;
-		opt.startAngle+=rotate;
+		var opt=options||{}, dir=opt.dir||1;
 		
 		var rad = Math.PI / 180,
 			angleOffset=opt.endAngle-opt.startAngle,
@@ -89,7 +86,7 @@
 		if(!opt.animation){
 			sector=Math.abs(angleOffset)===360?opt.paper.circle(opt.x,opt.y,opt.r):opt.paper.path(sectorPath.path.join(' '));
 		}else{
-			sector=opt.paper.path().attr({arc: [opt.x, opt.y ,opt.r,opt.hollow,opt.startAngle, opt.startAngle]}).animate({arc: [opt.x, opt.y ,opt.r,opt.hollow,opt.startAngle, opt.endAngle]}, opt.time||100, opt.callback);
+			sector=opt.paper.path().attr({arc: [opt.x,opt.y,opt.r,opt.startAngle,opt.startAngle,opt.dir]}).animate({arc: [opt.x,opt.y,opt.r,opt.startAngle,opt.endAngle,opt.dir]}, opt.time||100, opt.callback);
 		}
 		
 		opt.color&&sector.attr(strokeOpt);
@@ -98,7 +95,7 @@
 		
 		opt.animation&&opt.d&&text.hide();
 		
-		DPChart.mix(sector,{cx:opt.x,cy:opt.y,mx:sectorPath.pos.xmiddle,my:sectorPath.pos.ymiddle,text:text});
+		DPChart.mix(sector,{cx:opt.x,cy:opt.y, mx:sectorPath.pos.xmiddle,my:sectorPath.pos.ymiddle, text:text});
 		
 		return sector;
 	}
@@ -113,25 +110,32 @@
 				duration:900,
 				animation:true, 
 				showText:true,
+				rotate:-90,
+				dir:1,
 				hollow:0,
 				stroke:{}
 			}, options);
 			
+			if(options.hollow>=options.radius){options.hollow=0;}
+			options.r=options.radius;
+			delete options.radius;
+			
 			/**define variables needed*/
 			var series = this.series.getSeries().sort(function(a,b){return b.data-a.data}),
 				colors = this.colors,
-				paper=this.raphael,
+				paper=this.stage,
 				data,
 				total=0,
 				elements=[],
 				value,
-				startAngle=-90,
+				// startAngle=-90,
+				startAngle=options.rotate*options.dir,
 				opts=[],t=0,
 				endAngle;
 				
 			/**add coustomer attribute*/
-			paper.customAttributes.arc = function (x,y,r,hollow,startAngle,endAngle){
-				return {path: getSectorPath({x:x,y:y,r:r,hollow:hollow,startAngle:startAngle,endAngle:endAngle}).path};				
+			paper.customAttributes.arc = function (x,y,r,startAngle,endAngle,dir){
+				return {path: getSectorPath({x:x,y:y,r:r,startAngle:startAngle,endAngle:endAngle,dir:dir}).path};				
             };
 			
 			/**calculate summation of all data*/
@@ -159,11 +163,11 @@
 				}
 				
 				setTimeout(function(){
-					elements.push(SectorChart(DPChart.mix({paper:paper, x:options.x, y:options.y, r:options.radius, hollow:options.hollow, stroke:options.stroke, animation:options.animation,
+					elements.push(SectorChart(DPChart.mix({paper:paper,
 						callback:function(){
 							this.text&&this.text.show();
 						}
-					},item)));
+					},DPChart.mix(options,item))));
 				},t);
 			});
 			
