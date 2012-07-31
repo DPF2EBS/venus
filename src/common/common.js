@@ -70,18 +70,7 @@
         return o1;
     }
 	
-	/**
-	*get variable true type	
-	*@param {Unknown} target variable to be checked
-	*@param {String} type[optional] which variable type to be check. 
-	*type can be any element of this array [Arguments, Array, Boolean, Date, Error, Function, JSON, Math, Number, Object, RegExp, String]
-	*@return the result checked, if parameter type is provide, result will be true or false. else result is variable type.
-	*@type {Boolean|String}
-	*/
-	DPChart.type=function(target, type) {
-		var clas = Object.prototype.toString.call(target).slice(8, -1);
-		return !type?clas:target !== undefined && target !== null && clas === type;
-	};
+	
 	
 
 
@@ -90,14 +79,31 @@
     * */
 
    DPChart.isArray =  function (arr) {
-        return Object.prototype.toString.call(arr) === "[object Array]";
+        return __type(arr, "array");
     }
 
     /*
      * isObject
      */
     DPChart.isObject = function(obj){
-        return obj === Object(obj);
+        return __type(obj, "object");
     }
+
+
     this.DPChart = DPChart;
+
+    /**
+    *get variable true type 
+    *@param {Unknown} target variable to be checked
+    *@param {String} type[optional] which variable type to be check. 
+    *type can be any element of this array [Arguments, Array, Boolean, Date, Error, Function, JSON, Math, Number, Object, RegExp, String]
+    *@return the result checked, if parameter type is provide, result will be true or false. else result is variable type.
+    *@type {Boolean|String}
+    */
+    function __type(target, type) {
+        var clas = Object.prototype.toString.call(target).slice(8, -1);
+        clas = clas.toLowerCase();
+        return !type?clas:target !== undefined && target !== null && clas === type;
+    };
+
 })();
