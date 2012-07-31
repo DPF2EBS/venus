@@ -141,25 +141,50 @@
 
             fillPathString = fillPathString.join(",");			
 
+            var path,fillPath;
+
             if(!!lineOptions.shadow){
-                var path = new Kinetic.Path({
+                fillPath = new Kinetic.Path({
+                          y:xAxis.options.beginY,
                           data: fillPathString,
                           scale: 1,
                           draggable: true,
                           fill:lineOptions.lineStroke,
-                          alpha:0.2
+                          alpha:0.2,
+                          scale:{
+                            y:0
+                          }
                 });
-                layer.add(path);    
+                layer.add(fillPath);
+
+                fillPath.transitionTo({
+                    y:0,
+                    scale:{
+                        y:1
+                    },
+                    duration:1
+                });    
             }
             
-            var path = new Kinetic.Path({
+            path = new Kinetic.Path({
+                      y:xAxis.options.beginY,
                       data: pathString,
                       stroke: lineOptions.lineStroke,
-                      scale: 1,
                       strokeWidth:2,
-                      draggable: true
+                      draggable: true,
+                      scale:{
+                        y:0
+                      }
             });
             layer.add(path);
+
+            path.transitionTo({
+                y:0,
+                scale:{
+                    y:1
+                },
+                duration:1
+            });
 
             var stage = this.stage,
                 newLayer;
@@ -170,24 +195,54 @@
                 points.forEach(function (d, i) {
                    var dot = new Kinetic.Circle({
                         x: d.x,
-                        y: d.y,
+                        y: yAxis.options.beginY,
                         radius: lineOptions.dotRadius,
                         fill: series[i].color,
                         draggable: true
                     });
-                    dot.on('mouseover', function(evt) {
-                    if(newLayer) { DPChart.toolTipHide(newLayer); }
-                    this.transitionTo({
-                        radius:{
-                            x:lineOptions.dotRadius * 1.5,
-                            y:lineOptions.dotRadius * 1.5
-                        },
-                        duration:0.2
-                    });
-                    
-                    newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
 
-                    stage.add(newLayer);
+                    var rect=new Kinetic.Rect({
+                        x:d.x - xAxis.options.tickWidth,
+                        y:yAxis.options.endY,
+                        height:yAxis.options.length,
+                        width:xAxis.options.tickWidth
+                    });
+
+                    layer.add(rect);
+
+                    (function(dot){
+                        rect.on("mouseover", function(){
+
+                            if(newLayer) { DPChart.toolTipHide(newLayer); }
+                            dot.transitionTo({
+                                radius:{
+                                    x:lineOptions.dotRadius * 1.5,
+                                    y:lineOptions.dotRadius * 1.5
+                                },
+                                duration:0.2
+                            });
+                            
+                            newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
+
+                            stage.add(newLayer);
+                        });
+                    })(dot);
+                    
+                    
+
+                    dot.on('mouseover', function(evt) {
+                        if(newLayer) { DPChart.toolTipHide(newLayer); }
+                        this.transitionTo({
+                            radius:{
+                                x:lineOptions.dotRadius * 1.5,
+                                y:lineOptions.dotRadius * 1.5
+                            },
+                            duration:0.2
+                        });
+                        
+                        newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
+
+                        stage.add(newLayer);
 
                     });
                     dot.on('mouseout', function(evt) {
@@ -201,6 +256,13 @@
                         !!lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
                     });
                     layer.add(dot);
+
+                    (function(y){
+                        dot.transitionTo({
+                            y:y,
+                            duration:1
+                        });
+                    })(d.y);
                 });
                 
             }
