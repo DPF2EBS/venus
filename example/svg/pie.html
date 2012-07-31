@@ -3,11 +3,17 @@
 <head>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="example.svg.css" />
-	<title>Bar-DPChart</title>
+	<style type="text/css">
+	body{background:#ededed; font-size:14px; font-family:Georgia;}
+	input{margin:2px; border:#dfdfdf 1px solid; height:20px; width:25px;}
+	dl{width:960px; margin:0px auto; height:auto; overflow:hidden; margin-top:1px;}
+	dt{background:#afafaf; line-height:30px; height:30px; text-indent:1em; font-size:16px; border-bottom:#6f6f6f 1px solid; border-radius:4px 4px 0px 0px;}
+	dt a{margin-left:4px;}
+	dd{padding:10px 6px; background:#dfdfdf; border-color:#afafaf;border-width:1px 1px 1px; border-style:solid; width:306px; margin:0px auto; float:left;}
+	</style>
+	<title>Pie-DPChart</title>
 </head>
-<body>
-	<div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-	
+<body>	
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
 	<script type="text/javascript" src="../../src/common/lang.js"></script>
 	<script type="text/javascript" src="../../src/common/common.js"></script>
@@ -17,16 +23,191 @@
 	<script type="text/javascript" src="../../src/svg/types/pie.js"></script>
 	
 	<script type="text/javascript">
-	var container = document.getElementById('chart_container'),
-            data = [25,30,40,10,60,15,9,20,25,33],
+	var dt=document.getElementsByTagName('dt');
+	var dd=document.getElementsByTagName('dd');
+	
+	</script>
+	
+	<dl>
+		<dt>[Pie]</dt>
+		<dd style="height:130px;">
+			<script type="text/javascript">
+		var container = dd[0],
+            data = [25,25,40],
             options = {
-                pie:{
+				legend:{},
+				pie:{}
+            }
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[1],
+            data = [25,25,40,10,8],
+            options = {
+				axis:{
+                    x:{
+						enable:false,
+						max:100,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:40
+
+                    },
+                    y:{
+						enable:false,
+                        min:0,
+                        max:40,
+                        tickWidth:20,
+                        tickSize:10
+                    }
+                },
+				legend:{
+				
+				},
+				pie:{
+					//duration:8000,
+					animation:false, //[true, false, 'simultaneous'],
+					showText:false,
+					stroke:{
+						//'stroke-width':2,
+						//'stroke':'#2d2d2d',
+						//'fill':'#9d9d9d'
+					}
 					/*x:220,
 					y:220,
 					radius:90*/
                 }
             }
-    var pie = new DPChart(container, data, options);
-	</script>
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[2],
+            data = [25,25,40,10,8],
+            options = {
+				axis:{
+                    x:{
+						enable:false,
+						max:100,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:40
+
+                    },
+                    y:{
+						enable:false,
+                        min:0,
+                        max:40,
+                        tickWidth:20,
+                        tickSize:10
+                    }
+                },
+				legend:{
+				
+				},
+				pie:{
+					duration:8000,
+					animation:'simultaneous', //[true, false, 'simultaneous'],
+					showText:true,
+					stroke:{
+						'stroke-width':2,
+						'stroke':'#2d2d2d',
+						//'fill':'#9d9d9d'
+					}
+					/*x:220,
+					y:220,
+					radius:90*/
+                }
+            }
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[3],
+            data = [25,25,40,10,8],
+            options = {
+				axis:{
+                    x:{
+						enable:false,
+						max:100,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:40
+
+                    },
+                    y:{
+						enable:false,
+                        min:0,
+                        max:40,
+                        tickWidth:20,
+                        tickSize:10
+                    }
+                },
+				legend:{
+				
+				},
+				pie:{
+					//duration:8000,
+					animation:true, //[true, false, 'simultaneous'],
+					showText:false,
+					hollow:20,
+					stroke:{
+						//'stroke-width':2,
+						//'stroke':'#2d2d2d',
+						//'fill':'#9d9d9d'
+					}
+					/*x:220,
+					y:220,
+					radius:90*/
+                }
+            }
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[4],
+            data = [25,25,40,10,8,22,9],
+            options = {
+				pie:{
+					duration:8000,
+					animation:'simultaneous', //[true, false, 'simultaneous'],
+					hollow:20,
+					stroke:{
+						'stroke-width':1,
+						'stroke':'#2d2d2d',
+						//'fill':'#9d9d9d'
+					}
+                }
+            }
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+		
+		<dd style="height: 130px;">
+		<script type="text/javascript">
+		var container = dd[5],
+            data = [25,25,40,10,8,22,9],
+            options = {
+				pie:{
+					//duration:8000,
+					animation:true, //[true, false, 'simultaneous'],
+					hollow:20,
+					stroke:{
+						'stroke-width':3,
+						'stroke':'#dfdfdf',
+						'fill':'#2f81bf'
+					}
+                }
+            }
+		var pie = new DPChart(container, data, options);
+		</script>
+		</dd>
+	</dl>
 </body>
 </html>
