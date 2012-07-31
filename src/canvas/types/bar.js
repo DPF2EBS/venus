@@ -39,6 +39,7 @@
                     newLayer = DPChart.tooltips(opt.x + opt.width/2, opt.y, points[i].val, 'top');
 
                     stage.add(newLayer);
+                    
                     this.setStrokeWidth(2);
                     this.setStroke("#FFF");
 
