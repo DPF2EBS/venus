@@ -1,4 +1,4 @@
-test("Series", function () {
+test("Series Constructor and getSeries()", function () {
     var data1 = [1, 2, 9],
         data2 = {name1:1, name2:2, name3:3},
         data3 = [
@@ -50,15 +50,64 @@ test("Series", function () {
     ], 'Data format as [array,...]')
 
 
+});
+
+test('Series.getRange()', function () {
     var expects = {min:1, max:9}
 
-    deepEqual(series1.getRange(), expects, 'data property is number，range is {min:1,max:9}')
+    var data1 = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        data3 = [
+            {Jan:1, Feb:2, Mar:3},
+            {Jan:4, Feb:5, Mar:6},
+            {Jan:7, Feb:8, Mar:9}
+        ],
+        data5 = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+
+    var Series = DPChart.Series
+
+    var series1 = new Series(data1),
+        series3 = new Series(data3),
+        series5 = new Series(data5)
+
+    deepEqual(series1.getRange(), expects, 'data property is number, range is {min:1,max:9}')
 
     deepEqual(series3.getRange(), expects, 'data property is object, range is {min:1,max:9}')
 
     deepEqual(series5.getRange(), expects, 'data property is array, range is {min:1,max:9}')
-});
+})
 
-test('Series.getRange()', function () {
-    ok(1, 'true')
+
+test('Series.getLabels()', function () {
+    var data1 = [1, 2, 9],
+        data2 = {name1:1, name2:2, name3:3},
+        data3 = [
+            {Jan:1, Feb:2, Mar:3},
+            {Jan:4, Feb:5, Mar:6},
+            {Jan:7, Feb:8, Mar:9}
+        ],
+        data4 = [
+            {name:'name1', data:{Jan:1, Feb:2, Mar:3}},
+            {name:'name2', data:{Jan:4, Feb:5, Mar:6}},
+            {name:'name3', data:{Jan:7, Feb:8, Mar:9}}
+        ],
+        data5 = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+
+    var Series = DPChart.Series
+
+    var series1 = new Series(data1),
+        series2 = new Series(data2),
+        series3 = new Series(data3),
+        series4 = new Series(data4),
+        series5 = new Series(data5)
+
+    equal(series1.getLabels().length, data1.length, "length is equal")
+    deepEqual(series1.getLabels(), ['','',''])
 })

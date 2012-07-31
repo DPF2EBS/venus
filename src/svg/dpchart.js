@@ -170,7 +170,7 @@
                 }
                 else if (isObject(d)) {
                     //item is {}
-                    if (d.data) {
+                    if (d.data !== undefined) {
                         // item in format {data:something,otherThings...}
                         series.push(d);
                     } else {
