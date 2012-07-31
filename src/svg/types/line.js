@@ -1,4 +1,5 @@
-;(function (Chart, undefined) {
+;
+(function (Chart, undefined) {
     /*
      * line chart
      *
@@ -90,18 +91,23 @@
                 points.sort(function (a, b) {
                     return a.x - b.x;
                 });
-
+                var pathString,
+                    areaPathString,
+                    pathAnimateString,
+                    areaPathAnimateString
                 points.length <= 2 && (lineOpt.smooth = false)
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
-                        pathString,
-                        areaPathString,
                         i, l,
                         x0, y0, x1, y1,
                         p
+
+
                     pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
                     areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
+                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
+                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
                     for (i = 1, l = points.length - 1; i < l; i++) {
                         x0 = points[i - 1].x;
                         y0 = points[i - 1].y;
@@ -112,34 +118,48 @@
                         p = getAnchors(x0, y0, x, y, x1, y1);
                         pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
                         areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
+                        lineOpt.beginAnimate && pathAnimateString.push('H', x) && areaPathAnimateString.push('H',x)
                     }
                     pathString.push(x1, y1, x1, y1)
                     areaPathString.push(x1, y1, x1, y1, 'V', axises.y.beginY, 'H', points[0].x, 'Z')
+                    lineOpt.beginAnimate && pathAnimateString.push('H', x1)
                 } else {
                     //straight line
-                    var pathString = ['M', points[0].x, points[0].y],
-                        areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y]
+                    pathString = ['M', points[0].x, points[0].y];
+                    areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y]
+                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
+                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
                     points.forEach(function (d, i) {
                         pathString.push('L', d.x, d.y)
                         areaPathString.push('L', d.x, d.y)
+                        lineOpt.beginAnimate && pathAnimateString.push('H', d.x)
+                        lineOpt.beginAnimate && areaPathAnimateString.push('H', d.x)
                     });
                     areaPathString.push('V', axises.y.beginY, 'H', points[0].x, 'Z')
                 }
+
                 var line = raphael.path().attr({
                         'stroke-width':lineOpt['line-width'],
                         'stroke':color,
-                        path:pathString
+                        path:pathAnimateString || pathString
                     }),
                     dots = raphael.set(),
                     area
+                if (lineOpt.beginAnimate) {
+                    //begin animate
+                    line.animate({'path':pathString}, 1000)
+                }
                 if (lineOpt.area) {
                     //draw area path
                     area = raphael.path().attr({
                         'stroke-width':0,
-                        'path':areaPathString,
+                        'path':areaPathAnimateString || areaPathString,
                         'fill':color,
                         'opacity':lineOpt.areaOpacity
                     });
+                    if(lineOpt.beginAnimate){
+                        area.animate({'path':areaPathString},1000)
+                    }
                 }
 
                 if (lineOpt.dots) {
@@ -167,6 +187,10 @@
                                 }, 100);
                                 this.toolTipHide()
                             }).data('point', d);
+                        if (lineOpt.beginAnimate) {
+                            dot.attr('cy', axises.y.beginY);
+                            dot.animate({'cy':d.y}, 1000)
+                        }
                         if (lineOpt.dotSelect) {
                             //选中dot 显示tip
                             dot.click(function () {
@@ -208,7 +232,7 @@
             }
 
             if (data[0]) {
-                if (DPChart.isNumber( data[0].data)) {
+                if (DPChart.isNumber(data[0].data)) {
                     //data is simple number
                     drawLine(data, undefined, this.colors[0], undefined);
                 } else if (DPChart.isArray(data[0].data)) {
