@@ -1,4 +1,4 @@
-(function (undefined) {
+;(function (undefined) {
 	/**
 	*get sector path string and position parameters
 	*@param {Object} options {
@@ -123,7 +123,7 @@
 			/**define variables needed*/
 			var series = this.series.getSeries().sort(function(a,b){return b.data-a.data}),
 				colors = this.colors,
-				paper=this.raphael,
+				paper=this.stage,
 				data,
 				total=0,
 				elements=[],

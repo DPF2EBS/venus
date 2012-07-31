@@ -1,4 +1,4 @@
-(function (Chart, undefined) {
+;(function (Chart, undefined) {
     /*
      * line chart
      *
@@ -46,7 +46,7 @@
                 axises = this.axises,
                 data = series.getSeries(),
                 self = this,
-                raphael = this.raphael,
+                raphael = this.stage,
                 colors = this.colors, //this.colors,
                 elements = [], //按series 存放element
                 dotsByXAxis = {}  //按x轴存放dot
@@ -208,7 +208,7 @@
             }
 
             if (data[0]) {
-                if (typeof data[0].data === "number") {
+                if (DPChart.isNumber( data[0].data)) {
                     //data is simple number
                     drawLine(data, undefined, this.colors[0], undefined);
                 } else if (DPChart.isArray(data[0].data)) {

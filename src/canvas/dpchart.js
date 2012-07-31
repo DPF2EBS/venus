@@ -1,15 +1,14 @@
 ///////////////////////////////////////////////////////////////////////
-//  Sector
+//  SimpleText
 ///////////////////////////////////////////////////////////////////////
 /**
- * Sector constructor
+ * SimpleText constructor
  * @constructor
  * @augments Kinetic.Shape
  * @param {Object} config
  */
-
 Kinetic.SimpleText = Kinetic.Shape.extend({
-    init: function(config) {
+    init: function (config) {
         this.setDefaultAttrs({
             text: "",
             font: "12",
@@ -19,7 +18,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
         this.shapeType = "SimpleText";
 
-        config.drawFunc = function(context) {
+        config.drawFunc = function (context) {
             var text = this.attrs.text;
             context.save();
             context.font = this.attrs.font,
@@ -36,7 +35,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
 /*
  * Canvas Chart Lib of Venus
- */;
+ */
+;
 (function (global, undefined) {
 
     var _DPChart = global.DPChart;
@@ -68,12 +68,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         var defaultOptions = {
             width: container.clientWidth,
             height: container.clientHeight,
-            margin:10
+            margin: 10
         };
 
         this.container = container;
         this.data = data || [];
-        this.events = new CustomEvent();
+        this.events = new DPChart.CustomEvent();
 
         this.options = mix(defaultOptions, options || {});
 
@@ -165,7 +165,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 beginX,
                 beginY;
 
-            if(typeof axisOption == "undefined"){
+            if (typeof axisOption == "undefined") {
                 return;
             }
             for (var axis in axisOption) {
@@ -185,12 +185,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                     if (axis == "x") {
                         if (!thisAxisOption.ticks) {
                             thisAxisOption.ticks = this.series.getLabels();
-                        }   
+                        }
                     }
 
                     thisAxisOption.canvasWidth = this.options.width;
                     thisAxisOption.canvasHeight = this.options.height;
-                    thisAxisOption.margin=this.options.margin;
+                    thisAxisOption.margin = this.options.margin;
 
                     axises[axis] = new Axis(this.options, thisAxisOption, this.series, this.layer);
                 }
@@ -311,10 +311,10 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 //do nothing
             }
 
-            colors=DPChart.getColors(series.length);
+            colors = DPChart.getColors(series.length);
 
-            series.forEach(function(item, index){
-                item.color=colors[index];
+            series.forEach(function (item, index) {
+                item.color = colors[index];
             });
 
             tempArr = series.map(function (item) {
@@ -346,36 +346,39 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 
     var Axis = function (globalOptions, options, series, layer) {
         var defaultOptions = {
-                axisType:"x",
-                max: 0,
-                min: 0,
-                tickSize: 1,
-                tickWidth: 30,
-                ticks: []
-            }, 
-            axisElement, 
-            labelElements = [], 
+            axisType: "x",
+            max: 0,
+            min: 0,
+            tickSize: 1,
+            tickWidth: 30,
+            ticks: []
+        },
+        axisElement,
+        labelElements = [],
             opt = this.options = mix(defaultOptions, options),
             i, l,
             label;
-        if(opt.axisType == "x"){
+        if (opt.axisType == "x") {
             opt.beginX = opt.margin;
             opt.beginY = opt.canvasHeight - opt.margin;
             opt.endX = opt.canvasWidth - opt.margin;
             opt.endY = opt.margin;
             opt.length = opt.canvasWidth - 2 * opt.margin;
-            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length -1] - opt.ticks[0]) ;
+            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length - 1] - opt.ticks[0]);
             opt.tickWidth = opt.length / opt.ticks.length;
-        }else if(opt.axisType == "y"){
+        } else if (opt.axisType == "y") {
             opt.beginX = opt.margin;
             opt.beginY = opt.canvasHeight - opt.margin;
             opt.endX = opt.margin;
             opt.endY = opt.margin;
             opt.length = opt.canvasHeight - 2 * opt.margin;
-            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length -1] - opt.ticks[0]) ;
-            opt.tickWidth = opt.length / (opt.ticks.length -1);
+            opt.scaleSize = opt.length / (opt.ticks[opt.ticks.length - 1] - opt.ticks[0]);
+            opt.tickWidth = opt.length / (opt.ticks.length - 1);
         }
-        globalOptions = mix(globalOptions, { originX: opt.beginX, originY: opt.beginY });
+        globalOptions = mix(globalOptions, {
+            originX: opt.beginX,
+            originY: opt.beginY
+        });
         //如果是X轴的话 画X轴
         if (opt.axisType == "x") {
             globalOptions.axis.x = mix(globalOptions.axis.x, opt);
@@ -388,11 +391,11 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }));
             for (i = 0, l = opt.ticks.length; i < l; i++) {
                 label = new Kinetic.SimpleText({
-                    x: opt.beginX + (i+.5) * opt.tickWidth,
+                    x: opt.beginX + (i + .5) * opt.tickWidth,
                     y: opt.beginY + 5,
                     text: opt.ticks[i] + "",
                     textFill: "#000000",
-                    textAlign : "center"
+                    textAlign: "center"
                 });
                 layer.add(label);
             }
@@ -408,7 +411,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }));
             for (i = 0, l = opt.ticks.length; i < l; i++) {
                 label = new Kinetic.SimpleText({
-                    x: opt.beginX-10,
+                    x: opt.beginX - 10,
                     y: opt.beginY - i * opt.tickWidth,
                     text: opt.ticks[i] + "",
                     textFill: "#000000",
@@ -425,7 +428,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             //return the x in svg coordinate
             var opt = this.options;
 
-            return opt.beginX + (index+.5) * opt.tickWidth;
+            return opt.beginX + (index + .5) * opt.tickWidth;
         },
         getY: function (data) {
             //return the y in svg coordinate
@@ -501,14 +504,14 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         }
         for (var jj = 0; jj < seriesLen; jj++) {
             var itype;
-            if(showType == "Circle"){
+            if (showType == "Circle") {
                 itype = new Kinetic[showType]({
                     x: pos.x + 5,
                     y: pos.y + jj * lineHeight + 12,
                     radius: 8,
                     fill: series.series[jj].color
                 })
-            }else if(showType == "Rect"){
+            } else if (showType == "Rect") {
                 itype = new Kinetic[showType]({
                     x: pos.x + 5,
                     y: pos.y + jj * lineHeight,
@@ -518,13 +521,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 })
             }
             var itext = new Kinetic.Text({
-                    x: pos.x + 12 + 5,
-                    y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
-                    text: labelTexts[jj] + "",
-                    fontSize: 12,
-                    fontFamily: "Curier",
-                    textFill: "#666"
-                });
+                x: pos.x + 12 + 5,
+                y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
+                text: labelTexts[jj] + "",
+                fontSize: 12,
+                fontFamily: "Curier",
+                textFill: "#666"
+            });
             layer.add(itype);
             layer.add(itext);
         }
@@ -578,135 +581,136 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         }
     }
 
-    function tooltips(x, y, texts, side){
+        function tooltips(x, y, texts, side) {
 
-        var tooltipslayer = new Kinetic.Layer();
-        
-        (side == undefined) && (side = 'top');
+            var tooltipslayer = new Kinetic.Layer();
 
-        (side == 'top') && (y = y - 10);
+            (side == undefined) && (side = 'top');
 
-        (side == 'left') && (x = x - 10);
+            (side == 'top') && (y = y - 10);
 
-        (side == 'right') && (x = x + 10);
+            (side == 'left') && (x = x - 10);
 
-        (side == 'bottom') && (y = y + 10);
+            (side == 'right') && (x = x + 10);
 
-        var path = function (width, height, padding) {
-                    var p = ['M', x, y],
-                        arrowWidth = 5,
-                        left, top
+            (side == 'bottom') && (y = y + 10);
+
+            var path = function (width, height, padding) {
+                var p = ['M', x, y],
+                    arrowWidth = 5,
+                    left, top
 
                     height += (2 * padding || 0);
-                    width += (2 * padding || 0);
-                    switch (side) {
-                        case 'right':
-                            //arrow at the left side and content at right
-                            height = Math.max(arrowWidth * 2, height);
-                            p.push('l', arrowWidth, -arrowWidth);
-                            p.push('v', -(height / 2 - arrowWidth));
-                            p.push('h', width);
-                            p.push('v', height, 'h', -width);
-                            p.push('v', -(height / 2 - arrowWidth));
-                            p.push('l', -arrowWidth, -arrowWidth);
-                            left = x + arrowWidth;
-                            top = y - height / 2;
-                            break;
-                        case 'top':
-                            width = Math.max(arrowWidth * 2, width);
-                            p.push('l', -arrowWidth, -arrowWidth);
-                            p.push('h', -(width / 2 - arrowWidth));
-                            p.push('v', -height, 'h', width, 'v', height);
-                            p.push('h', -(width / 2 - arrowWidth));
-                            p.push('l', -arrowWidth, arrowWidth);
-                            left = x - width / 2;
-                            top = y - arrowWidth - height;
-                            break;
-                        case 'left':
-                            height = Math.max(arrowWidth * 2, height);
-                            p.push('l', -arrowWidth, arrowWidth);
-                            p.push('v', height / 2 - arrowWidth);
-                            p.push('h', -width, 'v', -height, 'h', width);
-                            p.push('v', height / 2 - arrowWidth);
-                            p.push('l', arrowWidth, arrowWidth);
-                            left = x - arrowWidth - width;
-                            top = y - height / 2;
-                            break;
-                        case 'bottom':
-                            width = Math.max(arrowWidth * 2, width);
-                            p.push('l', arrowWidth, arrowWidth);
-                            p.push('h', width / 2 - arrowWidth);
-                            p.push('v', height, 'h', -width, 'v', -height);
-                            p.push('h', width / 2 - arrowWidth);
-                            p.push('l', arrowWidth, -arrowWidth);
-                            left = x - width / 2;
-                            top = y + arrowWidth;
-                            break;
+                width += (2 * padding || 0);
+                switch (side) {
+                case 'right':
+                    //arrow at the left side and content at right
+                    height = Math.max(arrowWidth * 2, height);
+                    p.push('l', arrowWidth, - arrowWidth);
+                    p.push('v', - (height / 2 - arrowWidth));
+                    p.push('h', width);
+                    p.push('v', height, 'h', - width);
+                    p.push('v', - (height / 2 - arrowWidth));
+                    p.push('l', - arrowWidth, - arrowWidth);
+                    left = x + arrowWidth;
+                    top = y - height / 2;
+                    break;
+                case 'top':
+                    width = Math.max(arrowWidth * 2, width);
+                    p.push('l', - arrowWidth, - arrowWidth);
+                    p.push('h', - (width / 2 - arrowWidth));
+                    p.push('v', - height, 'h', width, 'v', height);
+                    p.push('h', - (width / 2 - arrowWidth));
+                    p.push('l', - arrowWidth, arrowWidth);
+                    left = x - width / 2;
+                    top = y - arrowWidth - height;
+                    break;
+                case 'left':
+                    height = Math.max(arrowWidth * 2, height);
+                    p.push('l', - arrowWidth, arrowWidth);
+                    p.push('v', height / 2 - arrowWidth);
+                    p.push('h', - width, 'v', - height, 'h', width);
+                    p.push('v', height / 2 - arrowWidth);
+                    p.push('l', arrowWidth, arrowWidth);
+                    left = x - arrowWidth - width;
+                    top = y - height / 2;
+                    break;
+                case 'bottom':
+                    width = Math.max(arrowWidth * 2, width);
+                    p.push('l', arrowWidth, arrowWidth);
+                    p.push('h', width / 2 - arrowWidth);
+                    p.push('v', height, 'h', - width, 'v', - height);
+                    p.push('h', width / 2 - arrowWidth);
+                    p.push('l', arrowWidth, - arrowWidth);
+                    left = x - width / 2;
+                    top = y + arrowWidth;
+                    break;
 
-                    }
-                    p.push('z')
-                    return {
-                        path:p,
-                        box:{
-                            left:left,
-                            top:top,
-                            width:width,
-                            height:height
-                        }
-                    };
-                };
-                var preWord = new Kinetic.Text({
-                        x: x,
-                        y: -200,
-                        fontSize: 12,
-                        text: '' + texts
-                    }),
-                    wd = preWord.getTextWidth(),
-                    hd = preWord.getTextHeight();
-
-
-                var pathObj = path(wd, hd, 10),
-                    pathString = pathObj.path,
-                    boxInfo = pathObj.box;
-
-                    pathString =  pathString.join(',');
-                
-                if (texts) {
-                    var tipWord = new Kinetic.Text({
-                        x: boxInfo.left + 10,
-                        y: boxInfo.top + 10,
-                        text: '' + texts,
-                        align: 'center',
-                        fontSize: 12,
-                        textFill: "#FF7018"
-                    });
                 }
-                var path = new Kinetic.Path({
-                      data: pathString,
-                      stroke: '#FF7018',
-                      scale: 1,
-                      fill: '#FFFFFF',
-                      draggable: true,
-                      shadow: {
-                        color:"#000",
-                        blur: 5,
-                        alpha: 0.4,
-                        offset: [2, 2]
-                      }
+                p.push('z')
+                return {
+                    path: p,
+                    box: {
+                        left: left,
+                        top: top,
+                        width: width,
+                        height: height
+                    }
+                };
+            };
+            var preWord = new Kinetic.Text({
+                x: x,
+                y: -200,
+                fontSize: 12,
+                text: '' + texts
+            }),
+                wd = preWord.getTextWidth(),
+                hd = preWord.getTextHeight();
+
+
+            var pathObj = path(wd, hd, 10),
+                pathString = pathObj.path,
+                boxInfo = pathObj.box;
+
+            pathString = pathString.join(',');
+
+            if (texts) {
+                var tipWord = new Kinetic.Text({
+                    x: boxInfo.left + 10,
+                    y: boxInfo.top + 10,
+                    text: '' + texts,
+                    align: 'center',
+                    fontSize: 12,
+                    textFill: "#FF7018"
                 });
-
-                tooltipslayer.removeChildren();
-
-                tooltipslayer.add(path);
-
-                tooltipslayer.add(tipWord);
-
-                return tooltipslayer;
-
             }
-            function toolTipHide(newLayer){
-                newLayer.clear();
-            }
+            var path = new Kinetic.Path({
+                data: pathString,
+                stroke: '#FF7018',
+                scale: 1,
+                fill: '#FFFFFF',
+                draggable: true,
+                shadow: {
+                    color: "#000",
+                    blur: 5,
+                    alpha: 0.4,
+                    offset: [2, 2]
+                }
+            });
+
+            tooltipslayer.removeChildren();
+
+            tooltipslayer.add(path);
+
+            tooltipslayer.add(tipWord);
+
+            return tooltipslayer;
+
+        }
+
+        function toolTipHide(newLayer) {
+            newLayer.clear();
+        }
     DPChart.tooltips = tooltips;
 
     DPChart.toolTipHide = toolTipHide;

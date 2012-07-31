@@ -1,5 +1,5 @@
 (function () {
-	function getAnchors(p1x, p1y, p2x, p2y, p3x, p3y) {
+    function getAnchors(p1x, p1y, p2x, p2y, p3x, p3y) {
         var l1 = (p2x - p1x) / 2,
             l2 = (p3x - p2x) / 2,
             a = Math.atan((p2x - p1x) / Math.abs(p2y - p1y)),
@@ -15,42 +15,42 @@
             dy2 = l2 * Math.cos(alpha + b);
 
         return {
-            x1:p2x - dx1,
-            y1:p2y + dy1,
-            x2:p2x + dx2,
-            y2:p2y + dy2
+            x1: p2x - dx1,
+            y1: p2y + dy1,
+            x2: p2x + dx2,
+            y2: p2y + dy2
         };
     }
-	/*
-	*@Todo: add Line to the Chart
-	*/
+    /*
+     *@Todo: add Line to the Chart
+     */
     function VerticalLine(layer, x, y, ox, oy, color, d) {
         layer.add(new Kinetic.Line({
             points: [x, y, x + ox, y - oy],
-	        stroke: color,
-	        strokeWidth: 2,
-	        lineCap: "round",
-	        lineJoin: "round"
+            stroke: color,
+            strokeWidth: 2,
+            lineCap: "round",
+            lineJoin: "round"
         }));
     }
     DPChart.addChart('line', {
 
-        draw:function () {
+        draw: function () {
 
-			var options = this.options,
+            var options = this.options,
                 lineOptions,
-				points = [];
+                points = [];
 
-			lineOptions = DPChart.mix({
-				smooth: false,
-				lineStroke: '#4FEE30',
+            lineOptions = DPChart.mix({
+                smooth: false,
+                lineStroke: '#4FEE30',
                 hasDot: false,
                 dotRadius: 8,
                 dotFill: '#F74D8B',
-                shadow:false,
+                shadow: false,
                 autoMouseOut: false
             }, options.line);
-			
+
             var series = this.series.getSeries();
 
             var range = this.series.getRange();
@@ -66,134 +66,138 @@
             var yOrigin = yAxis.getOrigin();
 
 
-            var colors=DPChart.getColors(series.length+1);
+            var colors = DPChart.getColors(series.length + 1);
 
-            var data, posOffset = {x:0, y:0}, posX, posY, width, height;
+            var data, posOffset = {
+                x: 0,
+                y: 0
+            }, posX, posY, width, height;
 
-			series.forEach(function(item, index) {
-			   	points.push({
-	                x: xAxis.getX(index),
-	                y: yAxis.options.beginY - yAxis.getY(item.data),  
-	                val: item.data,
-					label: item.label
-	            });
-			});
-			
-			var beginPiont = {
-				
-			    x: xAxis.getX(0), 
-			
-				y: yAxis.options.beginY - yAxis.getY(series[0].data)  
-				
-		   	},
-		    pathString = [], fillPathString;
-			
+            series.forEach(function (item, index) {
+                points.push({
+                    x: xAxis.getX(index),
+                    y: yAxis.options.beginY - yAxis.getY(item.data),
+                    val: item.data,
+                    label: item.label
+                });
+            });
+
+            var beginPiont = {
+
+                x: xAxis.getX(0),
+
+                y: yAxis.options.beginY - yAxis.getY(series[0].data)
+
+            },
+            pathString = [],
+                fillPathString;
+
             (points.length <= 2) && (lineOptions.smooth = false);
-            
-            if(lineOptions.smooth) {
-            	// 曲线
-            	var i, l,
-            		x0, y0,
-            		x, y,
-            		x1, y1,
- 					p;
 
-				pathString = [ 'M' , beginPiont.x , beginPiont.y, 'C', beginPiont.x, beginPiont.y];
-				
-            	for (i = 1, l = points.length - 1; i < l; i++) {
+            if (lineOptions.smooth) {
+                // 曲线
+                var i, l,
+                x0, y0,
+                x, y,
+                x1, y1,
+                p;
 
-            			x0 = points[i-1].x;
+                pathString = ['M', beginPiont.x, beginPiont.y, 'C', beginPiont.x, beginPiont.y];
 
-                		y0 = points[i-1].y;
+                for (i = 1, l = points.length - 1; i < l; i++) {
 
-                		x = points[i].x;
+                    x0 = points[i - 1].x;
 
-                		y = points[i].y;
+                    y0 = points[i - 1].y;
 
-                		x1 = points[i+1].x;
+                    x = points[i].x;
 
-                		y1 = points[i+1].y;
+                    y = points[i].y;
 
-                        p = getAnchors(x0, y0, x, y, x1, y1);
-						                                     
-						pathString.push(p.x1, p.y1, x, y, p.x2, p.y2); 
-                        
-                    }
-					pathString.push(x1, y1, x1, y1);
-					
+                    x1 = points[i + 1].x;
+
+                    y1 = points[i + 1].y;
+
+                    p = getAnchors(x0, y0, x, y, x1, y1);
+
+                    pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
+
+                }
+                pathString.push(x1, y1, x1, y1);
+
             } else {
-	
-			   	pathString = ['M', beginPiont.x, beginPiont.y];
 
-				
+                pathString = ['M', beginPiont.x, beginPiont.y];
+
+
                 points.forEach(function (d, i) {
                     pathString.push('L', d.x, d.y);
                 });
             }
 
-            fillPathString=pathString;
-            pathString =  pathString.join(',');
+            fillPathString = pathString;
+            pathString = pathString.join(',');
 
-            var endPoint= points[points.length - 1 ];
+            var endPoint = points[points.length - 1];
 
-            fillPathString.push("L", endPoint.x, xAxis.options.beginY-1);
-            fillPathString.push("L", beginPiont.x, xAxis.options.beginY-1);
+            fillPathString.push("L", endPoint.x, xAxis.options.beginY - 1);
+            fillPathString.push("L", beginPiont.x, xAxis.options.beginY - 1);
 
-            fillPathString = fillPathString.join(",");			
+            fillPathString = fillPathString.join(",");
 
-            var path,fillPath;
+            var path, fillPath;
 
-            if(!!lineOptions.shadow){
+            if ( !! lineOptions.shadow) {
                 fillPath = new Kinetic.Path({
-                          y:xAxis.options.beginY,
-                          data: fillPathString,
-                          scale: 1,
-                          draggable: true,
-                          fill:lineOptions.lineStroke,
-                          alpha:0.2,
-                          scale:{
-                            y:0
-                          }
+                    y: xAxis.options.beginY,
+                    data: fillPathString,
+                    scale: 1,
+                    draggable: true,
+                    fill: lineOptions.lineStroke,
+                    alpha: 0.2,
+                    scale: {
+                        y: 0
+                    }
                 });
                 layer.add(fillPath);
 
                 fillPath.transitionTo({
-                    y:0,
-                    scale:{
-                        y:1
+                    y: 0,
+                    scale: {
+                        y: 1
                     },
-                    duration:1
-                });    
+                    duration: 1
+                });
             }
-            
+
             path = new Kinetic.Path({
-                      y:xAxis.options.beginY,
-                      data: pathString,
-                      stroke: lineOptions.lineStroke,
-                      strokeWidth:2,
-                      draggable: true,
-                      scale:{
-                        y:0
-                      }
+                y: xAxis.options.beginY,
+                data: pathString,
+                stroke: lineOptions.lineStroke,
+                strokeWidth: 2,
+                draggable: true,
+                scale: {
+                    y: 0
+                }
             });
             layer.add(path);
 
             path.transitionTo({
-                y:0,
-                scale:{
-                    y:1
+                y: 0,
+                scale: {
+                    y: 1
                 },
-                duration:1
+                duration: 1
             });
 
             var stage = this.stage,
                 newLayer;
             // if the line has dot
 
-            if(lineOptions.hasDot) {
-                
+            if (lineOptions.hasDot) {
+
                 points.forEach(function (d, i) {
-                   var dot = new Kinetic.Circle({
+                    var dot = new Kinetic.Circle({
                         x: d.x,
                         y: yAxis.options.beginY,
                         radius: lineOptions.dotRadius,
@@ -201,70 +205,73 @@
                         draggable: true
                     });
 
-                    var rect=new Kinetic.Rect({
-                        x:d.x - xAxis.options.tickWidth,
-                        y:yAxis.options.endY,
-                        height:yAxis.options.length,
-                        width:xAxis.options.tickWidth
+                    var rect = new Kinetic.Rect({
+                        x: d.x - xAxis.options.tickWidth,
+                        y: yAxis.options.endY,
+                        height: yAxis.options.length,
+                        width: xAxis.options.tickWidth
                     });
 
                     layer.add(rect);
 
-                    (function(dot){
-                        rect.on("mouseover", function(){
+                    (function (dot) {
+                        rect.on("mouseover", function () {
 
-                            if(newLayer) { DPChart.toolTipHide(newLayer); }
+                            if (newLayer) {
+                                DPChart.toolTipHide(newLayer);
+                            }
                             dot.transitionTo({
-                                radius:{
-                                    x:lineOptions.dotRadius * 1.5,
-                                    y:lineOptions.dotRadius * 1.5
+                                radius: {
+                                    x: lineOptions.dotRadius * 1.5,
+                                    y: lineOptions.dotRadius * 1.5
                                 },
-                                duration:0.2
+                                duration: 0.2
                             });
-                            
+
                             newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
 
                             stage.add(newLayer);
                         });
                     })(dot);
-                    
-                    
 
-                    dot.on('mouseover', function(evt) {
-                        if(newLayer) { DPChart.toolTipHide(newLayer); }
+
+
+                    dot.on('mouseover', function (evt) {
+                        if (newLayer) {
+                            DPChart.toolTipHide(newLayer);
+                        }
                         this.transitionTo({
-                            radius:{
-                                x:lineOptions.dotRadius * 1.5,
-                                y:lineOptions.dotRadius * 1.5
+                            radius: {
+                                x: lineOptions.dotRadius * 1.5,
+                                y: lineOptions.dotRadius * 1.5
                             },
-                            duration:0.2
+                            duration: 0.2
                         });
-                        
+
                         newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
 
                         stage.add(newLayer);
 
                     });
-                    dot.on('mouseout', function(evt) {
+                    dot.on('mouseout', function (evt) {
                         this.transitionTo({
-                            radius:{
-                                x:lineOptions.dotRadius,
-                                y:lineOptions.dotRadius
+                            radius: {
+                                x: lineOptions.dotRadius,
+                                y: lineOptions.dotRadius
                             },
-                            duration:0.2
-                        });
-                        !!lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
+                            duration: 0.2
+                        }); !! lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
                     });
                     layer.add(dot);
 
-                    (function(y){
+                    (function (y) {
                         dot.transitionTo({
-                            y:y,
-                            duration:1
+                            y: y,
+                            duration: 1
                         });
                     })(d.y);
                 });
-                
+
             }
         }
     });

@@ -2,14 +2,12 @@
  * SVG Chart Lib of Venus
  * */
 
-(function (global, undefined) {
+;(function (global, undefined) {
     var _DPChart = global.DPChart;
     var mix = _DPChart.mix
         , PI = Math.PI
         , isArray = _DPChart.isArray
-        , isObject = function (obj) {
-            return obj === Object(obj);
-        }
+        , isObject = _DPChart.isObject
         , charts = {} // charts added by using DPChart.addChart
         , getColor = _DPChart.getColors;
 
@@ -26,7 +24,7 @@
         }
         this.container = container;
         this.data = data || [];
-        this.events = new CustomEvent();
+        this.events = new _DPChart.CustomEvent();
         var defaultOptions = {
             /**
              *maybe here will cause a bug when a html element size is autosize or it is invisible.
@@ -43,12 +41,14 @@
             }
         };
         this.options = mix(defaultOptions, options || {});
-        this.raphael = new Raphael(container, this.options.width, this.options.height);
-        this.colors = getColor(data.length);
+        this.stage = new Raphael(container, this.options.width, this.options.height);
+
 
         //init data
         this._initData();
         this.events.fire('onDataInit', this.series);
+
+        this.colors = getColor(this.series.getSeries().length);
 
         // init axis
         this._initAxis();
@@ -109,7 +109,7 @@
 
                     thisAxisOption._svgWidth = this.options.width;
                     thisAxisOption._svgHeight = this.options.height;
-                    axises[axis] = new Axis(thisAxisOption, this.series, this.raphael);
+                    axises[axis] = new Axis(thisAxisOption, this.series, this.stage);
                     !thisAxisOption.beginX && axis == "x" && (beginX = (opt.width - axises[axis].axisLength) / 2);
                     !thisAxisOption.beginY && axis == "y" && (beginY = (opt.height - axises[axis].axisLength) / 2 + axises[axis].axisLength);
                 }
@@ -118,7 +118,6 @@
                 for (axis in axises) {
                     //adjust beginX and beginY
                     axises[axis].setPosition(beginX, beginY);
-
                 }
             }
             this.axises = axises;
@@ -127,20 +126,18 @@
             var opt = this.options,
                 legendOption = opt.legend;
             if (legendOption && this.series.getSeries().length) {
-
                 legendOption._svgWidth = opt.width;
                 legendOption._svgHeight = opt.height;
                 legendOption.colors = this.colors;
                 this.axises.x && this.axises.x.options.ticks && ( legendOption._ticks = this.axises.x.options.ticks);
-                this.legend = new Legend(this.series, legendOption, this.raphael);
-
+                this.legend = new Legend(this.series, legendOption, this.stage);
             }
         },
         _initGrid:function () {
             var gridOption = this.options.grid
             gridOption.enableRow && this.axises.y && (gridOption.rows = this.axises.y.getTicksPos().y) && (gridOption._x = this.axises.y.beginX) && this.axises.x && (gridOption.width = this.axises.x.axisLength)
             gridOption.enableColumn && this.axises.x && (gridOption.columns = this.axises.x.getTicksPos().x) && (gridOption._y = this.axises.x.beginY) && this.axises.y && (gridOption.height = this.axises.y.axisLength)
-            this.grid = new Grid(gridOption, this.raphael);
+            this.grid = new Grid(gridOption, this.stage);
         },
         _initEvents:function () {
 
@@ -230,7 +227,7 @@
                 _labels = {},
                 isObj = false
             this.series.forEach(function (item) {
-                if (item.name && typeof item.data == 'number') {
+                if (item.name && _DPChart.isNumber(item.data)) {
                     labels.push(item.name)
                 }
                 else {
@@ -437,7 +434,7 @@
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
                 names.push(d.name);
-            } else if (typeof d.data === 'number') {
+            } else if (_DPChart.isNumber(d.data) ) {
                 names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
             } else {
                 names.push('');

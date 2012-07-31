@@ -1,3 +1,12 @@
+test("common", function(){
+	ok(DPChart.isObject({}));
+	ok(!DPChart.isObject([]));
+	ok(!DPChart.isObject(function(){}));
+	ok(DPChart.isArray([]));
+	ok(!DPChart.isArray({}));
+	ok(!DPChart.isArray(function(){}));
+});
+
 test("DPChart", function(){
 	ok(true, DPChart.getTickSize(5, 0.1, 0.4));
 	ok(true, DPChart.getTickSize(3, 0.1, 0.4));

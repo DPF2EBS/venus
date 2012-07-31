@@ -7,27 +7,26 @@
  * @augments Kinetic.Shape
  * @param {Object} config
  */
-
 Kinetic.Sector = Kinetic.Shape.extend({
-    init: function(config) {
+    init: function (config) {
         this.setDefaultAttrs({
-            radius:20,
-            startAngle:0,
-            endAngle:180,
-            counterclockwise:false
+            radius: 20,
+            startAngle: 0,
+            endAngle: 180,
+            counterclockwise: false
         });
 
         this.shapeType = "Sector";
 
-        config.drawFunc = function(context) {
+        config.drawFunc = function (context) {
             var radius = this.getRadius(),
                 startAngle = this.getStartAngle(),
                 endAngle = this.getEndAngle(),
                 counterclockwise = this.getCounterclockwise(),
-                PI=Math.PI;
+                PI = Math.PI;
             context.beginPath();
             context.save();
-            context.arc(0, 0, radius, startAngle * PI / 180 , endAngle * PI / 180, counterclockwise);
+            context.arc(0, 0, radius, startAngle * PI / 180, endAngle * PI / 180, counterclockwise);
             context.lineTo(0, 0);
             context.restore();
             context.closePath();
@@ -43,41 +42,42 @@ Kinetic.Sector = Kinetic.Shape.extend({
 Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngle", "counterclockwise"]);
 
 (function () {
-	var colors;
+    var colors;
     DPChart.addChart('pie', {
-        draw:function () {
+        draw: function () {
 
 
             //排序
-            var series = this.series.getSeries().sort(function(a,b){
+            var series = this.series.getSeries().sort(function (a, b) {
                 return a.data - b.data;
             });
             var colors;
 
             var layer = this.layer,
-                stage=this.stage;
+                stage = this.stage;
 
-            var options=this.options,
+            var options = this.options,
                 pieOptions;
 
             pieOptions = DPChart.mix({
-                easing:false,
-                radius:50
+                easing: false,
+                radius: 50
             }, options.pie);
 
             //计算饼图的圆心
-            var centerX=this.options.width/2;
-            var centerY=this.options.height/2;
+            var centerX = this.options.width / 2;
+            var centerY = this.options.height / 2;
 
-            var sum=0,path,data;
+            var sum = 0,
+                path, data;
             for (var i = 0, L = series.length; i < L; i++) {
                 data = series[i];
-                sum+=data.data;
+                sum += data.data;
             }
 
             for (var i = 0, L = series.length; i < L; i++) {
                 data = series[i];
-                data.percent=data.data/sum;
+                data.percent = data.data / sum;
             }
             var startAngle = 0,
                 endAngle = 0,
@@ -88,48 +88,45 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                 data = series[i];
                 endAngle = startAngle + 360 * data.percent;
 
-                (function(startAngle,endAngle){
+                (function (startAngle, endAngle) {
                     sector = new Kinetic.Sector({
-                        x:centerX,
-                        y:centerY,
-                        radius:(pieOptions.easing ? 0 : pieOptions.radius),
-                        startAngle:(pieOptions.easing ? 0 : pieOptions.radius),
-                        endAngle:(pieOptions.easing ? 0 : pieOptions.radius),
-                        fill:data.color
+                        x: centerX,
+                        y: centerY,
+                        radius: (pieOptions.easing ? 0 : pieOptions.radius),
+                        startAngle: (pieOptions.easing ? 0 : pieOptions.radius),
+                        endAngle: (pieOptions.easing ? 0 : pieOptions.radius),
+                        fill: data.color
                     });
                     layer.add(sector);
 
-                    if(!!pieOptions.easing){
+                    if ( !! pieOptions.easing) {
                         sector.transitionTo({
-                            radius:options.pie.radius,
-                            duration:.5,
-                            startAngle:startAngle,
-                            endAngle:endAngle,
-                            easing:"ease-out"
-                        });    
+                            radius: options.pie.radius,
+                            duration: .5,
+                            startAngle: startAngle,
+                            endAngle: endAngle,
+                            easing: "ease-out"
+                        });
                     }
 
 
-                    sector.on("mouseover", function(){
+                    sector.on("mouseover", function () {
                         this.transitionTo({
-                            radius: options.pie.radius*1.1,
+                            radius: options.pie.radius * 1.1,
                             duration: 0.2,
-                            easing:"ease-in"
-                          });
+                            easing: "ease-in"
+                        });
                     });
-                    sector.on("mouseout",function(){
-                            this.transitionTo({
+                    sector.on("mouseout", function () {
+                        this.transitionTo({
                             radius: options.pie.radius,
                             duration: 0.2,
-                            easing:"ease-out"
-                          });
+                            easing: "ease-out"
+                        });
                     });
 
-                })(startAngle,endAngle);
+                })(startAngle, endAngle);
 
-                
-                
-                
                 startAngle = endAngle;
 
             }
