@@ -1,4 +1,4 @@
-(function () {
+;(function () {
     DPChart.addChart('bar', {
         draw:function () {
             var series = this.series.getSeries(),
@@ -7,7 +7,7 @@
                 xTickWidth = xAxis.options.tickWidth,
                 yAxis = this.axises.y,
                 beginY = yAxis.beginY,
-                paper = this.raphael,
+                paper = this.stage,
                 barOptions = DPChart.mix({
                     radius:0,
                     beginAnimate:true,
@@ -69,7 +69,7 @@
             // console.log('data series elements count: ', series.length);
 
             if (series.length) {
-                if (typeof series[0].data === "number") {
+                if (DPChart.isNumber(series[0].data ) ) {
                     series.forEach(function (d, i) {
                         elements[i] = drawBar(xAxis.getX(i) - xTickWidth / 4, yAxis.getY(i), xTickWidth / 2, beginY - yAxis.getY(i), colors[i], d.data);
                     });

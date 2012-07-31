@@ -29,7 +29,7 @@
 				radius,
 				total=0,
 				elements=[],
-				paper=this.raphael;
+				paper=this.stage;
 			
 			/**calculate summation of all data*/
 			for (var i = 0, L = series.length; i < L; i++) {
