@@ -49,7 +49,7 @@
                     newRect.on('mouseover', function(evt) {
 
 
-                    newLayer = DPChart.tooltips(opt.x + opt.width/2, opt.y, points[i].val, 'top');
+                    newLayer = DPChart.tooltips(opt.x + opt.width/2, y, points[i].val, 'top');
 
                     stage.add(newLayer);
                     
