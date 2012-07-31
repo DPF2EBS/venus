@@ -93,6 +93,10 @@
     DPChart.isNumber = function(nub){
         return __type(nub, "number");
     }
+	
+	DPChart.isFunction=function(func){
+		return __type(func,"function");
+	}
 
     this.DPChart = DPChart;
 

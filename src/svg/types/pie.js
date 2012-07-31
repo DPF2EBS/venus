@@ -86,7 +86,7 @@
 		if(!opt.animation){
 			sector=Math.abs(angleOffset)===360?opt.paper.circle(opt.x,opt.y,opt.r):opt.paper.path(sectorPath.path.join(' '));
 		}else{
-			sector=opt.paper.path().attr({arc: [opt.x,opt.y,opt.r,opt.startAngle,opt.startAngle,opt.dir]}).animate({arc: [opt.x,opt.y,opt.r,opt.startAngle,opt.endAngle,opt.dir]}, opt.time||100, opt.callback);
+			sector=opt.paper.path().attr({arc: [opt.x,opt.y,opt.r,opt.hollow,opt.startAngle,opt.startAngle,opt.dir]}).animate({arc: [opt.x,opt.y,opt.r,opt.hollow,opt.startAngle,opt.endAngle,opt.dir]}, opt.time||100, opt.callback);
 		}
 		
 		opt.color&&sector.attr(strokeOpt);
@@ -134,8 +134,8 @@
 				endAngle;
 				
 			/**add coustomer attribute*/
-			paper.customAttributes.arc = function (x,y,r,startAngle,endAngle,dir){
-				return {path: getSectorPath({x:x,y:y,r:r,startAngle:startAngle,endAngle:endAngle,dir:dir}).path};				
+			paper.customAttributes.arc = function (x,y,r,hollow,startAngle,endAngle,dir){
+				return {path: getSectorPath({x:x,y:y,r:r,hollow:hollow,startAngle:startAngle,endAngle:endAngle,dir:dir}).path};				
             };
 			
 			/**calculate summation of all data*/
@@ -188,9 +188,6 @@
 					});
 				});
 			}
-			
-			/**draw pie cover for animation*/
-			// paper.path().attr({arc: [options.x, options.y ,options.radius, 0, 359],'fill':'#fff','stroke':'#fff','stroke-width':2}).animate({arc: [options.x, options.y ,options.radius, 0, 0, ]}, 900, "<",function(){this.remove()});
 			
 			/**
 			*bind legends event actions
