@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<header class="header">
+    	<section class="header-cont">
+        	<div class="header-logo">
+            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
+            </div>
+            <nav class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
+                    <li><a href="svgdemo.html">SVG Demo</a></li>
+                    <li><a href="ours.html">关于我们</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+    <div class="main">
+    	<section class="main-cont">
+        	<h2> »Raphaël简介</h2>
+           	<section class="main-profile">
+            	<p>Raphaël is a small JavaScript library that should simplify your work with vector graphics on the web. If you want to create your own specific chart or image crop and rotate widget, for example, you can achieve it simply and easily with this library.
+Raphaël ['ræfeɪəl] uses the SVG W3C Recommendation and VML as a base for creating graphics. This means every graphical object you create is also a DOM object, so you can attach JavaScript event handlers or modify them later. Raphaël’s goal is to provide an adapter that will make drawing vector art compatible cross-browser and easy.
+Raphaël currently supports Firefox 3.0+, Safari 3.0+, Chrome 5.0+, Opera 9.5+ and Internet Explorer 6.0+.<p>
+            </section>
+            <h2> »Raphaël官方展示的Demo</h2>
+            <div id="holder" style="height:400px;width:400px;margin-left:260px;"></div>
+            <h2> »Venus Demos(based on Raphaël)</h2>
+                <section class="main-item">
+                    <p>（一）Venus svg饼图展示如下：<p>
+                </section>
+                <div id="chart_container" style="height: 750px; width:1000px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+                <section class="main-item">
+                    <p>（一）Venus svg饼图初始化代码块如下：<p>
+                </section>
+            	<textarea name="code" class="js" rows="50" cols="100">
+                // 生成饼图
+                var container = document.getElementById('chart_container'),
+                    bingData = [25,30,40,10,60,15,9,20,25,33],
+                    bingOptions = {
+                        pie:{
+                            /*x:220,
+                            y:220,
+                            radius:90*/
+                        }
+                    };
+                new DPChart(container, bingData, bingOptions);
+                </textarea>
+            <section class="main-item">
+                <p>（二）Venus svg柱状图展示如下：<p>
+            </section>
+            <div id="chart_container1" style="height: 800px; width:960px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+            <section class="main-item">
+                <p>（二）Venus svg柱状图初始化代码如下：<p>
+            </section>
+            <textarea name="code" class="js" rows="50" cols="100">
+                // 柱状图
+                var container = document.getElementById('chart_container1'),
+                    barData = [],
+                    barOptions = {
+                        axis:{
+                            x:{
+                                tickWidth:150,
+                                ticks:['Q1', 'Q2', 'Q3', 'Q4']
+                            },
+                            y:{
+                                min:0,
+                                max:100,
+                                tickWidth:65,
+                                tickSize:10
+                            }
+                        },
+                        bar:{
+                            radius:2
+                        },
+                        grid:{
+                            enableRow:true,
+                            enableColumn:true
+                        },
+                        legend:{
+                            direction:'horizontal',
+                            position:['center','bottom']
+                        }
+
+                    };
+                for (var i = 0, l = 3; i < l; i++) {
+                    var arr = {}
+                    barOptions.axis.x.ticks.forEach(function (month) {
+                        arr[month] = parseInt(Math.random() * 100)
+                    })
+                    barData.push({name:i, data:arr})
+                }
+                new DPChart(container, barData, barOptions);
+            </textarea>
+
+            <section class="main-item">
+                <p>（三）Venus svg线图（直线或曲线）展示如下：<p>
+            </section>
+            <div id="chart_container2" style="height: 400px; width:960px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+            <section class="main-item">
+                <p>（三）Venus svg线图（直线或曲线）初始化代码如下：<p>
+            </section>
+            <textarea name="code" class="js" rows="50" cols="100">
+            // 线图
+            var container2 = document.getElementById('chart_container2'),
+                lineData = [],
+                lineOptions = {
+                    axis:{
+                        x:{
+                            tickWidth:50,
+                            ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        },
+                        y:{
+                            min:0,
+                            max:100,
+                            tickWidth:20,
+                            tickSize:10
+                        }
+                    },
+                    line:{
+                        smooth:true
+                    },
+                    grid:{
+                        enableColumn:true
+                    }
+                };
+            for (var i = 0, l = 5; i < l; i++) {
+                var arr = []
+                lineData.push({name:i, data:arr})
+                for (var j = 0; j < 12; j++) {
+                    arr.push(parseInt(Math.random() * 100))
+                }
+
+            }
+            var line = new DPChart(container2, lineData, lineOptions);
+            </textarea>
+
+            <section class="main-item">
+                <p>（四）Venus svg点图展示如下：<p>
+            </section>
+            <div id="chart_container3" style="height: 750px; width:960px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+            
+            <section class="main-item">
+                <p>（四）Venus svg点图初始化代码如下：<p>
+            </section>
+            <textarea name="code" class="js" rows="50" cols="100">
+            // 点图
+            var container3 = document.getElementById('chart_container3'),
+                dotData = [25,25,40,10,5,10,22,33],
+                dotOptions = {
+                    axis:{
+                        x:{
+                            max:400,
+                            ticks:['FF', 'IE', 'Chrome', 'other'],
+                            tickWidth:200
+
+                        },
+                        y:{
+                            min:0,
+                            max:100,
+                            tickWidth:60,
+                            tickSize:10
+                        }
+                    }, dot:{}
+                };
+            for (var i = 0, l = 4; i < l; i++) {
+                var arr = []
+                dotOptions.axis.x.ticks.forEach(function (month) {
+                    //arr[month] = parseInt(Math.random() * 100)
+                    arr.push(parseInt(Math.random() * 40+20))
+                })
+                dotData.push({name:options.axis.x.ticks[i], data:arr})
+            }
+            new DPChart(container3, dotData, dotOptions);
+            </textarea>
+            <section class="main-item">
+                <p>以上是svg的实例，会有更多精彩的demo提供出来，还是有所期待吧~~<p>
+            </section>
+        </section>
+    </div>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>
+
+    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../src/svg/types/pie.js"></script>
+    <script type="text/javascript" src="../src/svg/types/bar.js"></script>
+    <script type="text/javascript" src="../src/svg/types/line.js"></script>
+    <script type="text/javascript" src="../src/svg/types/dot.js"></script>
+
+    <script type="text/javascript" src="Scripts/svgdemo.js"></script>
+    
+    <script class="javascript" src="Scripts/shCore.js"></script>
+    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
+    <script class="javascript" src="Scripts/shBrushCss.js"></script>
+
+    <script class="javascript">
+    	dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+</body>
+</html>

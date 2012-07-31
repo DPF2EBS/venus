@@ -33,11 +33,20 @@
                 circle=new Kinetic.Circle({
                     x:x,
                     y:y,
-                    radius:data[2] / max * scale,
+                    radius:0,
                     fill:DPChart.getColors(data[2])[data[2]-1]
                 });
 
                 layer.add(circle);
+
+                circle.transitionTo({
+                    radius:{
+                        x:data[2] / max * scale,
+                        y:data[2] / max * scale
+                    },
+                    duration:1,
+                    easing:"elastic-ease-out"
+                });
 
                 circle.on("mouseover", function(){
                     var radius= this.getRadius();

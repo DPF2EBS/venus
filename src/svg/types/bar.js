@@ -9,24 +9,35 @@
                 beginY = yAxis.beginY,
                 paper = this.raphael,
                 barOptions = DPChart.mix({
-                    radius:0
+                    radius:0,
+                    beginAnimate:true,
+                    opacity:0.5
                 }, this.options.bar),
                 elements = [],
                 self = this
 
             function drawBar(x, y, width, height, color, value) {
-                return paper.rect(x, y, width, height, barOptions.radius).attr({
+                var bar
+                if (barOptions.beginAnimate) {
+                    bar = paper.rect(x, yAxis.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500)
+                } else {
+                    bar = paper.rect(x, y, width, height, barOptions.radius)
+                }
+
+                bar.attr({
                     'fill':color,
-                    'stroke-width':0
+                    'stroke-width':0,
+                    'opacity':barOptions.opacity ||1
                 }).hover(function (e) {
                         this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), value);
                     }, function () {
                         this.toolTipHide()
                     })
+                return bar;
             }
 
             function bindLegendEvents() {
-             self.legend &&  self.legend.on('click', (function () {
+                self.legend && self.legend.on('click', (function () {
                     var arr = new Array(series.length);
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {

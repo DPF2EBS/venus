@@ -40,11 +40,13 @@
 
 .dp-highlighter ol
 {
+	font-family: Courier, "Courier New", "Consolas", mono, serif;
 	list-style: decimal; /* for ie */
 	background-color: #fff;
 	margin: 0px 0px 1px 45px !important; /* 1px bottom margin seems to fix occasional Firefox scrolling */
 	padding: 0px;
 	color: #5C5C5C;
+	font-size:14px;
 }
 
 .dp-highlighter.nogutter ol,
@@ -85,13 +87,14 @@
 {
 	padding-bottom: 5px;
 }
-
+.dp-highlighter ol li {
+	height: 24px;
+	line-height:24px;
+}
 .dp-highlighter ol li.alt
 {
 	background-color: #FFF;
 	color: inherit;
-	height: 20px;
-	line-height:20px;
 }
 .dp-highlighter ol li span
 {

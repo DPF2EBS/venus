@@ -57,7 +57,13 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var layer = this.layer,
                 stage=this.stage;
 
-            var options=this.options;
+            var options=this.options,
+                pieOptions;
+
+            pieOptions = DPChart.mix({
+                easing:false,
+                radius:50
+            }, options.pie);
 
             //计算饼图的圆心
             var centerX=this.options.width/2;
@@ -78,32 +84,52 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                 sector;
 
             for (var i = 0, L = series.length; i < L; i++) {
+
                 data = series[i];
                 endAngle = startAngle + 360 * data.percent;
-                sector = new Kinetic.Sector({
-                    x:centerX,
-                    y:centerY,
-                    radius:options.pie.radius,
-                    startAngle:startAngle,
-                    endAngle:endAngle,
-                    fill:data.color
-                });
-                sector.on("mouseover", function(){
-                    this.transitionTo({
-                        radius: options.pie.radius*1.1,
-                        duration: 0.2,
-                        easing:"ease-in"
-                      });
-                });
-                sector.on("mouseout",function(){
-                        this.transitionTo({
-                        radius: options.pie.radius,
-                        duration: 0.2,
-                        easing:"ease-out"
-                      });
-                });
 
-                layer.add(sector);
+                (function(startAngle,endAngle){
+                    sector = new Kinetic.Sector({
+                        x:centerX,
+                        y:centerY,
+                        radius:(pieOptions.easing ? 0 : pieOptions.radius),
+                        startAngle:(pieOptions.easing ? 0 : pieOptions.radius),
+                        endAngle:(pieOptions.easing ? 0 : pieOptions.radius),
+                        fill:data.color
+                    });
+                    layer.add(sector);
+
+                    if(!!pieOptions.easing){
+                        sector.transitionTo({
+                            radius:options.pie.radius,
+                            duration:.5,
+                            startAngle:startAngle,
+                            endAngle:endAngle,
+                            easing:"ease-out"
+                        });    
+                    }
+
+
+                    sector.on("mouseover", function(){
+                        this.transitionTo({
+                            radius: options.pie.radius*1.1,
+                            duration: 0.2,
+                            easing:"ease-in"
+                          });
+                    });
+                    sector.on("mouseout",function(){
+                            this.transitionTo({
+                            radius: options.pie.radius,
+                            duration: 0.2,
+                            easing:"ease-out"
+                          });
+                    });
+
+                })(startAngle,endAngle);
+
+                
+                
+                
                 startAngle = endAngle;
 
             }

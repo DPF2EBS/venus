@@ -22,32 +22,64 @@
                 });
             });
             points.forEach(function(d, i) {
+                var y;
+                y=points[i].y;
                 options = {
                     x:points[i].x - xAxis.options.tickWidth * 0.618/2,
-                    y:points[i].y,
+                    y:xAxis.options.beginY,
                     width:xAxis.options.tickWidth * 0.618,
                     height:yAxis.getY(points[i].val),
                     fill:colors[i]
                 };
-                var newRect = new Kinetic.Rect(options),
-                    newLayer;
-                (function(opt) {
+                
+                (function(opt,y) {
+                    var height=opt.height;
+                    opt.height=0;
+                    var newRect = new Kinetic.Rect(opt),
+                        newLayer;
+
+                    layer.add(newRect);
+
+                    newRect.transitionTo({
+                        height:height,
+                        y:y,
+                        duration:0.5
+                    });
                     
                     newRect.on('mouseover', function(evt) {
 
-                    newLayer = DPChart.tooltips(opt.x + opt.width/2, opt.y, points[i].val, 'top');
+
+                    newLayer = DPChart.tooltips(opt.x + opt.width/2, y, points[i].val, 'top');
 
                     stage.add(newLayer);
+                    
+                    this.setStrokeWidth(2);
+                    this.setStroke("#FFF");
+
+                    this.setShadow({
+                        color:"#000",
+                        blur: 8,
+                        alpha: 0.4,
+                        offset: [2, -2]
+                    });
 
                     });
                     newRect.on('mouseout', function(evt) {
                         
                         DPChart.toolTipHide(newLayer);
+                        this.transitionTo({
+                            alpha: 1,
+                            duration: 0.2
+                        });
+                        this.setStrokeWidth(0);
+                        this.setStroke("");
+                        this.setShadow(null);
 
                     });
-                })(options);
+                    
+                })(options,y);
                 
-                layer.add(newRect);
+                
 
             });
         }
