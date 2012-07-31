@@ -1,4 +1,4 @@
-(function () {	
+(function () {
 	function DotChart(paper, x, y, r, color, d) {
 		var dot;
 
@@ -33,15 +33,15 @@
 			
 			/**calculate summation of all data*/
 			for (var i = 0, L = series.length; i < L; i++) {
-				if(DPChart.type(series[i].data,'Array')){
+				if(DPChart.isArray(series[i].data)){
 					series[i].data.forEach(function(item){
 						total+=item;
 					});
-				}else if(DPChart.type(series[i].data,'Object')){
+				}else if(DPChart.isObject(series[i].data)){
 					for(var key in series[i].data){
 						total+=series[i].data[key];
 					}
-				}else if(DPChart.type(series[i].data,'Number')){
+				}else if(DPChart.isNumber(series[i].data)){
 					total+=series[i].data;
 				}
 			}
@@ -49,7 +49,7 @@
 			
 			for (var i = 0, L = series.length; i < L; i++) {
 				elements.push([]);
-				if(DPChart.type(series[i].data,'Array')){
+				if(DPChart.isArray(series[i].data)){
 					series[i].data.forEach(function(item,j){
 						data = item;
 						posX = xAxis.getX(i,j);
@@ -58,7 +58,7 @@
 
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
 					});
-				}else if(DPChart.type(series[i].data,'Object')){
+				}else if(DPChart.isObject(series[i].data)){
 					var j=0;
 					for(var key in series[i].data){
 						data =series[i].data[key];
@@ -69,7 +69,7 @@
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
 						j++;
 					}
-				}else if(DPChart.type(series[i].data,'Number')){
+				}else if(DPChart.isNumber(series[i].data)){
 					data=series[i].data;
 					posX = xAxis.getX(i);
 					posY = yAxis.getY(i);

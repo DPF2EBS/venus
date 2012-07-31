@@ -22,31 +22,39 @@
 	
 	<script type="text/javascript" src="../../src/svg/types/pie.js"></script>
 	
-	<script type="text/javascript">
-	var dt=document.getElementsByTagName('dt');
-	var dd=document.getElementsByTagName('dd');
-	
-	</script>
-	
 	<dl>
 		<dt>[Pie]</dt>
-		<dd style="height:130px;">
-			<script type="text/javascript">
-		var container = dd[0],
-            data = [25,25,40],
-            options = {
-				legend:{},
-				pie:{}
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
+		<dd style="height:130px;"></dd>
 		
-		<dd style="height: 130px;">
-		<script type="text/javascript">
-		var container = dd[1],
-            data = [25,25,40,10,8],
-            options = {
+		<dd style="height: 130px;"></dd>
+		
+		<dd style="height: 130px;"></dd>
+		
+		<dd style="height: 130px;"></dd>
+		
+		<dd style="height: 130px;"></dd>
+		
+		<dd style="height: 130px;"></dd>
+	</dl>
+	
+	<script type="text/javascript">
+	var dt=document.getElementsByTagName('dt'),
+		dd=document.getElementsByTagName('dd'),
+		data=[], opt=[];
+
+		data.push([25,25,40]);
+		opt.push({
+			legend:{
+                //position:['left','top']
+			},
+			pie:{
+				dir:-1,
+				rotate:90
+			}
+        });
+
+		data.push([25,25,40,10,8]);
+        opt.push({
 				axis:{
                     x:{
 						enable:false,
@@ -79,16 +87,10 @@
 					y:220,
 					radius:90*/
                 }
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
-		
-		<dd style="height: 130px;">
-		<script type="text/javascript">
-		var container = dd[2],
-            data = [25,25,40,10,8],
-            options = {
+            });
+			
+		data.push([25,25,40,10,8]),
+        opt.push({
 				axis:{
                     x:{
 						enable:false,
@@ -121,16 +123,10 @@
 					y:220,
 					radius:90*/
                 }
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
-		
-		<dd style="height: 130px;">
-		<script type="text/javascript">
-		var container = dd[3],
-            data = [25,25,40,10,8],
-            options = {
+            });
+			
+		data.push([25,25,40,10,8]);
+        opt.push({
 				axis:{
                     x:{
 						enable:false,
@@ -164,16 +160,10 @@
 					y:220,
 					radius:90*/
                 }
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
-		
-		<dd style="height: 130px;">
-		<script type="text/javascript">
-		var container = dd[4],
-            data = [25,25,40,10,8,22,9],
-            options = {
+            });
+			
+		data.push([25,25,40,10,8,22,9]);
+        opt.push({
 				pie:{
 					duration:8000,
 					animation:'simultaneous', //[true, false, 'simultaneous'],
@@ -184,30 +174,26 @@
 						//'fill':'#9d9d9d'
 					}
                 }
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
-		
-		<dd style="height: 130px;">
-		<script type="text/javascript">
-		var container = dd[5],
-            data = [25,25,40,10,8,22,9],
-            options = {
+            });
+			
+		data.push([25,25,40,10,8,22,9]);
+        opt.push({
 				pie:{
 					//duration:8000,
 					animation:true, //[true, false, 'simultaneous'],
-					hollow:20,
+					hollow:35,
+					dir:-1,
 					stroke:{
 						'stroke-width':3,
 						'stroke':'#dfdfdf',
 						'fill':'#2f81bf'
 					}
                 }
-            }
-		var pie = new DPChart(container, data, options);
-		</script>
-		</dd>
-	</dl>
+            });
+			
+		data.forEach(function(d,i){new DPChart(dd[i], d, opt[i]);});
+		
+		//new DPChart(dd[0], data[0], opt[0]);
+	</script>
 </body>
 </html>
