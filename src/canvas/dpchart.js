@@ -556,11 +556,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
         }
     }
-
+        var tooltipslayer = null;
         function tooltips(x, y, texts, side) {
-
-            var tooltipslayer = new Kinetic.Layer();
-
+            if(tooltipslayer == null) {
+                tooltipslayer = new Kinetic.Layer();
+            } else {
+                tooltipslayer.clear();
+            }
             (side == undefined) && (side = 'top');
 
             (side == 'top') && (y = y - 10);
