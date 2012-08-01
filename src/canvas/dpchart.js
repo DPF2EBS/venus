@@ -183,6 +183,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 }
             }
             this.stage.add(this.layer);
+            this.percentLayer && this.stage.add(this.percentLayer);
         },
         update: function () {
 
@@ -422,7 +423,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         };
         options.legend = mix(defaultOptions, options.legend);
 
-        var colors = ["orangered", "skyblue", "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
+        var colors = [ "skyblue","orangered", "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
 
         var legendOptions = options.legend,
             legendWidth = legendOptions.width,
@@ -472,6 +473,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         var seriesLen = series.series.length,
             labelTexts = [],
             lineHeight = Math.ceil(legendHeight / seriesLen);
+
+            series.series = series.series.sort(function(a,b){return b.data - a.data});
         for (var ii = 0; ii < seriesLen; ii++) {
             labelTexts.push(series.series[ii].name);
         }
@@ -487,19 +490,19 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             } else if (showType == "Rect") {
                 itype = new Kinetic[showType]({
                     x: pos.x + 5,
-                    y: pos.y + jj * lineHeight,
-                    width: 15,
-                    height: 15,
+                    y: pos.y + jj * lineHeight+5,
+                    width: 10,
+                    height: 10,
                     fill: colors[jj]
                 })
             }
             var itext = new Kinetic.Text({
-                x: pos.x + 12 + 5,
+                x: pos.x + 12 + 5 + 5,
                 y: pos.y + (jj - 1) * lineHeight + lineHeight + 5,
                 text: labelTexts[jj] + "",
-                fontSize: 12,
+                fontSize: 10,
                 fontFamily: "Curier",
-                textFill: "#666"
+                textFill: "#000"
             });
             layer.add(itype);
             layer.add(itext);
@@ -659,7 +662,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
             var path = new Kinetic.Path({
                 data: pathString,
-                stroke: '#FF7018',
+                stroke: '#EFEFEF',
                 scale: 1,
                 fill: '#FFFFFF',
                 draggable: true,
