@@ -49,9 +49,9 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
 
             //排序
             var series = this.series.getSeries().sort(function (a, b) {
-                return a.data - b.data;
+                return b.data - a.data ;
             });
-            var colors = ["orangered", "skyblue", "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
+            var colors = ["skyblue", "orangered",  "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
 
             var layer = this.layer,
                 stage = this.stage;
