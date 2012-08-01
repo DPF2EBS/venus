@@ -160,16 +160,18 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-in"
                         });
-                        if(tipAngle > 0 && tipAngle < 45) { newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'right');}
+                        var direction = '';
+                        if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
                         if(tipAngle > 315 && tipAngle < 360) {
-                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'right');
+                            direction = 'right';
                         } else if(tipAngle >= 45 && tipAngle < 135) {
-                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'bottom');
+                            direction = 'bottom';
                         } else if(tipAngle >= 135 && tipAngle < 225) {
-                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'left');
+                            direction = 'left';
                         } else {
-                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'top');
+                            direction = 'top';
                         }
+                        newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
                         stage.add(newLayer);
                     });
                     sector.on("mouseout", function () {
