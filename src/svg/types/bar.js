@@ -78,7 +78,7 @@
                         elements[i] = paper.set();
                         d.data.forEach(function (value, j) {
                             var p = getPositions(i, j)
-                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], value[j]));
+                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], value));
                         });
                     })
                 } else {

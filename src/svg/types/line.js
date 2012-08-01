@@ -220,12 +220,12 @@
                             arr[i] = false;
                             elements[i].line.hide();
                             elements[i].dots.hide();
-                            elements[i].area.hide();
+                            elements[i].area && elements[i].area.hide();
                         } else {
                             arr[i] = true;
                             elements[i].line.show();
                             elements[i].dots.show();
-                            elements[i].area.show();
+                            elements[i].area && elements[i].area.show();
                         }
                     }
                 })())

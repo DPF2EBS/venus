@@ -270,7 +270,9 @@
                 pop:0, // 前面空掉几个刻度的位置
                 _svgWidth:0,
                 _svgHeight:0,
-                enable:true
+                labelRotate:0,
+                enable:true,
+                fontSize:12
             }
             , axisElement
             , labelElements = []
@@ -308,7 +310,13 @@
             if (i !== 0) {
                 pathString += (  "h" + opt.tickWidth + "v" + tickHeight + "v" + -tickHeight );
             }
-            labelElements[i] = paper.text((beginX + (i + opt.pop) * opt.tickWidth), beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1), opt.ticks[i]).rotate(rotate, beginX, beginY);
+            labelElements[i] = paper.text((beginX + (i + opt.pop) * opt.tickWidth), beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1), opt.ticks[i]).rotate(rotate, beginX, beginY).attr({
+                'font-size':opt.fontSize
+            });
+            if(opt.labelRotate){
+                var bbox = labelElements[i].getBBox()
+                labelElements[i].rotate(opt.labelRotate).translate(bbox.width/2,0)
+            }
         }
 
         axisElement = this.axisElement = paper.path(pathString);
@@ -402,6 +410,7 @@
         var defaultOption = {
                 position:['right', 'top'],
                 format:'{name}',
+                fontSize:12,
                 colors:[],
                 direction:'vertical',
                 itemType:'rect'// circle
@@ -467,7 +476,9 @@
                     });
                     break;
             }
-            text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i])
+            text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
+                'font-size':opt.fontSize
+            })
             textWidth = text.getBBox().width;
             text.translate(textWidth / 2, 0);
             isVertical || (startX += (width + padding + span + textWidth))
