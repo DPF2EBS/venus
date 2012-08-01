@@ -183,6 +183,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 }
             }
             this.stage.add(this.layer);
+            this.percentLayer && this.stage.add(this.percentLayer);
         },
         update: function () {
 

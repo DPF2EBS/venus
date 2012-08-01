@@ -56,6 +56,8 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var layer = this.layer,
                 stage = this.stage;
 
+            var percentLayer = this.percentLayer = new Kinetic.Layer();
+
             var options = this.options,
                 pieOptions;
 
@@ -81,14 +83,22 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             }
             var startAngle = 0,
                 endAngle = 0,
-                sector;
+                sector,
+                text;
 
             for (var i = 0, L = series.length; i < L; i++) {
 
                 data = series[i];
                 endAngle = startAngle + 360 * data.percent;
 
-                (function (startAngle, endAngle) {
+                (function (startAngle, endAngle, percent) {
+
+                    //添加扇形
+                    var textAngle = (startAngle + endAngle)/2,
+                        textRadius = 0.6 * pieOptions.radius;
+
+                    
+
                     sector = new Kinetic.Sector({
                         x: centerX,
                         y: centerY,
@@ -105,6 +115,27 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         }
                     });
                     layer.add(sector);
+
+                    //添加扇形上的文字
+                    if(percent > 0.14){
+                        console.log(percent);
+                        console.log(startAngle, endAngle, textAngle);
+                        text = new Kinetic.Text({
+                            text:(percent*100).toFixed(2),
+                            x:centerX + Math.cos(textAngle * Math.PI /180) * textRadius,
+                            y:centerY + Math.sin(textAngle * Math.PI /180) * textRadius,
+                            textFill:"black",
+                            align:"center",
+                            width:30,
+                            offset:{
+                                x: 12
+                            }
+                        });
+                        console.log(text);
+                        percentLayer.add(text);
+                    }
+
+
 
                     if ( !! pieOptions.easing) {
                         sector.transitionTo({
@@ -132,7 +163,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         });
                     });
 
-                })(startAngle, endAngle);
+                })(startAngle, endAngle, data.data);
 
                 startAngle = endAngle;
 
