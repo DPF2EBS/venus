@@ -84,7 +84,10 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var startAngle = 0,
                 endAngle = 0,
                 sector,
-                text;
+                text,
+                tip, sumAngle = 0,
+                newLayer,
+                stage = this.stage;
 
             for (var i = 0, L = series.length; i < L; i++) {
 
@@ -95,10 +98,12 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
 
                     //添加扇形
                     var textAngle = (startAngle + endAngle)/2,
-                        textRadius = 0.6 * pieOptions.radius;
+                        thisAngle = endAngle - startAngle,
+                        textRadius = 0.6 * pieOptions.radius,
+                        tipRadius = pieOptions.radius;
 
-                    
-
+                    sumAngle += thisAngle;
+                    var tipAngle = sumAngle - thisAngle/2;
                     sector = new Kinetic.Sector({
                         x: centerX,
                         y: centerY,
@@ -115,11 +120,15 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         }
                     });
                     layer.add(sector);
+                    var tipX = centerX + Math.cos(tipAngle * Math.PI /180) * tipRadius;
+                    var tipY = centerY + Math.sin(tipAngle * Math.PI /180) * tipRadius;
+                    
+                    tipAngle = parseInt(tipAngle);
+
+                    
 
                     //添加扇形上的文字
                     if(percent > 0.14){
-                        console.log(percent);
-                        console.log(startAngle, endAngle, textAngle);
                         text = new Kinetic.Text({
                             text:(percent*100).toFixed(2),
                             x:centerX + Math.cos(textAngle * Math.PI /180) * textRadius,
@@ -131,11 +140,8 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                                 x: 12
                             }
                         });
-                        console.log(text);
                         percentLayer.add(text);
                     }
-
-
 
                     if ( !! pieOptions.easing) {
                         sector.transitionTo({
@@ -154,6 +160,17 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-in"
                         });
+                        if(tipAngle > 0 && tipAngle < 45) { newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'right');}
+                        if(tipAngle > 315 && tipAngle < 360) {
+                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'right');
+                        } else if(tipAngle >= 45 && tipAngle < 135) {
+                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'bottom');
+                        } else if(tipAngle >= 135 && tipAngle < 225) {
+                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'left');
+                        } else {
+                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), 'top');
+                        }
+                        stage.add(newLayer);
                     });
                     sector.on("mouseout", function () {
                         this.transitionTo({
@@ -161,6 +178,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-out"
                         });
+                        DPChart.toolTipHide(newLayer);
                     });
 
                 })(startAngle, endAngle, data.data);

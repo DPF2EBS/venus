@@ -662,7 +662,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
             var path = new Kinetic.Path({
                 data: pathString,
-                stroke: '#FF7018',
+                stroke: '#EFEFEF',
                 scale: 1,
                 fill: '#FFFFFF',
                 draggable: true,
