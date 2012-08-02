@@ -18,7 +18,8 @@
                     <li><a href="api.html">API文档</a></li>
                     <li><a href="canvasdemo.html">Canvas Demo</a></li>
                     <li><a href="svgdemo.html">SVG Demo</a></li>
-                    <li><a href="ours.html">关于我们</a></li>
+					<li><a href="svgcase.html">svg案例</a></li>
+                    <li><a href="canvascase.html">canvas案例</a></li>
                 </ul>
             </nav>
         </section>
@@ -27,80 +28,230 @@
     	<section class="main-cont">
         	<h2>API大概如下：</h2>
 			<textarea name="code" class="js" rows="50" cols="100">
-				function DPChart(container, data, options) {
-					if (!container || !container.nodeType) {
-						return;
-					}
-					this.container = container;
-					this.data = data || [];
-					this.events = new CustomEvent();
-					var defaultOptions = {
-						/**
-						 *maybe here will cause a bug when a html element size is autosize or it is invisible.
-						 *chart size may provide from other way.
-						 */
-						width:container.clientWidth,
-						height:container.clientHeight,
-						colors:[],
-						axis:{
-							y:{
-								rotate:90
-							}
-						},
-						legend:{
+				//基础类
+				Class DPChart(container,data,options)
+				@param container {DOMElement} 放置SVG的容器
+				@data {Array} 
+				@param options {Object} 配置参数，default：
+				{
+					width:
+					height:
+					//title:””,
+					//subtitle:””,
+					colors:[“red”,”green”,”yellow”], //自定义Chart颜色
+					axis:{
+					‘x’:{
+						‘enable’:true
+					max:
+							min:
+							tickSize:
+							//beginX:
+							//beginY:
+							ticks:[],
+							minorTickNum: // 一个tick中有几个minor tick ，<0 就没有
+							rotate:逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
+							radius:弯曲半径	
 
-						},
-						grid:{
-							enableRow:true,
-							enableColumn:false
-						}
-					};
-					this.options = mix(defaultOptions, options || {});
-					this.raphael = new Raphael(container, this.options.width, this.options.height);
-					this.colors = colors;
+				},
+					‘y’:{}
+					
+				},
+				legend:{
+						position：[left,top],
+						//border:
+						format:”{name}-{percent.2f}%”
+				itemType:’rect’ // circle		
+				},
+				grid:{
+					‘color’:’’
+				},
+				events:{
+				}，
+				bar:{
+					events
+				},
+				pie:{
+					x:,  //中心点x坐标
+					y:,  //中心点y坐标
+					radius: //半径
+				}
+				}
 
-					//init data
-					this._initData();
-					this.events.fire('onDataInit', this.series);
 
-					// init axis
-					this._initAxis();
-					this.events.fire('onAxisInit', {});
+				prototype:{
+					_initData(),
+					_initTitle(),
+					_initAxis(),
+					_initLegend(),
+					_initGrid(),
+					draw(),
+					_initEvents()，
+					update(index,key,value)
+				}
+				// 添加图表类型，必须有draw函数，实例化DPChart的时候，options里面有对应的name参数。
+				DPChart.addChart(name,methods);
+//通过new DPChart(container,options)绘制图表，options里面有对应的图表参数，则就会生成相应的图表，可以有多个类型，实现柱状图，饼图，折线图的组合图表
+				/*
+				Modules:
+				1.Class Series(data)
+				@param data 
+				data现可支持的format如下：
+				1.[1,2,3,4....] Number Array ------------>[{data:1},{data:2}...]...
+				2.[{key:value,...},.....] Object Array --->[{data:{key:value,....}}....]
+				3.[{name:’’,data:Number or Array or Object}]  no change
+				4.{key:value....} --------------------------->[{name:key,data:value}....]
+				5.[[1,2,3,4,5...],[]...]------------------------>[{data:[1,2,3,4,5,...]}........]
 
-					//init legend
-					this._initLegend();
-					this.events.fire('onLegendInit', this.legend);
+				attribute:
+					series: {Array} 转换后的标准形式 [{name:’’,data:Number or Array or Object},....]   name 不一定有
+				prototype:
+					getSeries():返回series属性
+					getRange():返回数据的跨度 {max:，min:}
+				*/
 
-					//init grid
-					this._initGrid();
-					this.events.fire('onGridInit', this.grid);
+				/*
+				2.Class Title(title,subtitle)
+				@param title ,subtitle{String}
 
-					// draw
-					this.draw();
+				attribute:
+					title:{String}
+					subtitle:{String}
+					titleElement:Raphael Element
+					subtitleElement: Raphael Element
 
-					//init events
-					this._initEvents();
+				prototype:
+					title():get 或者set title
+					subTitle():get 或者 set subTitle
+					//其他设置直接调用titleElement的raphael方法
+				*/
 
-					this.events.fire('onFinish');
-				}     
+				/*
+				3.Class Axis(options)
+					@param options 
+						{
+							max:
+							min:
+							tickSize: 精度
+							tickWidth: 宽度
+							//beginX:
+							//beginY:
+							ticks:[],
+							//minorTickNum: // 一个tick中有几个minor tick ，<0 就没有
+							rotate:逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
+							radius:弯曲半径
+				}
+
+					attributes:
+						labelElements:[],
+				axisElement:		
+						beginX
+						beginY
+						axisLength //坐标总宽度
+					prototype:
+						getX(index), 对应的x相对于Chart左上角的绝对坐标值
+						getY(index，key),对应的y相对于Chart左上角的绝对坐标值
+						getOrigin(), 坐标轴的起始位置 return {x:,y:}
+						getAngel(index)//对应的角度，如果有radius的话
+						getStartAngle(index), 扇形的起始角度
+						getEndAngle(index),  扇形的终止角度
+						getRadius(index),  扇形或者圆形的半径
+				*/
+
+				/*
+				4. Class Legend(series ,options)
+					@param: series Series对象
+					@param: options {
+						position：[left,top],
+						direction:’vertical’ or ‘horizontal’ 
+						format:”{name}-{percent.2f}%”
+				itemType:’rect’ // circle		
+				}
+
+				prototype:{
+					set(key,value)
+					on()// events
+					off()
+				}
+				*/
+
+				/*
+				5 Class Grid(options)
+					@param options{
+						color:
+						enableRow
+						enableColumn
+				}
+
+				prototype:{
+					set(key,value)
+				}
+				*/
+
+				/*
+				6 Class Utility(options)
+					@param options{
+					
+				},
+
+				attributes:	
+
+				prototype:{
+					getColors(colorCount) //获取颜色，colorCount需要多少个颜色值
+				}
+				*/
+
+				/*
+				Events:
+				绘图流中的事件在options.events绑定listener
+				onDataInit: 
+				处理完Data之后fire
+				param：Series实例
+
+				//onTitleInit:
+					初始化title之后fire
+					param: title实例
+
+				onAxisInit:
+					初始化Axis之后fire
+					params: {x:Axis实例} 各个Axis的实例
+
+				onLegendInit：
+					初始化Legend之后fire
+					param：legend实例
+
+				onGridgroundInit:
+					初始化grid之后触发
+					param: Grid实例
+
+				onDraw:
+					画完内容后触发
+					
+
+				onFinish:
+					全部执行完后触发
+
+				*/
+
+				//其他的事件如click，mouseover等DOM事件，由各个图自己定义绑定和触发的方式以及参数，
+				//listener可以定义在events中，也可以定义在(各图自己的属性).events中
             </textarea>
         </section>
     </div>
-    <script type="text/javascript" src="src/common/lang.js"></script>
-	<script type="text/javascript" src="lib/KineticJS/dist/kinetic-core.js"></script>
-	<script type="text/javascript" src="src/common/common.js"></script>    
-    <script type="text/javascript" src="src/common/customevent.js"></script>
-    <script type="text/javascript" src="src/canvas/dpchart.js"></script>
-    <script type="text/javascript" src="src/canvas/types/pie.js"></script>
-    <script type="text/javascript" src="src/canvas/types/line.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
+	<script type="text/javascript" src="../src/common/common.js"></script>    
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/pie.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/line.js"></script>
 
 
-    <script type="text/javascript" src="lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="src/svg/dpchart.js"></script>
-	<script type="text/javascript" src="src/svg/dpchart.pie.js"></script>
-	<script type="text/javascript" src="src/svg/dpchart.bar.js"></script>
-	<script type="text/javascript" src="src/svg/dpchart.dot.js"></script>
-	<script type="text/javascript" src="src/svg/dpchart.line.js"></script>
+    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../src/svg/types/pie.js"></script>
+	<script type="text/javascript" src="../src/svg/types/bar.js"></script>
+	<script type="text/javascript" src="../src/svg/types/dot.js"></script>
+	<script type="text/javascript" src="../src/svg/types/line.js"></script>
     
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>
