@@ -45,6 +45,9 @@ input, select {vertical-align:middle;}
 
 /* SVG DEMO Page */
 .chart_box{width:960px;height: 600px;margin: 0 auto;background-color:#FFFFFF;}
+.main-cont .main-item .sel { width: 80px; }
+.main-cont .opera { background-color: #FFF;margin-bottom: 20px;} 
+.main-cont .main-item label {margin-left:20px;}
 
 
 

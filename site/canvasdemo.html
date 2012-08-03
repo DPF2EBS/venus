@@ -136,9 +136,42 @@
                         new DPChart(container3, data, options3);
                 </textarea>
             <h2>Canvas图形展示如下：</h2>
+
            	<section class="main-item">
             	<p>（一）Canvas饼状图展示如下：<p>
             </section>
+
+            <section class="main-item opera">
+                <label>饼图半径：</label>
+                <select class="sel J_pie" data-type="radius">
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="180">180</option>
+                </select>
+
+                <label>饼图初始化动画效果：</label>
+                <select class="sel J_pie" data-type="ease">
+                    <option value="ease-in">ease-in</option>
+                    <option value="ease-out" selected="true">ease-out</option>
+                    <option value="ease-in-out">ease-in-out</option>
+                </select>
+
+
+                <label>是否需要tip提示：</label>
+                <select class="sel J_pie" data-type="tip">
+                    <option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+                <br><br>
+                <label>是否需要图例：</label>
+                <select class="sel J_pie" data-type="legend">
+                    <option value="1" selected="true">需要</option>
+                    <option value="0">不需要</option>
+                </select>
+
+            </section>
+
             <div id="chart_container" style="height:400px; width:960px;"></div>
 
             <section class="main-item">
@@ -156,6 +189,7 @@
 
         </section>
     </div>
+    <script type="text/javascript" src="http://t2.dpfile.com/combo/_t_js_g.mt.min.js-_t_js_g.dp.min.js/20_76.js"></script>
     <script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
     <script type="text/javascript" src="../src/common/common.js"></script>    
@@ -188,15 +222,14 @@
                 height: 400,
                 margin:30,
                 pie:{
-                    radius:100,
-                    easing:"back-ease-out"
+                    radius:150,
+                    easing:"ease-in"
                 },
                 legend:{
                     height: 200,
                     itemType:"rect",
                     position:[500,80]
                 }
-
             },
             options1 = {
                     width:930,
@@ -262,17 +295,50 @@
                     enableYGrid: false
                 }
             };
-    new DPChart(container,  [
-                {data:0.1693, label:"IE-6"},
-                {data:0.0605, label:"IE-7"},
-                {data:0.4124, label: "IE-8"},
-                {data:0.1046, label: "IE-9"},
-                {data:0.145, label: "Chrome"},
-                {data:0.02, label: "Firefox"},
-                {data:0.035, label: "Safari"},
-                {data:0.0532, label: "Others"}
-            ], options);
-
+    var dataMin = [
+        {data:0.1693, label:"IE-6"},
+        {data:0.0605, label:"IE-7"},
+        {data:0.4124, label: "IE-8"},
+        {data:0.1046, label: "IE-9"},
+        {data:0.145, label: "Chrome"},
+        {data:0.02, label: "Firefox"},
+        {data:0.035, label: "Safari"},
+        {data:0.0532, label: "Others"}
+    ];
+    var bing = new DPChart(container, dataMin, options);
+    // Radius
+    $$('.J_pie').addEvent('change', function (e) {
+        var _this = $(this),
+            val = _this.value,
+            attr = _this.getProperty('data-type');
+        switch (attr) {
+            case 'radius':
+                options.pie.radius = val;
+                break;
+            case 'ease':
+                options.pie.easing = val; 
+                break;
+            case 'tip':
+                if(val == '0') options.pie.needTip = false;
+                else { options.pie.needTip = true; }
+                break;
+            case 'legend':
+                if (val == '0')  options.legend = null;
+                else {
+                    options.legend = {
+                        height: 200,
+                        itemType:"rect",
+                        position:[500,80]
+                    };
+                }
+                break;
+            default: break;
+        }
+        bing = null;
+        container.innerHTML = '';
+        new DPChart(container, dataMin, options);
+    });
+    
     new DPChart(container1, data, options1);
 
     new DPChart(container2, dotData, options2);

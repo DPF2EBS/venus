@@ -63,7 +63,8 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
 
             pieOptions = DPChart.mix({
                 easing: false,
-                radius: 50
+                radius: 50,
+                needTip: false
             }, options.pie);
 
             //计算饼图的圆心
@@ -149,7 +150,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: .5,
                             startAngle: startAngle,
                             endAngle: endAngle,
-                            easing: "ease-out"
+                            easing: pieOptions.easing
                         });
                     }
 
@@ -160,19 +161,21 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-in"
                         });
-                        var direction = '';
-                        if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
-                        if(tipAngle > 315 && tipAngle < 360) {
-                            direction = 'right';
-                        } else if(tipAngle >= 45 && tipAngle < 135) {
-                            direction = 'bottom';
-                        } else if(tipAngle >= 135 && tipAngle < 225) {
-                            direction = 'left';
-                        } else {
-                            direction = 'top';
+                        if(pieOptions.needTip) {
+                            var direction = '';
+                            if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
+                            if(tipAngle > 315 && tipAngle < 360) {
+                                direction = 'right';
+                            } else if(tipAngle >= 45 && tipAngle < 135) {
+                                direction = 'bottom';
+                            } else if(tipAngle >= 135 && tipAngle < 225) {
+                                direction = 'left';
+                            } else {
+                                direction = 'top';
+                            }
+                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
+                            stage.add(newLayer);
                         }
-                        newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
-                        stage.add(newLayer);
                     });
                     sector.on("mouseout", function () {
                         this.transitionTo({
@@ -180,7 +183,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-out"
                         });
-                        DPChart.toolTipHide(newLayer);
+                        pieOptions.needTip && DPChart.toolTipHide(newLayer);
                     });
 
                 })(startAngle, endAngle, data.data);
