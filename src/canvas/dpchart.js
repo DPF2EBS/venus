@@ -183,6 +183,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
                 }
             }
             this.stage.add(this.layer);
+            this.percentLayer && this.stage.add(this.percentLayer);
         },
         update: function () {
 
@@ -555,11 +556,13 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
         }
     }
-
+        var tooltipslayer = null;
         function tooltips(x, y, texts, side) {
-
-            var tooltipslayer = new Kinetic.Layer();
-
+            if(tooltipslayer == null) {
+                tooltipslayer = new Kinetic.Layer();
+            } else {
+                tooltipslayer.clear();
+            }
             (side == undefined) && (side = 'top');
 
             (side == 'top') && (y = y - 10);
@@ -661,7 +664,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             }
             var path = new Kinetic.Path({
                 data: pathString,
-                stroke: '#FF7018',
+                stroke: '#EFEFEF',
                 scale: 1,
                 fill: '#FFFFFF',
                 draggable: true,

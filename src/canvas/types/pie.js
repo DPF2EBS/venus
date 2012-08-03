@@ -56,6 +56,8 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var layer = this.layer,
                 stage = this.stage;
 
+            var percentLayer = this.percentLayer = new Kinetic.Layer();
+
             var options = this.options,
                 pieOptions;
 
@@ -81,14 +83,27 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             }
             var startAngle = 0,
                 endAngle = 0,
-                sector;
+                sector,
+                text,
+                tip, sumAngle = 0,
+                newLayer,
+                stage = this.stage;
 
             for (var i = 0, L = series.length; i < L; i++) {
 
                 data = series[i];
                 endAngle = startAngle + 360 * data.percent;
 
-                (function (startAngle, endAngle) {
+                (function (startAngle, endAngle, percent) {
+
+                    //添加扇形
+                    var textAngle = (startAngle + endAngle)/2,
+                        thisAngle = endAngle - startAngle,
+                        textRadius = 0.6 * pieOptions.radius,
+                        tipRadius = pieOptions.radius;
+
+                    sumAngle += thisAngle;
+                    var tipAngle = sumAngle - thisAngle/2;
                     sector = new Kinetic.Sector({
                         x: centerX,
                         y: centerY,
@@ -105,6 +120,28 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         }
                     });
                     layer.add(sector);
+                    var tipX = centerX + Math.cos(tipAngle * Math.PI /180) * tipRadius;
+                    var tipY = centerY + Math.sin(tipAngle * Math.PI /180) * tipRadius;
+                    
+                    tipAngle = parseInt(tipAngle);
+
+                    
+
+                    //添加扇形上的文字
+                    if(percent > 0.14){
+                        text = new Kinetic.Text({
+                            text:(percent*100).toFixed(2),
+                            x:centerX + Math.cos(textAngle * Math.PI /180) * textRadius,
+                            y:centerY + Math.sin(textAngle * Math.PI /180) * textRadius,
+                            textFill:"black",
+                            align:"center",
+                            width:30,
+                            offset:{
+                                x: 12
+                            }
+                        });
+                        percentLayer.add(text);
+                    }
 
                     if ( !! pieOptions.easing) {
                         sector.transitionTo({
@@ -123,6 +160,19 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-in"
                         });
+                        var direction = '';
+                        if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
+                        if(tipAngle > 315 && tipAngle < 360) {
+                            direction = 'right';
+                        } else if(tipAngle >= 45 && tipAngle < 135) {
+                            direction = 'bottom';
+                        } else if(tipAngle >= 135 && tipAngle < 225) {
+                            direction = 'left';
+                        } else {
+                            direction = 'top';
+                        }
+                        newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
+                        stage.add(newLayer);
                     });
                     sector.on("mouseout", function () {
                         this.transitionTo({
@@ -130,9 +180,10 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                             duration: 0.2,
                             easing: "ease-out"
                         });
+                        DPChart.toolTipHide(newLayer);
                     });
 
-                })(startAngle, endAngle);
+                })(startAngle, endAngle, data.data);
 
                 startAngle = endAngle;
 
