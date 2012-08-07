@@ -156,11 +156,13 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
 
 
                     sector.on("mouseover", function () {
+						
                         this.transitionTo({
                             radius: options.pie.radius * 1.1,
                             duration: 0.2,
                             easing: "ease-in"
                         });
+						
                         if(pieOptions.needTip) {
                             var direction = '';
                             if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}

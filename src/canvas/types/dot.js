@@ -12,8 +12,14 @@
             var xAxis = this.axises.x,
                 yAxis = this.axises.y;
 
-            var x, y;
+            var x, y, dotOptions;
 
+			dotOptions = DPChart.mix({
+				radius: 2,
+				easing: 'elastic-ease-out'
+			}, options.dot);
+            
+			
             var circle, data;
 
             var max = this.data.map(function (data) {
@@ -26,7 +32,7 @@
 
             for (var i = 0, L = series.length; i < L; i++) {
                 data = this.data[i];
-                //console.log(data);
+
                 x = xAxis.getX(data[1]),
                 y = yAxis.options.beginY - (1 + data[0]) * yAxis.options.tickWidth,
 
@@ -45,7 +51,7 @@
                         y: data[2] / max * scale
                     },
                     duration: 1,
-                    easing: "elastic-ease-out"
+                    easing: dotOptions.easing
                 });
 
                 circle.on("mouseover", function () {

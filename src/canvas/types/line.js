@@ -44,11 +44,13 @@
             lineOptions = DPChart.mix({
                 smooth: false,
                 lineStroke: '#4FEE30',
-                hasDot: false,
+                hasDot: true,
                 dotRadius: 8,
                 dotFill: '#F74D8B',
                 shadow: false,
-                autoMouseOut: false
+                autoMouseOut: false,
+				easing: true,
+				tipPos: 'right'
             }, options.line);
 
             var series = this.series.getSeries();
@@ -161,13 +163,16 @@
                 });
                 layer.add(fillPath);
 
-                fillPath.transitionTo({
-                    y: 0,
-                    scale: {
-                        y: 1
-                    },
-                    duration: 1
-                });
+                if(lineOptions.easing) {
+					fillPath.transitionTo({
+	                    y: 0,
+	                    scale: {
+	                        y: 1
+	                    },
+	                    duration: 1
+	                });
+				}
+			   
             }
 
             path = new Kinetic.Path({
@@ -181,14 +186,18 @@
                 }
             });
             layer.add(path);
-
-            path.transitionTo({
-                y: 0,
-                scale: {
-                    y: 1
-                },
-                duration: 1
-            });
+                             
+            
+			if(lineOptions.easing) {
+				path.transitionTo({
+	                y: 0,
+	                scale: {
+	                    y: 1
+	                },
+	                duration: 1
+	            });
+			}
+            
 
             var stage = this.stage,
                 newLayer;
@@ -204,7 +213,8 @@
                         fill: series[i].color,
                         draggable: true
                     });
-
+					layer.add(dot);
+                    /*
                     var rect = new Kinetic.Rect({
                         x: d.x - xAxis.options.tickWidth,
                         y: yAxis.options.endY,
@@ -212,9 +222,11 @@
                         width: xAxis.options.tickWidth
                     });
 
-                    layer.add(rect);
+                    layer.add(rect);   
+
 
                     (function (dot) {
+	      			 
                         rect.on("mouseover", function () {
 
                             if (newLayer) {
@@ -233,9 +245,9 @@
                             stage.add(newLayer);
                         });
                     })(dot);
+                    					*/
 
-
-
+                    
                     dot.on('mouseover', function (evt) {
                         if (newLayer) {
                             DPChart.toolTipHide(newLayer);
@@ -248,7 +260,7 @@
                             duration: 0.2
                         });
 
-                        newLayer = DPChart.tooltips(d.x, d.y, points[i].val, 'right');
+                        newLayer = DPChart.tooltips(d.x, d.y, points[i].label + ':' + points[i].val, lineOptions.tipPos);
 
                         stage.add(newLayer);
 
@@ -262,14 +274,15 @@
                             duration: 0.2
                         }); !! lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
                     });
-                    layer.add(dot);
-
-                    (function (y) {
-                        dot.transitionTo({
-                            y: y,
-                            duration: 1
-                        });
-                    })(d.y);
+                     
+                    if(lineOptions.easing) {
+	                   	(function (y) {
+	                        dot.transitionTo({
+	                            y: y,
+	                            duration: 1
+	                        });
+	                    })(d.y);
+					}
                 });
 
             }

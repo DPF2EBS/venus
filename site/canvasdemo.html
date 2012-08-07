@@ -140,8 +140,38 @@
            	<section class="main-item">
             	<p>（一）Canvas饼状图展示如下：<p>
             </section>
-
-            <section class="main-item opera">
+			
+			<section class="main-item opera">
+				<label>画布的宽度:</label>
+            	<input id="J_stageWidth" type="text" class="g-input"/>
+            	<label>画布的高度:</label>
+            	<input id="J_stageHeight" type="text" class="g-input" />
+            	<label>画面的外边距:</label>
+            	<input id="J_picMargin" type="text" class="g-input" />
+            	<br />
+            	<p class="p-button"><input id="J_stageSize" type="button" value="提交数据" class="g-button"/></p>
+			</section>
+			
+			<section class="main-item opera">
+				<label>初始化动画效果：</label>
+				<select class="sel J_pie" data-type="initEase">
+					<option value="linear" selected="true">linear</option>
+					<option value="ease-in">ease-in</option>
+					<option value="ease-out">ease-out</option>
+					<option value="ease-in-out">ease-in-out</option>
+					<option value="back-ease-out">back-ease-out</option>
+					<option value="bounce-ease-out">bounce-ease-out</option>
+					<option value="bounce-ease-in">bounce-ease-in</option>
+					<option value="bounce-ease-in-out">bounce-ease-in-out</option>
+					<option value="strong-ease-in">strong-ease-in</option>
+					<option value="strong-ease-out">strong-ease-out</option>
+					<option value="strong-ease-in-out">strong-ease-in-out</option>
+                </select>
+                
+                
+			</section>
+			
+			<section class="main-item opera">
                 <label>饼图半径：</label>
                 <select class="sel J_pie" data-type="radius">
                     <option value="50">50</option>
@@ -149,47 +179,285 @@
                     <option value="150" selected="true">150</option>
                     <option value="180">180</option>
                 </select>
-
-                <label>饼图初始化动画效果：</label>
-                <select class="sel J_pie" data-type="ease">
-                    <option value="ease-in">ease-in</option>
-                    <option value="ease-out" selected="true">ease-out</option>
-                    <option value="ease-in-out">ease-in-out</option>
-                </select>
-
-
-                <label>是否需要tip提示：</label>
+			</section>
+			
+			<section class="main-item opera">
+				<label>是否需要tip提示：</label>
                 <select class="sel J_pie" data-type="tip">
                     <option value="0" selected="true">不需要</option>
                     <option value="1">需要</option>
                 </select>
-                <br><br>
+			</section>
+			
+            <section class="main-item opera">
+				<!--linear, ease-in, ease-out, ease-in-out,
+     *  back-ease-in, back-ease-out, back-ease-in-out, elastic-ease-in, elastic-ease-out,
+     *  elastic-ease-in-out, bounce-ease-out, bounce-ease-in, bounce-ease-in-out,
+     *  strong-ease-in, strong-ease-out, or strong-ease-in-out -->
+				
                 <label>是否需要图例：</label>
                 <select class="sel J_pie" data-type="legend">
                     <option value="1" selected="true">需要</option>
                     <option value="0">不需要</option>
                 </select>
-
+                <br /><br />
+                <label>图例的位置：</label>
+                <select class="sel J_pie" data-type="legendPosition">
+                    <option value="right|top" selected="true">右上角</option>
+                    <option value="left|top">左上角</option>
+                    <option value="right|bottom">右下角</option>
+                </select>
+                
+                <label>图例的数字位置：</label>
+                x
+                <input type="text" id="J_legendPosX" class="g-input"/>
+                y
+                <input type="text" id="J_legendPosY" class="g-input"/>
+                <a href="javascript:void(0)" id="J_setPos">定位</a>
+                <br /><br />
+                
+                <label>图例的行高：</label>
+                <select class="sel J_pie" data-type="legendHeight">
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                </select>
+                
+                <label>图例的类型：</label>
+                <select class="sel J_pie" data-type="legendType">
+                	<option value="circle" selected="true">circle</option>
+                    <option value="rect">rect</option>
+                </select>
+                
             </section>
 
-            <div id="chart_container" style="height:400px; width:960px;"></div>
+            <div id="chart_container"></div>
 
             <section class="main-item">
             	<p>（二）Canvas线状图展示如下：<p>
             </section>
-            <div id="chart_container1" style="height:400px; width:960px;"></div>
+            
+            <section class="main-item opera">
+				<label>画布的宽度:</label>
+            	<input id="J_stageWidth1" type="text" class="g-input"/>
+            	<label>画布的高度:</label>
+            	<input id="J_stageHeight1" type="text" class="g-input" />
+            	<label>画面的外边距:</label>
+            	<input id="J_picMargin1" type="text" class="g-input" />
+            	<br />
+            	<p class="p-button"><input id="J_stageSize1" type="button" value="提交数据" class="g-button"/></p>
+			</section>
+            
+            <section class="main-item opera">
+            	<label>是否需要阴影块：</label>
+                <select class="sel J_line" data-type="lineShadow">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+                
+                <label>是否需要线连结点：</label>
+                <select class="sel J_line" data-type="lineDot">
+                	<option value="1" selected="true">需要</option>
+                	<option value="0">不需要</option>
+                </select>
+                
+                <label>线连结点的半径：</label>
+                <select class="sel J_line" data-type="lineDotRadius">
+                	<option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                    <option value="8" selected="true">8</option>
+                </select>
+                <br /><br />
+                <label>曲线还是直线：</label>
+                <select class="sel J_line" data-type="lineType">
+                	<option value="0" selected="true">直线</option>
+                    <option value="1">曲线</option>
+                </select>
+                
+                <label>线条的颜色(colorPicker)：</label>
+                <select class="sel J_line" data-type="lineColor">
+                	<option value="green" selected="true">绿色</option>
+                	<option value="red">红色</option>
+                    <option value="blue">蓝色</option>
+                    <option value="yellow">黄色</option>
+                </select>
+                
+                <label>Tip的位置：</label>
+                <select class="sel J_line" data-type="tipPos">
+                	<option value="right" selected="true">右侧</option>
+                	<option value="left">左侧</option>
+                    <option value="top">上面</option>
+                    <option value="bottom">下面</option>
+                </select>
+                
+            </section>
+            
+            <section class="main-item opera">
+            	<label>是否需要图例：</label>
+                <select class="sel J_line" data-type="legend">
+                    <option value="1" selected="true">需要</option>
+                    <option value="0">不需要</option>
+                </select>
+                <br /><br />
+                <label>图例的位置：</label>
+                <select class="sel J_line" data-type="legendPosition">
+                    <option value="right|top" selected="true">右上角</option>
+                    <option value="left|top">左上角</option>
+                    <option value="right|bottom">右下角</option>
+                </select>
+                
+                <label>图例的数字位置：</label>
+                x
+                <input type="text" id="J_legendPosX1" class="g-input"/>
+                y
+                <input type="text" id="J_legendPosY1" class="g-input"/>
+                <a href="javascript:void(0)" id="J_setPos1">定位</a>
+                <br /><br />
+                
+                <label>图例的行高：</label>
+                <select class="sel J_line" data-type="legendHeight">
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                </select>
+                
+                <label>图例的类型：</label>
+                <select class="sel J_line" data-type="legendType">
+                	<option value="circle" selected="true">circle</option>
+                    <option value="rect">rect</option>
+                </select>
+                
+                
+                <label>网格（横）：</label>
+                <select class="sel J_line" data-type="gridRow">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+                 <label>网格（竖）：</label>
+                <select class="sel J_line" data-type="gridCol">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+
+            </section>
+            
+            <div id="chart_container1"></div>
             <section class="main-item">
                 <p>（三）Canvas点状图展示如下：<p>
             </section>
-            <div id="chart_container2" style="height:500px; width:960px;"></div>
+            
+            <section class="main-item opera">
+				<label>画布的宽度:</label>
+            	<input id="J_stageWidth2" type="text" class="g-input"/>
+            	<label>画布的高度:</label>
+            	<input id="J_stageHeight2" type="text" class="g-input" />
+            	<label>画面的外边距:</label>
+            	<input id="J_picMargin2" type="text" class="g-input" />
+            	<br />
+            	<p class="p-button"><input id="J_stageSize2" type="button" value="提交数据" class="g-button"/></p>
+			</section>
+			
+			<section class="main-item opera">
+				<label>点图半径：</label>
+                <select class="sel J_dot" data-type="radius">
+                    <option value="1" selected="true">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                <label>点图初始化动画效果：</label>
+                <select class="sel J_dot" data-type="dotEase">
+					<option value="elastic-ease-out" selected="true">elastic-ease-out</option>
+					<option value="ease-in">ease-in</option>
+					<option value="ease-out">ease-out</option>
+					<option value="ease-in-out">ease-in-out</option>
+					<option value="back-ease-out">back-ease-out</option>
+					<option value="bounce-ease-out">bounce-ease-out</option>
+					<option value="bounce-ease-in">bounce-ease-in</option>
+					<option value="bounce-ease-in-out">bounce-ease-in-out</option>
+					<option value="strong-ease-in">strong-ease-in</option>
+					<option value="strong-ease-out">strong-ease-out</option>
+					<option value="strong-ease-in-out">strong-ease-in-out</option>
+                </select>
+			</section>
+			
+			
+            
+            <div id="chart_container2"></div>
             <section class="main-item">
                 <p>（四）Canvas柱状图展示如下：<p>
             </section>
+            
+            <section class="main-item opera">
+				<label>画布的宽度:</label>
+            	<input id="J_stageWidth3" type="text" class="g-input"/>
+            	<label>画布的高度:</label>
+            	<input id="J_stageHeight3" type="text" class="g-input" />
+            	<label>画面的外边距:</label>
+            	<input id="J_picMargin3" type="text" class="g-input" />
+            	<br />
+            	<p class="p-button"><input id="J_stageSize3" type="button" value="提交数据" class="g-button"/></p>
+			</section>
+			
+			<section class="main-item opera">
+            	<label>是否需要图例：</label>
+                <select class="sel J_bar" data-type="legend">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+                <br /><br />
+                <label>图例的位置：</label>
+                <select class="sel J_bar" data-type="legendPosition">
+                    <option value="right|top" selected="true">右上角</option>
+                    <option value="left|top">左上角</option>
+                    <option value="right|bottom">右下角</option>
+                </select>
+                
+                <label>图例的数字位置：</label>
+                x
+                <input type="text" id="J_legendPosX3" class="g-input"/>
+                y
+                <input type="text" id="J_legendPosY3" class="g-input"/>
+                <a href="javascript:void(0)" id="J_setPos3">定位</a>
+                <br /><br />
+                
+                <label>图例的行高：</label>
+                <select class="sel J_bar" data-type="legendHeight">
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                </select>
+                
+                <label>图例的类型：</label>
+                <select class="sel J_bar" data-type="legendType">
+                	<option value="circle" selected="true">circle</option>
+                    <option value="rect">rect</option>
+                </select>
+                
+                <label>网格（横）：</label>
+                <select class="sel J_bar" data-type="gridRow">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+                 <label>网格（竖）：</label>
+                <select class="sel J_bar" data-type="gridCol">
+                	<option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+            
             <div id="chart_container3" style="height:400px; width:960px;"></div>
 
         </section>
     </div>
-    <script type="text/javascript" src="http://t2.dpfile.com/combo/_t_js_g.mt.min.js-_t_js_g.dp.min.js/20_76.js"></script>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+    <script type="text/javascript" src="Scripts/g.dp.js"></script>
     <script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
     <script type="text/javascript" src="../src/common/common.js"></script>    
@@ -212,23 +480,21 @@
                 {data:40, label: "Safari"},
                 {data:78, label: "Opera"},
                 {data:40, label: "SouGou"},
-                {data:90, label: "BaiDu"},
-                {data:40, label: "TaoBao"},
-                {data:20, label: "QQ"}
+                {data:90, label: "BaiDu"}
             ],
             dotData = [[0,0,0],[0,1,0],[0,2,0],[0,3,1],[-0,4,6],[0,5,3],[0,6,2],[0,7,0],[0,8,0],[0,9,0],[0,10,0],[0,11,0],[0,12,0],[0,13,1],[0,14,11],[0,15,8],[0,16,0],[0,17,1],[0,18,0],[0,19,3],[0,20,13],[0,21,1],[0,22,0],[0,23,2],[1,0,0],[1,1,13],[1,2,0],[1,3,0],[1,4,0],[1,5,0],[1,6,0],[1,7,0],[1,8,0],[1,9,0],[1,10,0],[1,11,0],[1,12,0],[1,13,0],[1,14,3],[1,15,5],[1,16,0],[1,17,0],[1,18,2],[1,19,0],[1,20,1],[1,21,1],[1,22,3],[1,23,1],[2,0,1],[2,1,1],[2,2,0],[2,3,0],[2,4,0],[2,5,0],[2,6,0],[2,7,10],[2,8,0],[2,9,0],[2,10,0],[2,11,0],[2,12,0],[2,13,4],[2,14,2],[2,15,0],[2,16,8],[2,17,4],[2,18,4],[2,19,0],[2,20,2],[2,21,1],[2,22,1],[2,23,0],[3,0,1],[3,1,2],[3,2,0],[3,3,0],[3,4,0],[3,5,0],[3,6,0],[3,7,0],[3,8,1],[3,9,1],[3,10,0],[3,11,1],[3,12,0],[3,13,1],[3,14,4],[3,15,3],[3,16,2],[3,17,3],[3,18,0],[3,19,0],[3,20,1],[3,21,0],[3,22,0],[3,23,0],[4,0,1],[4,1,3],[4,2,11],[4,3,2],[4,4,5],[4,5,5],[4,6,2],[4,7,0],[4,8,0],[4,9,1],[4,10,0],[4,11,0],[4,12,0],[4,13,2],[4,14,4],[4,15,6],[4,16,2],[4,17,2],[4,18,2],[4,19,0],[4,20,1],[4,21,0],[4,22,0],[4,23,0],[5,0,0],[5,1,0],[5,2,0],[5,3,0],[5,4,1],[5,5,0],[5,6,0],[5,7,0],[5,8,0],[5,9,1],[5,10,0],[5,11,0],[5,12,1],[5,13,15],[5,14,4],[5,15,14],[5,16,6],[5,17,1],[5,18,3],[5,19,2],[5,20,0],[5,21,5],[5,22,2],[5,23,2],[6,0,2],[6,1,2],[6,2,0],[6,3,0],[6,4,1],[6,5,1],[6,6,0],[6,7,0],[6,8,0],[6,9,1],[6,10,0],[6,11,0],[6,12,2],[6,13,1],[6,14,0],[6,15,0],[6,16,0],[6,17,1],[6,18,4],[6,19,0],[6,20,0],[6,21,1],[6,22,0],[6,23,0]],
             options = {
                 width: 600,
                 height: 400,
-                margin:30,
+                margin: 30,
                 pie:{
                     radius:150,
                     easing:"ease-in"
                 },
                 legend:{
-                    height: 200,
-                    itemType:"rect",
-                    position:[500,80]
+                    height: 150,
+                    itemType:"circle",
+                    position:["right", "top"]
                 }
             },
             options1 = {
@@ -237,7 +503,7 @@
                     margin:100,
                     axis:{
                         x: {
-                            ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
+                            ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu"]
                         },
                         y: {
                             ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -246,18 +512,19 @@
                     line: {
                         hasDot: true,
                         smooth: false,
-                        dotRadius:5,
-                        shadow: true
+                        dotRadius: 8,
+                        shadow: false
                     },
+                    
+                    grid: {
+                        enableXGrid: false,
+                        enableYGrid: false
+                    } ,
                     legend:{
                         position:["right", "top"],
                         height: 200,
                         itemType:"circle"
-                    },
-                    grid: {
-                        enableXGrid: true,
-                        enableYGrid: false
-                    } 
+                    }
             },
             options2 = {
                 width: 800,
@@ -282,7 +549,7 @@
                 margin:100,
                 axis:{
                     x: {
-                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
+                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu"]
                     },
                     y: {
                         ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -291,7 +558,7 @@
                 bar: { 
                 },
                 grid: {
-                    enableXGrid: true,
+                    enableXGrid: false,
                     enableYGrid: false
                 }
             };
@@ -306,6 +573,40 @@
         {data:0.0532, label: "Others"}
     ];
     var bing = new DPChart(container, dataMin, options);
+    //var bing1 = new DPChart(container1, dataMin, options1);
+    // set width , height, margin 
+    $('J_stageSize').addEvent('click', function() {
+    	var widthVal = $('J_stageWidth').value,
+    		heightVal = $('J_stageHeight').value,
+    		marginVal = $('J_picMargin').value;
+    		
+    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 600;
+    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 30;
+    	
+    	options.width = widthVal;
+    	options.height = heightVal;
+    	options.margin = marginVal;
+		bing = null;
+        container.innerHTML = '';
+    	new DPChart(container, dataMin, options);
+    });
+    // set width, height, margin
+    
+    $('J_setPos').addEvent('click', function() {
+    	var posX = $('J_legendPosX').value,
+    		posY = $('J_legendPosY').value;
+    	posX = (posX !== '') ? parseInt(posX) : "right";
+    	posY = (posY !== '') ? parseInt(posY) : "top";
+
+    	options.legend.position = [posX, posY];
+
+    	bing = null;
+        container.innerHTML = '';
+    	new DPChart(container, dataMin, options);
+    });
+    
+    // -------------------------------------------
     // Radius
     $$('.J_pie').addEvent('change', function (e) {
         var _this = $(this),
@@ -315,6 +616,9 @@
             case 'radius':
                 options.pie.radius = val;
                 break;
+            case 'initEase':
+            	options.pie.easing = val;
+            	break;
             case 'ease':
                 options.pie.easing = val; 
                 break;
@@ -328,23 +632,217 @@
                     options.legend = {
                         height: 200,
                         itemType:"rect",
-                        position:[500,80]
+                        position:["right","top"]
                     };
                 }
                 break;
+            case 'legendPosition':
+            	var arr = val.split('|');
+            	options.legend && (options.legend.position = arr);
+            	break;
+            case 'legendHeight':
+            	options.legend && (options.legend.height = val);
+            	break;
+            case 'legendType':
+            	options.legend && (options.legend.itemType = val);
+            	break;
             default: break;
         }
         bing = null;
         container.innerHTML = '';
         new DPChart(container, dataMin, options);
     });
+    // --------------------------------------------
+    var bing1 = new DPChart(container1, data, options1);
     
-    new DPChart(container1, data, options1);
+	$('J_stageSize1').addEvent('click', function() {
+    	var widthVal = $('J_stageWidth1').value,
+    		heightVal = $('J_stageHeight1').value,
+    		marginVal = $('J_picMargin1').value;
+    		
+    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 930;
+    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 100;
+    	
+    	options1.width = widthVal;
+    	options1.height = heightVal;
+    	options1.margin = marginVal;
+		bing1 = null;
+        container1.innerHTML = '';
+    	new DPChart(container1, data, options1);
+    });
+    
+    $('J_setPos1').addEvent('click', function() {
+    	var posX = $('J_legendPosX1').value,
+    		posY = $('J_legendPosY1').value;
+    	posX = (posX !== '') ? parseInt(posX) : "right";
+    	posY = (posY !== '') ? parseInt(posY) : "top";
 
-    new DPChart(container2, dotData, options2);
-
-    new DPChart(container3, data, options3);
+    	options1.legend.position = [posX, posY];
+    	bing1 = null;
+        container1.innerHTML = '';
+    	new DPChart(container1, data, options1);
+    });
+    
+    $$('.J_line').addEvent('change', function() {
+    	var _this = $(this),
+            val = _this.value,
+            attr = _this.getProperty('data-type');
+        switch(attr) {
+        	case 'lineShadow':
+        		if(val == '0') options1.line.shadow = false;
+        		else { options1.line.shadow = true }
+        		break;
+        	case 'lineDot':
+        		if(val == '0') options1.line.hasDot = false;
+        		else { options1.line.hasDot = true; }
+        		break;
+        	case 'lineDotRadius':
+        		options1.line.hasDot && (options1.line.dotRadius = parseInt(val));
+        		break;
+        	case 'lineType':
+        		if(val == '0') options1.line.smooth = false;
+        		else { options1.line.smooth = true }
+        		break;
+        	case 'legend':
+                if (val == '0')  options1.legend = null;
+                else {
+                    options1.legend = {
+                        position:["right", "top"],
+                        height: 200,
+                        itemType:"circle"
+                    };
+                }
+                break;
+            case 'legendPosition':
+            	var arr = val.split('|');
+            	options1.legend && (options1.legend.position = arr);
+            	break;
+            case 'legendHeight':
+            	options1.legend && (options1.legend.height = val);
+            	break;
+            case 'legendType':
+            	options1.legend && (options1.legend.itemType = val);
+            	break;
+           	case 'gridRow':
+           		if(val == '0') options1.grid.enableXGrid = false;
+           		else { options1.grid.enableXGrid = true}
+           		break;
+           	case 'gridCol':
+           		if(val == '0') options1.grid.enableYGrid = false;
+           		else { options1.grid.enableYGrid = true }
+           		break;
+           	case 'lineColor':
+           		options1.line.lineStroke = val;
+           		break;
+           	case 'tipPos':
+           		options1.line.tipPos = val;
+           		break;
+        	default: 
+        		break;
+        }
+        bing1 = null;
+        container1.innerHTML = '';
+    	new DPChart(container1, data, options1);
+    });
+	// --------------------------------------
+    var bing2 = new DPChart(container2, dotData, options2);
+    
+    $('J_stageSize2').addEvent('click', function() {
+    	var widthVal = $('J_stageWidth2').value,
+    		heightVal = $('J_stageHeight2').value,
+    		marginVal = $('J_picMargin2').value;
+    		
+    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 800;
+    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 500;
+    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 70;
+    	
+    	options2.width = widthVal;
+    	options2.height = heightVal;
+    	options2.margin = marginVal;
+		bing2 = null;
+        container2.innerHTML = '';
+    	new DPChart(container2, dotData, options2);
+    });
+    $$('.J_dot').addEvent('change', function () {
+    	var _this = $(this),
+            val = _this.value,
+            attr = _this.getProperty('data-type');
+        switch(attr) {
+        	case 'radius':
+        		options2.dot.radius = parseInt(val);
+        		break;
+        	case 'dotEase':
+        		options2.dot.easing = val;
+        		break;
+        	default: break;
+        }
+        bing2 = null;
+        container2.innerHTML = '';
+    	new DPChart(container2, dotData, options2);
+    });
+    
+	// --------------------------------------
+    var bing3 = new DPChart(container3, data, options3);
+    
+    $('J_stageSize3').addEvent('click', function() {
+    	var widthVal = $('J_stageWidth3').value,
+    		heightVal = $('J_stageHeight3').value,
+    		marginVal = $('J_picMargin3').value;
+    		
+    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 800;
+    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 100;
+    	
+    	options3.width = widthVal;
+    	options3.height = heightVal;
+    	options3.margin = marginVal;
+		bing3 = null;
+        container3.innerHTML = '';
+    	new DPChart(container3, data, options3);
+    });
+    $$('.J_bar').addEvent('change', function() {
+    	var _this = $(this),
+            val = _this.value,
+            attr = _this.getProperty('data-type');
+        switch(attr) {
+        	case 'legend':
+                if (val == '0')  options3.legend = null;
+                else {
+                    options3.legend = {
+                        position:["right", "top"],
+                        height: 200,
+                        itemType:"circle"
+                    };
+                }
+                break;
+            case 'legendPosition':
+            	var arr = val.split('|');
+            	options3.legend && (options3.legend.position = arr);
+            	break;
+            case 'legendHeight':
+            	options3.legend && (options3.legend.height = val);
+            	break;
+            case 'legendType':
+            	options3.legend && (options3.legend.itemType = val);
+            	break;
+            case 'gridRow':
+           		if(val == '0') options3.grid.enableXGrid = false;
+           		else { options3.grid.enableXGrid = true}
+           		break;
+           	case 'gridCol':
+           		if(val == '0') options3.grid.enableYGrid = false;
+           		else { options3.grid.enableYGrid = true }
+           		break;
+        	default: break;
+        }
+        bing3 = null;
+        container3.innerHTML = '';
+    	new DPChart(container3, data, options3);
+    });
+    
     </script>
+    
     
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>

@@ -41,14 +41,16 @@ input, select {vertical-align:middle;}
 .main-cont .main-profile {padding:0 65px;}
 .main-cont .main-item {padding: 20px 65px;}
 .main-cont .main-profile p,.main-cont .main-item p{line-height:30px;color:#666666;}
-#chart_container,#chart_container1, #chart_container2, #chart_container3, #chart_container4 {border:1px dotted #999;background-color:#FFF;}
 
 /* SVG DEMO Page */
 .chart_box{width:960px;height: 600px;margin: 0 auto;background-color:#FFFFFF;}
 .main-cont .main-item .sel { width: 80px; }
 .main-cont .opera { background-color: #FFF;margin-bottom: 20px;} 
 .main-cont .main-item label {margin-left:20px;}
-
+.g-input { width: 100px; height:20px; padding:2px;border:1px solid #CCC;}
+.p-button { text-align: center; }
+.g-button { margin-top:20px;width: 100px; height:30px; border-radius: 4px;background-color:#EFEFEF;border-color:#999;cursor: pointer;}
+.kineticjs-content { border: 1px solid #CCC; background-color:#FFF;}
 
 
 
