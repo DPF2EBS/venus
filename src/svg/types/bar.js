@@ -11,7 +11,7 @@
                 barOptions = DPChart.mix({
                     radius:0,
                     beginAnimate:true,
-                    opacity:0.5
+                    opacity:1
                 }, this.options.bar),
                 elements = [],
                 self = this
