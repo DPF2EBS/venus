@@ -147,13 +147,14 @@
             //显示图表
             viewTaskModal.modal('hide')
             var data = [
-                {"text":2, "id":2, "parents":[6], "status":2, "children":[]},
-                {"text":6, "id":6, "parents":[3, 5, 1], "status":2, "children":[2]},
-                {"text":3, "id":3, "parents":[0], "status":2, "children":[6]},
-                {"text":5, "id":5, "parents":[4], "status":2, "children":[6]},
-                {"text":1, "id":1, "parents":[], "status":3, "children":[6]},
-                {"text":0, "id":0, "parents":[], "status":1, "children":[3]},
-                {"text":4, "id":4, "parents":[], "status":3, "children":[5]}
+                {"text":2, "id":2, "parents":[6, 7], "status":2},
+                {"text":7, "id":7, "parents":[3], "status":2},
+                {"text":6, "id":6, "parents":[3, 5, 1], "status":2},
+                {"text":3, "id":3, "parents":[0], "status":2},
+                {"text":5, "id":5, "parents":[4], "status":2},
+                {"text":1, "id":1, "parents":[], "status":3},
+                {"text":0, "id":0, "parents":[], "status":1},
+                {"text":4, "id":4, "parents":[], "status":3}
             ]
             chartContainer.innerHTML = "";
             var chart = new DPChart(chartContainer, data, {
@@ -164,9 +165,9 @@
                 }
             });
             chartMessage.removeClass('hide').find('.message').html('成功')
-            setTimeout(function(){
+            setTimeout(function () {
                 chartMessage.alert('close')
-            },4000);
+            }, 4000);
 
         });
 
@@ -174,7 +175,7 @@
             viewTaskModal.modal()
         })
 
-        navAddTask.click(function(){
+        navAddTask.click(function () {
             addTaskModal.modal()
         })
 

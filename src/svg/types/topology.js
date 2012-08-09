@@ -89,84 +89,121 @@
                 }
 
 
-            layers.forEach(function (layer) {
+            layers.forEach(function (layer, index) {
                 var edges = [] //一层边
+                if (index == layers.length - 1) {
+                    return;
+                }
 
-                layer.forEach(function (node) {
-                    node.parents && node.parents.forEach(function (parent) {
-                        if (!allNodes[parent]) {
-                            return;
-                        }
-                        var id = getId(parent, node.id),
-                            edge
-                        if (edge = existEdges[id]) {
-                            return;
-                        } else {
-                            edge = existEdges[id] = {
-                                node1:allNodes[parent],
-                                node2:node
+                for (var i = 0, len = layer.length; i < len; i++) {
+                    var node = layer[i]
+                    for (var j = 0, l = layers[index + 1].length; j < l; j++) {
+                        var node2 = layers[index + 1][j],
+                            isRelate = false
+                        //判断node是否是 node2的父节点或者子节点
+                        node2.parents && node2.parents.forEach(function (parent) {
+                            if (node.id === parent && !isRelate) {
+                                isRelate = true;
+                                var edge = {
+                                    node1:node,
+                                    node2:node2
+                                }
+                                if (arrowDirection == CHILD_TO_PARENT) {
+                                    edge.from = node2;
+                                    edge.to = node
+                                } else {
+                                    edge.from = node;
+                                    edge.to = node2;
+                                }
+                                edges.push(edge);
                             }
-                            if (arrowDirection == CHILD_TO_PARENT) {
-                                edge.from = node;
-                                edge.to = allNodes[parent]
-                            } else {
-                                edge.from = allNodes[parent];
-                                edge.to = node;
+                        });
+                        !isRelate && node2.children && node2.children.forEach(function (child) {
+                            if (node.id === child && !isRelate) {
+                                isRelate = true;
+                                var edge = {
+                                    node1:node,
+                                    node2:node2
+                                }
+                                if (arrowDirection == CHILD_TO_PARENT) {
+                                    edge.from = node;
+                                    edge.to = node2
+                                } else {
+                                    edge.from = node2;
+                                    edge.to = node;
+                                }
+                                edges.push(edge);
                             }
-
-                            edges.push(edge);
-                        }
-                    });
-                    node.children && node.children.forEach(function (child) {
-                        var id = getId(node.id, child)
-                        if (!allNodes[child]) {
-                            return;
-                        }
-                        var id = getId(node.id, child),
-                            edge
-                        if (edge = existEdges[id]) {
-                            return;
-                        } else {
-                            edge = existEdges[id] = {
-                                node1:node,
-                                node2:allNodes[child]
-                            }
-                            if (arrowDirection == CHILD_TO_PARENT) {
-                                edge.from = allNodes[child];
-                                edge.to = node
-                            } else {
-                                edge.from = node
-                                edge.to = allNodes[child];
-                            }
-                            edges.push(edge);
-                        }
-                    });
-                });
-                edges.length && edgeGroups.push(edges);
-
+                        });
+                    }
+                }
+                edgeGroups.push(edges)
             });
             return edgeGroups;
         },
-        swapNode = function (layer, i1, i2) {
-            if (i1 == i2) {
-                return;
-            }
-            var temp = layer[i1];
-            layer[i1] = layer[i2];
-            layer[i1]._indexInLayer = i2;
-            layer[i2] = temp;
-            layer[i2]._indexInLayer = i1;
-        },
-        reduceCrossing = function (edgeGroup, allNodes) {
-            edgeGroup.forEach(function (edges) {
-                var lastTopIndex = 0,
-                    lastBottomIndex = 0   //上层和下层的最后一个节点index,用于和当前边比较
-                edges.forEach(function (edge) {
+        reduceCrossing = function (edgeGroup, layers) {
+            //重心启发式算法，refer：http://ksei.bnu.edu.cn/old/paper/2005/gainiantudebujusuanfayanjiu.pdf
 
+            //从上往下
+            edgeGroup.forEach(function (edges, i) {
+                var weight = {},
+                    nodesWidthEdge = [],
+                    index = 0
+                edges.forEach(function (edge) {
+                    var node2Id = edge.node2.id
+                    weight[node2Id] || ((weight[node2Id] = {value:0, count:0}) && nodesWidthEdge.push(edge.node2));
+                    weight[node2Id].value += edge.node1._indexInLayer;
+                    weight[node2Id].count++;
+                });
+
+                //重新排序有边的节点
+                nodesWidthEdge.sort(function (a, b) {
+                    var aId = a.id,
+                        bId = b.id
+                    return weight[aId].value / weight[aId].count - weight[bId].value / weight[bId].count;
+                });
+                layers[i + 1].forEach(function (n, m) {
+                    if (weight[n.id]) {
+                        layers[i + 1][m] = nodesWidthEdge[index++];
+                    }
+                });
+                //重新生成 _indexInLayer
+                layers[i + 1].forEach(function (node, j) {
+                    node._indexInLayer = j;
                 });
             });
+
+            //从下往上 再来一次
+            for (var l = edgeGroup.length - 2; l >= 0; l--) {
+                var weight = {},
+                    nodesWidthEdge = [],
+                    edges = edgeGroup[l],
+                    index = 0
+                edges.forEach(function (edge) {
+                    var node1Id = edge.node1.id
+                    weight[node1Id] || ((weight[node1Id] = {value:0, count:0}) && nodesWidthEdge.push(edge.node1));
+                    weight[node1Id].value += edge.node2._indexInLayer;
+                    weight[node1Id].count++;
+                });
+
+                //重新排序有边的节点
+                nodesWidthEdge.sort(function (a, b) {
+                    var aId = a.id,
+                        bId = b.id
+                    return weight[aId].value / weight[aId].count - weight[bId].value / weight[bId].count;
+                });
+                layers[l].forEach(function (n, m) {
+                    if (weight[n.id]) {
+                        layers[l][m] = nodesWidthEdge[index++];
+                    }
+                });
+                //重新生成 _indexInLayer
+                layers[l].forEach(function (node, j) {
+                    node._indexInLayer = j;
+                });
+            }
         },
-        arrow = function (paper, r, edge, arrowLength) {
+        arrow = function (paper, r, edge, arrowLength, arrowWidth) {
             //@param r : radius of circle
             var x1 = edge.from._x,
                 y1 = edge.from._y,
@@ -180,7 +217,7 @@
 
             return paper.path().attr({
                 path:['M', x1 + r, y1, "h", length, 'l', -hArrow, -vArrow, 'm', hArrow, vArrow, 'l', -hArrow, vArrow],
-                'stroke-width':.5,
+                'stroke-width':arrowWidth,
                 'stroke':'#2f69bf'
             }).rotate(360 - alpha * 180 / Math.PI, x1, y1);
 
@@ -191,17 +228,17 @@
         CHILD_TO_PARENT = 'child_to_parent'
 
 
-
     DPChart.addChart('topology', {
         draw:function () {
             var options = DPChart.mix({
                     layerDirection:PARENT_ON_TOP,
                     arrowDirection:CHILD_TO_PARENT,
                     padding:40,
-                    nodeRadius:20,
+                    nodeRadius:30,
                     arrowLength:10,
+                    arrowWidth:2,
                     colorMap:{
-                        1:'#b22222',
+                        1:'#FF0000',
                         2:'#7CFC00',
                         3:'#B1C9ED'
                     },
@@ -217,6 +254,8 @@
                 layers.reverse();
             }
             var edges = layEdges(layers, allNodes, options.arrowDirection)
+
+            reduceCrossing(edges, layers);
 
             if (!layers.length)return;
 
@@ -243,14 +282,19 @@
 
                     node._x = x;
                     node._y = y;
+                    var color = options.colorMap[node.status] || 'green',
+                        rgb = Raphael.getRGB(color),
+                        hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b)
                     _circles.push(stage.circle(x, y, options.nodeRadius).attr({
-                        fill:options.colorMap[node.status], //"r(.5,.5)" + options.colorMap[node.status] + "-white",
+                        //fill:options.colorMap[node.status],
+                        fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s -.1, hsl.l -.2 ).hex,
                         'stroke':'none',
+                        'stroke-width':1,
                         cursor:'pointer'
                     }).data('node', node).click(function () {
                             options.onclick.call(this, node)
                         }))
-                    //  stage.text(x, y, node.text);
+                    stage.text(x, y, node.text);
 
                 });
             });
@@ -258,7 +302,7 @@
             //draw edges
             edges.forEach(function (layer) {
                 layer.forEach(function (edge) {
-                    arrow(stage, options.nodeRadius, edge, options.arrowLength)
+                    arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
 //                    relation[edge.from.id] || (relation[edge.from.id] = []);
 //                    relation[edge.from.id].push(arrow);
 //                    relation[edge.to.id] || (relation[edge.to.id] = []);
