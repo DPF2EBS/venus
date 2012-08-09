@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<header class="header">
+    	<section class="header-cont">
+        	<div class="header-logo">
+            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
+            </div>
+            <nav class="header-nav">
+            	<ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
+                    <li><a href="svgdemo.html">SVG Demo</a></li>
+                    <li><a href="svgcase.html">svg案例</a></li>
+                    <li><a href="canvascase.html">canvas案例</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+    <div class="nav">
+    	<section class="main-item">
+			<ul class="btn-list">
+				<li><a href="canvasdemo1.html" class="button orange bigrounded">饼状图</a></li>
+				<li><a href="canvasdemo2.html" class="button orange bigrounded">线状图</a></li>
+				<li><a href="canvasdemo3.html" class="button orange bigrounded">点状图</a></li>
+				<li><a href="canvasdemo4.html" class="button orange bigrounded">柱状图</a></li>
+			</ul>	
+		</section>
+    </div>
+    <div class="main">
+    	<div class="sidebar">
+			<h3 class="toggler first"><a href="javascript:void(0)">设置画布</a></h3>
+			<div class="accordion">
+			<ul>
+			<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+			<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+			<li><label>画布外边距：</label><input id="J_picMargin" type="text" class="g-input" /></li>
+			<li><a id="J_stageSize" class="button white">看看</a></li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler"><a href="javascript:void(0)">设置图例</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>是否有图例：</label>
+                <select class="sel J_bar" data-type="legend">
+                    <option value="1" selected="true">有</option>
+                    <option value="0">木有</option>
+                </select>
+            </li>
+			<li>
+				<label>图例的位置：</label>
+                <select class="sel J_bar" data-type="legendPosition">
+                    <option value="right|top" selected="true">右上角</option>
+                    <option value="left|top">左上角</option>
+                    <option value="right|bottom">右下角</option>
+                </select>
+			</li>
+			<li>
+				<label>图例的行高：</label>
+                <select class="sel J_bar" data-type="legendHeight">
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                </select>		
+			</li>
+			<li>
+				<label>图例的类型：</label>
+                <select class="sel J_bar" data-type="legendType">
+                	<option value="circle" selected="true">circle</option>
+                    <option value="rect">rect</option>
+                </select>
+			</li>
+			<li>
+				<label>图例X坐标：</label>
+				(x)
+                <input type="text" id="J_legendPosX" class="g-input"/>
+			</li>
+			<li>
+				<label>图例Y坐标：</label>
+				(y)
+                <input type="text" id="J_legendPosY" class="g-input"/>
+			</li>
+			<li>
+				<a href="javascript:void(0)" class="button white" id="J_setPos">看看</a>
+			</li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">设置网格</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>网格（横）：</label>
+                <select class="sel J_bar" data-type="gridRow">
+                	<option value="0" selected="true">木有</option>
+                    <option value="1">有</option>
+                </select>
+			</li>
+			<li>
+				<label>网格（竖）：</label>
+                <select class="sel J_bar" data-type="gridCol">
+                	<option value="0" selected="true">木有</option>
+                    <option value="1">有</option>
+                </select>
+			</li>
+			</ul>
+			</div>
+			
+    	</div>
+    	<div class="content">
+    		<div id="chart_container" class="chart-box"></div>
+    	</div>
+    </div>
+    
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>    
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/bar.js"></script>
+    <script type="text/javascript">
+    	var container = $('chart_container'),
+	    	data = [
+                {data:10, label:"FF"},
+                {data:80, label:"IE"},
+                {data:60, label: "Chrome"},
+                {data:10, label: "Ohter"},
+                {data:40, label: "Safari"},
+                {data:78, label: "Opera"},
+                {data:40, label: "SouGou"},
+                {data:90, label: "BaiDu"}
+            ],
+            options = {
+               width:800,
+                height:400,
+                margin:100,
+                axis:{
+                    x: {
+                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu"]
+                    },
+                    y: {
+                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+                    }
+                },
+                bar: { 
+                },
+                legend: {
+                	position:["right", "top"],
+                    height: 150,
+                    itemType:"circle"
+                },
+                grid: {
+                    enableXGrid: false,
+                    enableYGrid: false
+                }
+            };
+    	var bing = new DPChart(container, data, options);
+	    $('J_stageSize').addEvent('click', function() {
+	    	var widthVal = $('J_stageWidth').value,
+	    		heightVal = $('J_stageHeight').value,
+	    		marginVal = $('J_picMargin').value;
+	    		
+	    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 800;
+	    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+	    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 100;
+	    	
+	    	options.width = widthVal;
+	    	options.height = heightVal;
+	    	options.margin = marginVal;
+			bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, data, options);
+	    });
+	    
+	    
+        $('J_setPos').addEvent('click', function() {
+	    	var posX = $('J_legendPosX').value,
+	    		posY = $('J_legendPosY').value;
+	    	posX = (posX !== '') ? parseInt(posX) : "right";
+	    	posY = (posY !== '') ? parseInt(posY) : "top";
+	
+	    	options.legend.position = [posX, posY];
+	
+	    	bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, data, options);
+	    });
+	    
+	    var len = $$('.J_bar').length;
+	    for(var i = 0; i < len; i++) {
+	    	
+	    	$$('.J_bar')[i].addEvent('change', function() {
+	    		
+	    		var _this = $(this),
+	            val = _this.value,
+	            attr = _this.getProperty('data-type');
+		        switch(attr) {
+		        	case 'legend':
+		                if (val == '0')  options.legend = null;
+		                else {
+		                    options.legend = {
+		                        position:["right", "top"],
+		                        height: 200,
+		                        itemType:"circle"
+		                    };
+		                }
+		                break;
+		            case 'legendPosition':
+		            	var arr = val.split('|');
+		            	options.legend && (options.legend.position = arr);
+		            	break;
+		            case 'legendHeight':
+		            	options.legend && (options.legend.height = val);
+		            	break;
+		            case 'legendType':
+		            	options.legend && (options.legend.itemType = val);
+		            	break;
+		            case 'gridRow':
+		           		if(val == '0') options.grid.enableXGrid = false;
+		           		else { options.grid.enableXGrid = true}
+		           		break;
+		           	case 'gridCol':
+		           		if(val == '0') options.grid.enableYGrid = false;
+		           		else { options.grid.enableYGrid = true }
+		           		break;
+		        	default: break;
+		        }
+		        bing = null;
+		        container.innerHTML = '';
+		    	new DPChart(container, data, options);
+	    		
+	    	});
+	    	
+	    }
+		</script>
+</body>
+</html>

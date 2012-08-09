@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<header class="header">
+    	<section class="header-cont">
+        	<div class="header-logo">
+            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
+            </div>
+            <nav class="header-nav">
+            	<ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
+                    <li><a href="svgdemo.html">SVG Demo</a></li>
+                    <li><a href="svgcase.html">svg案例</a></li>
+                    <li><a href="canvascase.html">canvas案例</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+    <div class="nav">
+    	<section class="main-item">
+			<ul class="btn-list">
+				<li><a href="canvasdemo1.html" class="button orange bigrounded">饼状图</a></li>
+				<li><a href="canvasdemo2.html" class="button orange bigrounded">线状图</a></li>
+				<li><a href="canvasdemo3.html" class="button orange bigrounded">点状图</a></li>
+				<li><a href="canvasdemo4.html" class="button orange bigrounded">柱状图</a></li>
+			</ul>	
+		</section>
+    </div>
+    <div class="main">
+    	<div class="sidebar">
+			<h3 class="toggler first"><a href="javascript:void(0)">设置画布</a></h3>
+			<div class="accordion">
+			<ul>
+			<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+			<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+			<li><label>画布外边距：</label><input id="J_picMargin" type="text" class="g-input" /></li>
+			<li><a id="J_stageSize" class="button white">看看</a></li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">英雄本色</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>点图半径：</label>
+                <select class="sel J_dot" data-type="radius">
+                    <option value="1" selected="true">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+	        </li>
+	        <li>
+	        	<label>初始化动画：</label>
+                <select class="sel J_dot" data-type="dotEase">
+					<option value="elastic-ease-out" selected="true">elastic-ease-out</option>
+					<option value="ease-in">ease-in</option>
+					<option value="ease-out">ease-out</option>
+					<option value="ease-in-out">ease-in-out</option>
+					<option value="back-ease-out">back-ease-out</option>
+					<option value="bounce-ease-out">bounce-ease-out</option>
+					<option value="bounce-ease-in">bounce-ease-in</option>
+					<option value="bounce-ease-in-out">bounce-ease-in-out</option>
+					<option value="strong-ease-in">strong-ease-in</option>
+					<option value="strong-ease-out">strong-ease-out</option>
+					<option value="strong-ease-in-out">strong-ease-in-out</option>
+                </select>
+	        </li>
+			</ul>
+			</div>
+			
+    	</div>
+    	<div class="content">
+    		<div id="chart_container" class="chart-box"></div>
+    	</div>
+    </div>
+    
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>    
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/dot.js"></script>
+    <script type="text/javascript">
+    	var container = $('chart_container'),
+	    	data = [[0,0,0],[0,1,0],[0,2,0],[0,3,1],[-0,4,6],[0,5,3],[0,6,2],[0,7,0],[0,8,0],[0,9,0],[0,10,0],[0,11,0],[0,12,0],[0,13,1],[0,14,11],[0,15,8],[0,16,0],[0,17,1],[0,18,0],[0,19,3],[0,20,13],[0,21,1],[0,22,0],[0,23,2],[1,0,0],[1,1,13],[1,2,0],[1,3,0],[1,4,0],[1,5,0],[1,6,0],[1,7,0],[1,8,0],[1,9,0],[1,10,0],[1,11,0],[1,12,0],[1,13,0],[1,14,3],[1,15,5],[1,16,0],[1,17,0],[1,18,2],[1,19,0],[1,20,1],[1,21,1],[1,22,3],[1,23,1],[2,0,1],[2,1,1],[2,2,0],[2,3,0],[2,4,0],[2,5,0],[2,6,0],[2,7,10],[2,8,0],[2,9,0],[2,10,0],[2,11,0],[2,12,0],[2,13,4],[2,14,2],[2,15,0],[2,16,8],[2,17,4],[2,18,4],[2,19,0],[2,20,2],[2,21,1],[2,22,1],[2,23,0],[3,0,1],[3,1,2],[3,2,0],[3,3,0],[3,4,0],[3,5,0],[3,6,0],[3,7,0],[3,8,1],[3,9,1],[3,10,0],[3,11,1],[3,12,0],[3,13,1],[3,14,4],[3,15,3],[3,16,2],[3,17,3],[3,18,0],[3,19,0],[3,20,1],[3,21,0],[3,22,0],[3,23,0],[4,0,1],[4,1,3],[4,2,11],[4,3,2],[4,4,5],[4,5,5],[4,6,2],[4,7,0],[4,8,0],[4,9,1],[4,10,0],[4,11,0],[4,12,0],[4,13,2],[4,14,4],[4,15,6],[4,16,2],[4,17,2],[4,18,2],[4,19,0],[4,20,1],[4,21,0],[4,22,0],[4,23,0],[5,0,0],[5,1,0],[5,2,0],[5,3,0],[5,4,1],[5,5,0],[5,6,0],[5,7,0],[5,8,0],[5,9,1],[5,10,0],[5,11,0],[5,12,1],[5,13,15],[5,14,4],[5,15,14],[5,16,6],[5,17,1],[5,18,3],[5,19,2],[5,20,0],[5,21,5],[5,22,2],[5,23,2],[6,0,2],[6,1,2],[6,2,0],[6,3,0],[6,4,1],[6,5,1],[6,6,0],[6,7,0],[6,8,0],[6,9,1],[6,10,0],[6,11,0],[6,12,2],[6,13,1],[6,14,0],[6,15,0],[6,16,0],[6,17,1],[6,18,4],[6,19,0],[6,20,0],[6,21,1],[6,22,0],[6,23,0]],
+            options = {
+                width: 800,
+                height: 500,
+                margin: 70,
+                axis:{
+                    x:{ 
+                        ticks:['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p','11p']
+                    },
+                    y:{ 
+                        ticks:["",'Saturday','Friday','Thursday','Wednesday','Tuesday','Monday','Sunday']
+                    }
+                },
+                dot:{
+                    radius:1
+                }
+            };
+    	var bing = new DPChart(container, data, options);
+    	
+	    $('J_stageSize').addEvent('click', function() {
+	    	var widthVal = $('J_stageWidth').value,
+	    		heightVal = $('J_stageHeight').value,
+	    		marginVal = $('J_picMargin').value;
+	    		
+	    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 800;
+	    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 500;
+	    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 70;
+	    	
+	    	options.width = widthVal;
+	    	options.height = heightVal;
+	    	options.margin = marginVal;
+			bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, data, options);
+	    });
+	    var len = $$('.J_dot').length;
+	    for(var i = 0; i < len; i++) {
+	    	$$('.J_dot')[i].addEvent('change', function() {
+	    		var _this = $(this),
+	            val = _this.value,
+	            attr = _this.getProperty('data-type');
+		        switch(attr) {
+		        	case 'radius':
+		        		options.dot.radius = parseInt(val);
+		        		break;
+		        	case 'dotEase':
+		        		options.dot.easing = val;
+		        		break;
+		        	default: break;
+		        }
+		        bing = null;
+		        container.innerHTML = '';
+		    	new DPChart(container, data, options);
+	    	});
+	    }
+	  	</script>
+</body>
+</html>

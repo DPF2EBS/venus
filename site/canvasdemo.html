@@ -26,6 +26,16 @@
     </header>
     <div class="main">
     	<section class="main-cont">
+    		
+			<section class="main-item">
+				<ul class="btn-list">
+					<li><a href="canvasdemo1.html" class="button orange bigrounded">饼状图</a></li>
+					<li><a href="canvasdemo2.html" class="button orange bigrounded">线状图</a></li>
+					<li><a href="canvasdemo3.html" class="button orange bigrounded">点状图</a></li>
+					<li><a href="canvasdemo4.html" class="button orange bigrounded">柱状图</a></li>
+				</ul>	
+			</section>
+    		
         	<h2> »Kineticjs简介</h2>
            	<section class="main-profile">
             	<p>Greetings fellow webonauts! KineticJS is an HTML5 Canvas JavaScript library that extends the 2d context by enabling high performance path detection and pixel detection for desktop and mobile applications.</p>
@@ -136,106 +146,135 @@
                         new DPChart(container3, data, options3);
                 </textarea>
             <h2>Canvas图形展示如下：</h2>
-
-           	<section class="main-item">
+			
+           	<section class="main-item" id="pieSection">
             	<p>（一）Canvas饼状图展示如下：<p>
             </section>
-			
-			<section class="main-item opera">
-				<label>画布的宽度:</label>
-            	<input id="J_stageWidth" type="text" class="g-input"/>
-            	<label>画布的高度:</label>
-            	<input id="J_stageHeight" type="text" class="g-input" />
-            	<label>画面的外边距:</label>
-            	<input id="J_picMargin" type="text" class="g-input" />
-            	<br />
-            	<p class="p-button"><input id="J_stageSize" type="button" value="提交数据" class="g-button"/></p>
-			</section>
-			
-			<section class="main-item opera">
-				<label>初始化动画效果：</label>
-				<select class="sel J_pie" data-type="initEase">
-					<option value="linear" selected="true">linear</option>
-					<option value="ease-in">ease-in</option>
-					<option value="ease-out">ease-out</option>
-					<option value="ease-in-out">ease-in-out</option>
-					<option value="back-ease-out">back-ease-out</option>
-					<option value="bounce-ease-out">bounce-ease-out</option>
-					<option value="bounce-ease-in">bounce-ease-in</option>
-					<option value="bounce-ease-in-out">bounce-ease-in-out</option>
-					<option value="strong-ease-in">strong-ease-in</option>
-					<option value="strong-ease-out">strong-ease-out</option>
-					<option value="strong-ease-in-out">strong-ease-in-out</option>
-                </select>
-                
-                
-			</section>
-			
-			<section class="main-item opera">
-                <label>饼图半径：</label>
-                <select class="sel J_pie" data-type="radius">
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150" selected="true">150</option>
-                    <option value="180">180</option>
-                </select>
-			</section>
-			
-			<section class="main-item opera">
-				<label>是否需要tip提示：</label>
-                <select class="sel J_pie" data-type="tip">
-                    <option value="0" selected="true">不需要</option>
-                    <option value="1">需要</option>
-                </select>
-			</section>
-			
-            <section class="main-item opera">
-				<!--linear, ease-in, ease-out, ease-in-out,
-     *  back-ease-in, back-ease-out, back-ease-in-out, elastic-ease-in, elastic-ease-out,
-     *  elastic-ease-in-out, bounce-ease-out, bounce-ease-in, bounce-ease-in-out,
-     *  strong-ease-in, strong-ease-out, or strong-ease-in-out -->
+            <div class="chart-box">
+            	
+            	<div class="hurder-side">
+				<section class="main-item opera">
+					<ul class="operate-list">
+						<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+						<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+						<li><label>画面外边距：</label><input id="J_picMargin" type="text" class="g-input" /></li>
+						<li><input id="J_stageSize" type="button" value="提交数据" class="g-button"/></li>
+					</ul>
+				</section>
 				
-                <label>是否需要图例：</label>
-                <select class="sel J_pie" data-type="legend">
-                    <option value="1" selected="true">需要</option>
-                    <option value="0">不需要</option>
-                </select>
-                <br /><br />
-                <label>图例的位置：</label>
-                <select class="sel J_pie" data-type="legendPosition">
-                    <option value="right|top" selected="true">右上角</option>
-                    <option value="left|top">左上角</option>
-                    <option value="right|bottom">右下角</option>
-                </select>
-                
-                <label>图例的数字位置：</label>
-                x
-                <input type="text" id="J_legendPosX" class="g-input"/>
-                y
-                <input type="text" id="J_legendPosY" class="g-input"/>
-                <a href="javascript:void(0)" id="J_setPos">定位</a>
-                <br /><br />
-                
-                <label>图例的行高：</label>
-                <select class="sel J_pie" data-type="legendHeight">
-                    <option value="100">100</option>
-                    <option value="150" selected="true">150</option>
-                    <option value="200">200</option>
-                    <option value="250">250</option>
-                    <option value="300">300</option>
-                </select>
-                
-                <label>图例的类型：</label>
-                <select class="sel J_pie" data-type="legendType">
-                	<option value="circle" selected="true">circle</option>
-                    <option value="rect">rect</option>
-                </select>
-                
-            </section>
+				<section class="main-item opera">
+					<ul class="operate-list">
+						<li>
+							<label>初始化动画效果：</label>
+							<select class="sel J_pie" data-type="initEase">
+							<option value="linear" selected="true">linear</option>
+							<option value="ease-in">ease-in</option>
+							<option value="ease-out">ease-out</option>
+							<option value="ease-in-out">ease-in-out</option>
+							<option value="back-ease-out">back-ease-out</option>
+							<option value="bounce-ease-out">bounce-ease-out</option>
+							<option value="bounce-ease-in">bounce-ease-in</option>
+							<option value="bounce-ease-in-out">bounce-ease-in-out</option>
+							<option value="strong-ease-in">strong-ease-in</option>
+							<option value="strong-ease-out">strong-ease-out</option>
+							<option value="strong-ease-in-out">strong-ease-in-out</option>
+		                	</select>
+		                </li>
+					</ul>
+										
+				</section>
+				
+				<section class="main-item opera">
+					<ul class="operate-list">
+						<li>
+							<label>饼图半径：</label>
+			                <select class="sel J_pie" data-type="radius">
+			                    <option value="50">50</option>
+			                    <option value="100">100</option>
+			                    <option value="150" selected="true">150</option>
+			                    <option value="180">180</option>
+			                </select>
+		                </li>
+					</ul>
+	                
+				</section>
+				
+				<section class="main-item opera">
+					<ul class="operate-list">
+						<li>
+							<label>是否需要tip提示：</label>
+			                <select class="sel J_pie" data-type="tip">
+			                    <option value="0" selected="true">不需要</option>
+			                    <option value="1">需要</option>
+			                </select>
+						</li>
+					</ul>
+				</section>
+				
+					<section class="main-item opera last">
+					<!--linear, ease-in, ease-out, ease-in-out,
+	     *  back-ease-in, back-ease-out, back-ease-in-out, elastic-ease-in, elastic-ease-out,
+	     *  elastic-ease-in-out, bounce-ease-out, bounce-ease-in, bounce-ease-in-out,
+	     *  strong-ease-in, strong-ease-out, or strong-ease-in-out -->
+	     			
+					<ul class="operate-list">
+						<li>
+							<label>是否需要图例：</label>
+			                <select class="sel J_pie" data-type="legend">
+			                    <option value="1" selected="true">需要</option>
+			                    <option value="0">不需要</option>
+			                </select>
+			            </li>
+						<li>
+							<label>图例的位置：</label>
+			                <select class="sel J_pie" data-type="legendPosition">
+			                    <option value="right|top" selected="true">右上角</option>
+			                    <option value="left|top">左上角</option>
+			                    <option value="right|bottom">右下角</option>
+			                </select>
+						</li>
+						<li>
+							<label>图例X坐标：</label>
+							x：
+			                <input type="text" id="J_legendPosX" class="g-input"/>
+						</li>
+						<li>
+							<label>图例Y坐标：</label>
+							y：
+			                <input type="text" id="J_legendPosY" class="g-input"/>
+						</li>
+						<li>
+							<a href="javascript:void(0)" class="button orange bigrounded" id="J_setPos">定位</a>
+						</li>
+						<li>
+							<label>图例的行高：</label>
+			                <select class="sel J_pie" data-type="legendHeight">
+			                    <option value="100">100</option>
+			                    <option value="150" selected="true">150</option>
+			                    <option value="200">200</option>
+			                    <option value="250">250</option>
+			                    <option value="300">300</option>
+			                </select>		
+						</li>
+						<li>
+							<label>图例的类型：</label>
+			                <select class="sel J_pie" data-type="legendType">
+			                	<option value="circle" selected="true">circle</option>
+			                    <option value="rect">rect</option>
+			                </select>
+						</li>
+					</ul>
+	                
+	            </section>
+			</div>
 
-            <div id="chart_container"></div>
-
-            <section class="main-item">
+            <div id="chart_container" class="chart-side"></div>
+            	
+            </div>
+			
+			<!-- so do it -->
+			
+            <section class="main-item" id="lineSection">
             	<p>（二）Canvas线状图展示如下：<p>
             </section>
             
@@ -347,7 +386,9 @@
             </section>
             
             <div id="chart_container1"></div>
-            <section class="main-item">
+            
+            
+            <section class="main-item" id="dotSection">
                 <p>（三）Canvas点状图展示如下：<p>
             </section>
             
@@ -385,11 +426,11 @@
 					<option value="strong-ease-in-out">strong-ease-in-out</option>
                 </select>
 			</section>
-			
-			
             
             <div id="chart_container2"></div>
-            <section class="main-item">
+            
+            
+            <section class="main-item" id="barSection">
                 <p>（四）Canvas柱状图展示如下：<p>
             </section>
             
