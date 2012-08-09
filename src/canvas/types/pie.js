@@ -143,50 +143,59 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                         });
                         percentLayer.add(text);
                     }
-
-                    if ( !! pieOptions.easing) {
-                        sector.transitionTo({
-                            radius: options.pie.radius,
-                            duration: .5,
-                            startAngle: startAngle,
-                            endAngle: endAngle,
-                            easing: pieOptions.easing
-                        });
-                    }
-
-
-                    sector.on("mouseover", function () {
-						
-                        this.transitionTo({
-                            radius: options.pie.radius * 1.1,
-                            duration: 0.2,
-                            easing: "ease-in"
-                        });
-						
-                        if(pieOptions.needTip) {
-                            var direction = '';
-                            if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
-                            if(tipAngle > 315 && tipAngle < 360) {
-                                direction = 'right';
-                            } else if(tipAngle >= 45 && tipAngle < 135) {
-                                direction = 'bottom';
-                            } else if(tipAngle >= 135 && tipAngle < 225) {
-                                direction = 'left';
-                            } else {
-                                direction = 'top';
-                            }
-                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
-                            stage.add(newLayer);
+                    (function(sector){
+                        if ( !! pieOptions.easing) {
+                            sector.transitionTo({
+                                radius: options.pie.radius,
+                                duration: .5,
+                                startAngle: startAngle,
+                                endAngle: endAngle,
+                                easing: pieOptions.easing,
+                                callback:function(){
+                                    bindMouseEvent(sector);
+                                }
+                            });
+                        }else{
+                            bindMouseEvent(sector);
                         }
-                    });
-                    sector.on("mouseout", function () {
-                        this.transitionTo({
-                            radius: options.pie.radius,
-                            duration: 0.2,
-                            easing: "ease-out"
-                        });
-                        pieOptions.needTip && DPChart.toolTipHide(newLayer);
-                    });
+
+                        function bindMouseEvent(sector){
+                            sector.on("mouseover", function () {
+                                
+                                this.transitionTo({
+                                    radius: options.pie.radius * 1.1,
+                                    duration: 0.2,
+                                    easing: "ease-in"
+                                });
+                                
+                                if(pieOptions.needTip) {
+                                    var direction = '';
+                                    if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
+                                    if(tipAngle > 315 && tipAngle < 360) {
+                                        direction = 'right';
+                                    } else if(tipAngle >= 45 && tipAngle < 135) {
+                                        direction = 'bottom';
+                                    } else if(tipAngle >= 135 && tipAngle < 225) {
+                                        direction = 'left';
+                                    } else {
+                                        direction = 'top';
+                                    }
+                                    newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
+                                    stage.add(newLayer);
+                                }
+                            });
+                            sector.on("mouseout", function () {
+                                this.transitionTo({
+                                    radius: options.pie.radius,
+                                    duration: 0.2,
+                                    easing: "ease-out"
+                                });
+                                pieOptions.needTip && DPChart.toolTipHide(newLayer);
+                            });
+                        }
+
+                    }(sector));
+                    
 
                 })(startAngle, endAngle, data.data);
 
