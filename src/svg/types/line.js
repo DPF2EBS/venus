@@ -37,8 +37,8 @@
                     smooth:false,
                     dots:true,
                     dotRadius:4,
-                    area:true,
-                    beginAnimate:true,
+                    area:false,
+                    beginAnimate:false,
                     areaOpacity:0.1,
                     dotSelect:true,
                     columnHover:true

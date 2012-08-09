@@ -2,7 +2,8 @@
  * SVG Chart Lib of Venus
  * */
 
-;(function (global, undefined) {
+;
+(function (global, undefined) {
     var _DPChart = global.DPChart;
     var mix = _DPChart.mix
         , PI = Math.PI
@@ -157,6 +158,7 @@
     DPChart.addChart = function (name, methods) {
         charts[name] = methods;
     }
+    DPChart.charts = charts;
 
     var Series = function (data) {
         var series = []
@@ -225,7 +227,9 @@
         getLabels:function () {
             var labels = [],
                 _labels = {},
-                isObj = false
+                isObj = false,
+                isArr = false,
+                len = 0
             this.series.forEach(function (item) {
                 if (item.name && _DPChart.isNumber(item.data)) {
                     labels.push(item.name)
@@ -233,7 +237,8 @@
                 else {
                     var data = item.data;
                     if (isArray(data)) {
-                        labels.push('');
+                        isArr = true;
+                        len = Math.max(data.length, len)
                     }
                     else if (isObject(data)) {
                         for (var o in data) {
@@ -250,6 +255,14 @@
                 labels = [];
                 for (var o in _labels) {
                     labels.push(o);
+                }
+            }
+            if (isArr) {
+                // data is Array ,create an array of Math Length
+                labels = new Array(len);
+                // DON'T USE forEach , it won't work here
+                for (var i = 0; i < len; i++) {
+                    labels[i] = ''
                 }
             }
             return labels;
@@ -313,9 +326,9 @@
             labelElements[i] = paper.text((beginX + (i + opt.pop) * opt.tickWidth), beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1), opt.ticks[i]).rotate(rotate, beginX, beginY).attr({
                 'font-size':opt.fontSize
             });
-            if(opt.labelRotate){
+            if (opt.labelRotate) {
                 var bbox = labelElements[i].getBBox()
-                labelElements[i].rotate(opt.labelRotate).translate(bbox.width/2,0)
+                labelElements[i].rotate(opt.labelRotate).translate(bbox.width / 2, 0)
             }
         }
 
@@ -443,7 +456,7 @@
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
                 names.push(d.name);
-            } else if (_DPChart.isNumber(d.data) ) {
+            } else if (_DPChart.isNumber(d.data)) {
                 names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
             } else {
                 names.push('');

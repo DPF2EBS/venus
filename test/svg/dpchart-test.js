@@ -86,7 +86,7 @@ test('Series.getLabels()', function () {
         data2 = {name1:1, name2:2, name3:3},
         data3 = [
             {Jan:1, Feb:2, Mar:3},
-            {Jan:4, Feb:5, Mar:6},
+            {Jan:4, May:5, Mar:6},
             {Jan:7, Feb:8, Mar:9}
         ],
         data4 = [
@@ -95,9 +95,14 @@ test('Series.getLabels()', function () {
             {name:'name3', data:{Jan:7, Feb:8, Mar:9}}
         ],
         data5 = [
-            [1, 2, 3],
+            [1, 2, 3, 6],
             [4, 5, 6],
             [7, 8, 9]
+        ],
+        data6 = [
+            {name:'name1', data:[1, 2, 3, 4]},
+            {name:'name2', data:[1, 2, 3, 4]},
+            {name:'name3', data:[1, 2, 3, 4]}
         ]
 
     var Series = DPChart.Series
@@ -106,8 +111,25 @@ test('Series.getLabels()', function () {
         series2 = new Series(data2),
         series3 = new Series(data3),
         series4 = new Series(data4),
-        series5 = new Series(data5)
+        series5 = new Series(data5),
+        series6 = new Series(data6)
 
-    equal(series1.getLabels().length, data1.length, "length is equal")
-    deepEqual(series1.getLabels(), ['','',''])
+    equal(series1.getLabels().length, series1.getSeries().length, "length is equal")
+    deepEqual(series1.getLabels(), ['', '', ''], 'data is number and name is empty,labels are array of empty string')
+    deepEqual(series2.getLabels(), ['name1', 'name2', 'name3'], 'data is number and has names,labels are names')
+    deepEqual(series3.getLabels(), ['Jan', 'Feb', 'Mar', 'May'], 'data is object and name is empty,labels are keys of each item');
+    deepEqual(series4.getLabels(), ['Jan', 'Feb', 'Mar'], 'data is object and has names,labels are keys of each item');
+    deepEqual(series5.getLabels(), ['', '', '', ''], 'data is array and name is empty,labels are array of empty string');
+    deepEqual(series6.getLabels(), ['', '', '', ''], 'data is array and has names,but labels are array of empty string');
 })
+
+
+test('Axis beginX,beginY', function () {
+    var axis = new DPChart.Axis({
+        beginX:10,
+        beginY:20
+    }, new DPChart([]), new Raphael(document.getElementById('qunit-fixture')));
+
+    equal(axis.beginX, 10, 'beginX is 10');
+    equal(axis.beginY, 20, 'beginY is 20');
+});
