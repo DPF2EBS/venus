@@ -203,23 +203,32 @@
                 });
             }
         },
+        arrowPath = function (paper, x1, y1, x2, y2, r, arrowLength, arrowWidth) {
+            var length = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2)) - 2 * r,
+                degree45 = Math.PI / 4,
+                hArrow = arrowLength * Math.cos(degree45),
+                vArrow = arrowLength * Math.sin(degree45),
+                alpha = Math.acos((x2 - x1) / (length + 2 * r)) * ( y1 > y2 ? 1 : -1)
+
+            return {
+                path:['M', x1 + r, y1, "h", length, 'l', -hArrow, -vArrow, 'm', hArrow, vArrow, 'l', -hArrow, vArrow],
+                alpha:360 - alpha * 180 / Math.PI
+            }
+
+        },
         arrow = function (paper, r, edge, arrowLength, arrowWidth) {
             //@param r : radius of circle
             var x1 = edge.from._x,
                 y1 = edge.from._y,
                 x2 = edge.to._x,
                 y2 = edge.to._y,
-                length = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2)) - 2 * r,
-                degree45 = Math.PI / 4,
-                hArrow = arrowLength * Math.cos(degree45),
-                vArrow = arrowLength * Math.sin(degree45),
-                alpha = Math.acos((x2 - x1) / (length + 2 * r)) * ( y1 > y2 ? 1 : -1)
+                path = arrowPath(paper, x1, y1, x2, y2, r, arrowLength, arrowWidth)
 
             return paper.path().attr({
-                path:['M', x1 + r, y1, "h", length, 'l', -hArrow, -vArrow, 'm', hArrow, vArrow, 'l', -hArrow, vArrow],
+                path:path.path,
                 'stroke-width':arrowWidth,
                 'stroke':'#2f69bf'
-            }).rotate(360 - alpha * 180 / Math.PI, x1, y1);
+            }).rotate(path.alpha, x1, y1);
 
         },
         PARENT_ON_TOP = 'parent_on_top',
@@ -242,6 +251,7 @@
                         2:'#7CFC00',
                         3:'#B1C9ED'
                     },
+                    enableDrag:true,
                     onclick:function (data) {
                         //'this' will be parsed as circle object , data is the node data
                     }
@@ -272,6 +282,7 @@
             var height = layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) ,
                 width = maxLengthInLayer > 1 ? (chartWidth - options.padding * 2) / (maxLengthInLayer - 1) : 0,
                 _circles = stage.set(),
+                _texts = stage.set(),
                 relation = {},
                 _edges = stage.set()
             layers.forEach(function (layer, i) {
@@ -287,14 +298,18 @@
                         hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b)
                     _circles.push(stage.circle(x, y, options.nodeRadius).attr({
                         //fill:options.colorMap[node.status],
-                        fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s -.1, hsl.l -.2 ).hex,
+                        fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s - .1, hsl.l - .2).hex,
                         'stroke':'none',
                         'stroke-width':1,
                         cursor:'pointer'
                     }).data('node', node).click(function () {
+                            if (this._isDragging) {
+                                this._isDragging = false;
+                                return
+                            }
                             options.onclick.call(this, node)
                         }))
-                    stage.text(x, y, node.text);
+                    _texts.push(stage.text(x, y, node.text));
 
                 });
             });
@@ -302,30 +317,59 @@
             //draw edges
             edges.forEach(function (layer) {
                 layer.forEach(function (edge) {
-                    arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
-//                    relation[edge.from.id] || (relation[edge.from.id] = []);
-//                    relation[edge.from.id].push(arrow);
-//                    relation[edge.to.id] || (relation[edge.to.id] = []);
-//                    relation[edge.to.id].push(arrow);
+                    var _arrow = arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
+                    relation[edge.node1.id] || (relation[edge.node1.id] = []);
+                    relation[edge.node1.id].push({arrow:_arrow, edge:edge});
+                    relation[edge.node2.id] || (relation[edge.node2.id] = []);
+                    relation[edge.node2.id].push({arrow:_arrow, edge:edge});
                 });
             });
 
             //init drag
-//            _circles.forEach(function (circle) {
-//                var currentX,
-//                    currentY
-//                circle.drag(function (dx, dy, x, y, e) {
-//                    //onmove
-//                    this.attr({
-//                        cx:dx + currentX,
-//                        cy:dy + currentY
-//                    })
-//                }, function (x, y, e) {
-//                    currentX = this.attr('cx');
-//                    currentY = this.attr('cy');
-//                });
-//            })
+            if (options.enableDrag) {
+                _circles.forEach(function (circle, i) {
+                    var currentX,
+                        currentY
+                    circle.drag(function (dx, dy, x, y, e) {
+                        //onmove
+                        this._isDragging = true;
+                        this.attr({
+                            cx:dx + currentX,
+                            cy:dy + currentY
+                        });
+                        this.data('node')._x = dx + currentX;
+                        this.data('node')._y = dy + currentY;
+                        _texts[i].attr({
+                            x:dx + currentX,
+                            y:dy + currentY
+                        })
 
+                        //move related edges
+                        var id = circle.data('node').id
+                        relation[id] && relation[id].forEach(function (obj) {
+                            var edge = obj.edge,
+                                arrow = obj.arrow
+
+                            var x1 = edge.from._x,
+                                y1 = edge.from._y,
+                                x2 = edge.to._x,
+                                y2 = edge.to._y,
+                                path = arrowPath(stage, x1, y1, x2, y2, options.nodeRadius, options.arrowLength, options.arrowWidth)
+
+                            arrow.attr({
+                                path:path.path
+                            }).transform('R' + path.alpha + "," + x1 + "," + y1);
+                        });
+                    }, function (x, y, e) {
+                        //onstart
+                        currentX = this.attr('cx');
+                        currentY = this.attr('cy');
+                    }, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                })
+            }
 
             this._topology = {
                 allNodes:allNodes,
