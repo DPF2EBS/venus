@@ -4002,11 +4002,11 @@ TG.app = {
     },
 
     hoverMenu: function (b) {
+		
         if (!b) return;
         var t = b.getElement(".J_trigger"),
         p = b.getElement(".J_list");
         if (!t || !p) { return; }
-
         b.addEvents({
             'mouseenter': function () {
                 t.addClass('hover');
@@ -4128,3 +4128,14 @@ TG.app.mbox.extend(new Events)
                    }, options));
                }
            });
+// Venus obj
+var Venus = {};
+
+Venus.app = {
+	dropMenu: function () {
+		//console.log(11);
+		var menu = $$(".J_menu"), app = TG.app;
+		menu && menu.each(function(t){ app.hoverMenu(t);});
+	}
+};
+

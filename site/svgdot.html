@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<div class="nav">
+		<ul class="btn-list clearfix">
+			<li><a href="svgpie.html" class="button orange">饼状图</a></li>
+			<li><a href="svgline.html" class="button orange">线状图</a></li>
+			<li><a href="svgdot.html" class="button orange">点状图</a></li>
+			<li><a href="svgbar.html" class="button orange">柱状图</a></li>
+		</ul>
+    </div>
+    
+    <div class="cont-main clearfix">
+    	<div class="sidebar">
+			<h3 class="toggler first"><a href="javascript:void(0)">设置画布</a></h3>
+			<div class="accordion">
+			<ul>
+			<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+			<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+			<li><a id="J_stageSize" class="button white">看看</a></li>
+			</ul>
+			</div>
+			
+			<!-- 英雄本色 -->
+			<h3 class="toggler"><a href="javascript:void(0)">英雄本色</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>动画的半径：</label>
+				<select class="sel" data-type="radius">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="150" selected="true">150</option>
+					<option value="200">200</option>
+            	</select>
+			</li>
+
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">设置图例</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>显示图例吗：</label>
+				<select class="sel" data-type="showLegend">
+					<option value="1">显示</option>
+					<option value="0" selected="true">不显示</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>水平或竖直：</label>
+				<select class="sel" data-type="direction">
+					<option value="vertical" selected="true">vertical</option>
+					<option value="horizontal">horizontal</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>图例的类型：</label>
+				<select class="sel" data-type="legendType">
+					<option value="rect" selected="true">rect</option>
+					<option value="circle">circle</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>图例的位置：</label>
+				<select class="sel" data-type="legendPosition">
+					<option value="right-top" selected="true">右上角</option>
+					<option value="right-bottom">右下角</option>
+					<option value="left-top">左上角</option>
+					<option value="left-bottom">左下角</option>
+					<option value="center-top">上侧居中</option>
+					<option value="center-bottom">下侧居中</option>
+            	</select>
+			</li>
+			
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">设置网格</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>横向网格：</label>
+				<select class="sel" data-type="enableRow">
+					<option value="0">显示</option>
+					<option value="1" selected="true">不显示</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>竖向网格：</label>
+				<select class="sel" data-type="enableColumn">
+					<option value="0">显示</option>
+					<option value="1" selected="true">不显示</option>
+            	</select>
+			</li>
+			
+			</ul>
+			</div>
+
+    	</div>
+    	<div class="content">
+    		<div id="chart_container" class="chart-box"></div>
+    	</div>
+    </div>
+	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript" src="Scripts/g.mt.js"></script>
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../src/svg/types/dot.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+	<script type="text/javascript">
+	var container = document.getElementById('chart_container'),
+            data = [25,25,40,10,5,10,22,33],
+            options = {
+            	width: 900,
+            	height: 450,
+                axis:{
+                    x:{
+                        max:400,
+                        ticks:['FF', 'IE', 'Chrome', 'other'],
+                        tickWidth:200
+
+                    },
+                    y:{
+                        min:0,
+                        max:100,
+                        tickWidth:40,
+                        tickSize:10
+                    }
+                }, dot:{},
+				grid: { 
+				}
+            };
+    data=[];
+    for (var i = 0, l = 4; i < l; i++) {
+        var arr = []
+        options.axis.x.ticks.forEach(function (month) {
+            arr.push(parseInt(Math.random() * 40+20))
+        })
+        data.push({name:options.axis.x.ticks[i], data:arr})
+    }
+    
+    var dot = new DPChart(container, data, options);
+
+	// 
+	$('J_stageSize').addEvent('click', function() {
+		var widthVal = $('J_stageWidth').value,
+			heightVal = $('J_stageHeight').value;
+			
+		widthVal = (widthVal !== '') ? parseInt(widthVal) : 900;
+		heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+		
+		options.width = widthVal;
+		options.height = heightVal;
+		
+		dot = null;
+		container.innerHTML = '';
+		new DPChart(container, data, options);
+	});
+	// 操作点
+	$$('.accordion select').addEvent('change', function () {
+		var _this = $(this),
+	    	val = _this.value,
+			attr = _this.getProperty('data-type');
+		switch(attr) {
+			case 'enableRow':
+				if(val == '0') options.grid.enableRow = true;
+				else { options.grid.enableRow = false; }
+				break;
+			case 'enableColumn':
+				if(val == '0') options.grid.enableColumn = true;
+				else { options.grid.enableColumn = false; }
+				break;
+			case 'showLegend':
+				if (val == '1') options.legend = {};
+				else { options.legend = null; }
+				break;
+			case 'direction':
+				options.legend && (options.legend.direction = val);
+				break;
+			case 'legendType':
+				options.legend && (options.legend.itemType = val);
+				break;
+			case 'legendPosition':
+				var arr = [];
+				arr = val.split('-');
+				options.legend && (options.legend.position = arr);
+				break;
+			default: break; 
+		}
+		dot = null;
+		container.innerHTML = '';
+		new DPChart(container, data, options);
+	});
+    </script>
+    
+</body>
+</html>

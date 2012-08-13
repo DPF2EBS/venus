@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<div class="nav">
+		<ul class="btn-list clearfix">
+			<li><a href="svgpie.html" class="button orange">饼状图</a></li>
+			<li><a href="svgline.html" class="button orange">线状图</a></li>
+			<li><a href="svgdot.html" class="button orange">点状图</a></li>
+			<li><a href="svgbar.html" class="button orange">柱状图</a></li>
+		</ul>
+    </div>
+    
+    <div class="cont-main clearfix">
+    	<div class="sidebar">
+			<h3 class="toggler first"><a href="javascript:void(0)">设置画布</a></h3>
+			<div class="accordion">
+			<ul>
+			<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+			<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+			<li><a id="J_stageSize" class="button white">看看</a></li>
+			</ul>
+			</div>
+			
+			
+			<h3 class="toggler"><a href="javascript:void(0)">设置动画</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>有木有动画：</label>
+				<select class="sel" data-type="ease">
+				<option value="1" selected="true">有</option>
+				<option value="0">木有</option>
+            	</select>
+            </li>
+            <li>
+				<label>动画所耗时：</label>
+				<select class="sel" data-type="duration">
+				<option value="200">超快</option>
+				<option value="500">500ms</option>
+				<option value="1000" selected="true">1s</option>
+				<option value="1500">1.5s</option>
+				<option value="2000">2s</option>
+				<option value="5000">极慢</option>
+            	</select>
+            </li>
+            <li>
+            	<label>动画的方向：</label>
+				<select class="sel" data-type="dir">
+					<option value="1" selected="true">顺时针</option>
+					<option value="-1">逆时针</option>
+            	</select>
+            </li>
+			</ul>
+			</div>
+			<!-- 英雄本色 -->
+			<h3 class="toggler"><a href="javascript:void(0)">英雄本色</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>动画的半径：</label>
+				<select class="sel" data-type="radius">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="150" selected="true">150</option>
+					<option value="200">200</option>
+            	</select>
+			</li>
+			<li>
+				<label>显示文字吗：</label>
+				<select class="sel" data-type="showText">
+					<option value="1" selected="true">显示</option>
+					<option value="0">不显示</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>旋转的角度：</label>
+				<select class="sel" data-type="rotate">
+					<option value="-90" selected="true">-90度</option>
+					<option value="0">0度</option>
+					<option value="90">90度</option>
+					<option value="180">180度</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>空心的半径：</label>
+				<select class="sel" data-type="hollow">
+					<option value="0" selected="true">0</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+            	</select>
+			</li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">设置图例</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>显示图例吗：</label>
+				<select class="sel" data-type="showLegend">
+					<option value="1">显示</option>
+					<option value="0" selected="true">不显示</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>水平或竖直：</label>
+				<select class="sel" data-type="direction">
+					<option value="vertical" selected="true">vertical</option>
+					<option value="horizontal">horizontal</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>图例的类型：</label>
+				<select class="sel" data-type="legendType">
+					<option value="rect" selected="true">rect</option>
+					<option value="circle">circle</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>图例的位置：</label>
+				<select class="sel" data-type="legendPosition">
+					<option value="right-top" selected="true">右上角</option>
+					<option value="right-bottom">右下角</option>
+					<option value="left-top">左上角</option>
+					<option value="left-bottom">左下角</option>
+					<option value="center-top">上侧居中</option>
+					<option value="center-bottom">下侧居中</option>
+            	</select>
+			</li>
+			
+			</ul>
+			</div>
+			
+    	</div>
+    	<div class="content">
+    		<div id="chart_container" class="chart-box"></div>
+    	</div>
+    </div>
+	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript" src="Scripts/g.mt.js"></script>
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../src/svg/types/pie.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+	<script type="text/javascript">
+		var container = $('chart_container'),
+	    bingData = [25,30,40,10,60,15,9,20,25,33],
+	    bingOptions = {
+	    	width: 600,
+	    	height: 400,
+	        pie:{
+	            radius: 150
+	        }
+	    };
+	    var bing = new DPChart(container, bingData, bingOptions);
+	    
+	    // 设置画布
+	    $('J_stageSize').addEvent('click', function() {
+	    	var widthVal = $('J_stageWidth').value,
+	    		heightVal = $('J_stageHeight').value;
+	    		
+	    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 600;
+	    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+	    	
+	    	bingOptions.width = widthVal;
+	    	bingOptions.height = heightVal;
+	    	
+			bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, bingData, bingOptions);
+	    });
+	    
+	    var len = $$('select').length;
+	    for (var i = 0; i < len; i++) {
+	    	$$('select')[i].addEvent('change', function() {
+	    		var _this = $(this),
+	    			val = _this.value,
+	    			attr = _this.getProperty('data-type');
+	    		switch(attr) {
+	    			case 'ease':
+	    				if(val == '0') bingOptions.pie.animation = false;
+		                else { bingOptions.pie.animation = true; }
+	    				break;
+	    			case 'duration':
+	    				bingOptions.pie.duration = parseInt(val);
+	    				break;
+	    			case 'dir':
+	    				bingOptions.pie.dir = parseInt(val);
+	    				break;
+	    			case 'radius':
+	    				bingOptions.pie.radius = parseInt(val);
+	    				break;
+	    			case 'showText':
+	    				if(val == '1') { bingOptions.pie.showText = true; }
+	    				else { bingOptions.pie.showText = false; }
+	    				break;
+	    			case 'rotate':
+	    				bingOptions.pie.rotate = parseInt(val);
+	    				break;
+	    			case 'hollow':
+	    				bingOptions.pie.hollow = parseInt(val);
+	    				break;
+	    			case 'showLegend':
+	    				if (val == '1') bingOptions.legend = {};
+	    				else { bingOptions.legend = null; }
+	    				break;
+	    			case 'direction':
+	    				bingOptions.legend && (bingOptions.legend.direction = val);
+	    				break;
+	    			case 'legendType':
+	    				bingOptions.legend && (bingOptions.legend.itemType = val);
+	    				break;
+	    			case 'legendPosition':
+	    				var arr = [];
+	    				arr = val.split('-');
+	    				bingOptions.legend && (bingOptions.legend.position = arr);
+	    				break;
+	    			default: break; 
+	    		}
+	    		bing = null;
+		        container.innerHTML = '';
+		        new DPChart(container, bingData, bingOptions);
+	    	});
+	    }
+	</script>
+    
+</body>
+</html>

@@ -93,9 +93,6 @@ var containerGs = [containerG, containerG1, containerG2],
     leng = containerGs.length;
 
 for(var n = 0; n < leng; n++) {
-    if(!containerGs[n] || !dataGs[n]){
-            return;
-        }
         containerGs[n].innerHTML = "";
         new DPChart(containerGs[n],dataGs[n],{
             axis:{
@@ -132,9 +129,6 @@ var containers = [container, container1,container2, containerT, containerT1, con
     len = containers.length;
     // 循环生成
     for(var m = 0; m < len; m++ ) {
-            if (!containers[m] || !datas[m]) {
-                return;
-            }
             containers[m].innerHTML = "";
 
             new DPChart(containers[m], datas[m], {

@@ -7,61 +7,63 @@
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 </head>
 <body>
-	<header class="header">
-    	<section class="header-cont">
-        	<div class="header-logo">
-            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
-            </div>
-            <nav class="header-nav">
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
             	<ul>
                 	<li><a href="index.html">首页</a></li>
-                    <li><a href="api.html">API文档</a></li>
-                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
-                    <li><a href="svgdemo.html">SVG Demo</a></li>
-                    <li><a href="svgcase.html">svg案例</a></li>
-                    <li><a href="canvascase.html">canvas案例</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
                 </ul>
-            </nav>
-        </section>
-    </header>
-    <div class="main">
-    	<section class="main-cont">
-        	<h2>主站和团购的浏览器分布饼图展示：</h2>
-			<textarea name="code" class="js" rows="50" cols="100">
-			var case = 'bing';
-            </textarea>
-            <section class="slide">
-		        <h2>主站浏览器分布</h2>
-		        <div id="main_site_browsers_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购浏览器分布</h2>
-		        <div id="tuangou_browsers_chart" class="chart_box">
-		        </div>
-		    </section>
-
-        </section>
+            </div>
+        </div>
     </div>
 
-    <script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.min.js"></script>
+    <div class="main">
+    	<div class="main-cont">
+            <div class="slide">
+		        <h2>（1）主站浏览器分布</h2>
+		        <div id="main_site_browsers_chart" class="chart_box">
+		        </div>
+		    </div>
 
+		    <div class="slide">
+		        <h2>（2）团购浏览器分布</h2>
+		        <div id="tuangou_browsers_chart" class="chart_box">
+		        </div>
+		    </div>
+
+        </div>
+    </div>
+	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+    <script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.min.js"></script>
 	<script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../src/common/common.js"></script>
 	<script type="text/javascript" src="../src/common/customevent.js"></script>
-
 	<script type="text/javascript" src="../src/canvas/dpchart.js"></script>
 	<script type="text/javascript" src="../src/canvas/types/pie.js"></script>
-
 	<script type="text/javascript" src="Scripts/canvascase.js"></script>
-
-    <script class="javascript" src="Scripts/shCore.js"></script>
-    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
-    <script class="javascript" src="Scripts/shBrushCss.js"></script>
-
-    <script class="javascript">
-    	dp.SyntaxHighlighter.HighlightAll('code');
-    </script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
 </body>
 </html>
