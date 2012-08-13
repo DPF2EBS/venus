@@ -33,8 +33,133 @@
 						</ul>
 					</li>
                 </ul>
+<<<<<<< HEAD
             </div>
         </div>
+=======
+            </nav>
+        </section>
+    </header>
+    <div class="main">
+    	<section class="main-cont">
+        	<h2>基本简介</h2>
+           	<section class="main-profile">
+                <p>Venus is a flexible, modular JavaScript library designed for all the JavaScript developer.It give you a powerful solution for datavisualization.Venus is builded on KineticJS and Raphaël.</p>
+                <br>
+            	<p>KineticJS is an HTML5 Canvas JavaScript library that extends the 2d context by enabling high performance path detection and pixel detection for desktop and mobile applications.<p>
+                <br>
+                <p>Raphaël is a small JavaScript library that should simplify your work with vector graphics on the web. If you want to create your own specific chart or image crop and rotate widget, for example, you can achieve it simply and easily with this library.</p>
+                <br>
+                <p>Venus currently supports Firefox 3.0+, Safari 3.0+, Chrome 5.0+, Opera 9.5+ and Internet Explorer 6.0+.</p>
+                <br>
+                <p>Venus Developers: quanhua.ma, zhi.cun, xinwei.wang, yongliang.li, chao.wang @dpf2e-datavisualization-team.</p>
+            </section>
+            <h2>快速入门</h2>
+            	<textarea name="code" class="js" rows="50" cols="100">
+                    var container = document.getElementById('chart_container'),
+                        data = [25,25,40,10],
+                        options = {
+                            axis:{
+                                x:{
+                                    max:200,
+                                    ticks:['FF', 'IE', 'Chrome', 'other'],
+                                    tickWidth:40
+                                },
+                                y:{
+                                    min:0,
+                                    max:100,
+                                    tickWidth:30,
+                                    tickSize:10
+                                }
+                            }, bar:{
+                            }
+                    }
+                    var bar = new DPChart(container, data, options);
+                    /*DPChart Begin*/
+                    /*
+                     * Class DPChart
+                     * @param container{HTMLElement} container of the svg element to draw the chart
+                     * @param data{Array} Array of the data
+                     * @param options{object}
+                     */
+                    function DPChart(container, data, options) {
+                        if (!container || !container.nodeType) {
+                            return;
+                        }
+                        this.container = container;
+                        this.data = data || [];
+                        this.events = new CustomEvent();
+                        var defaultOptions = {
+                            /**
+                             *maybe here will cause a bug when a html element size is autosize or it is invisible.
+                             *chart size may provide from other way.
+                             */
+                            width:container.clientWidth,
+                            height:container.clientHeight,
+                            colors:[],
+                            axis:{
+                                y:{
+                                    rotate:90
+                                }
+                            },
+                            legend:{
+                
+                            },
+                            grid:{
+                                enableRow:true,
+                                enableColumn:false
+                            }
+                        };
+                        this.options = mix(defaultOptions, options || {});
+                        this.raphael = new Raphael(container, this.options.width, this.options.height);
+                        this.colors = colors;
+                
+                        //init data
+                        this._initData();
+                        this.events.fire('onDataInit', this.series);
+                
+                        // init axis
+                        this._initAxis();
+                        this.events.fire('onAxisInit', {});
+                
+                        //init legend
+                        this._initLegend();
+                        this.events.fire('onLegendInit', this.legend);
+                
+                        //init grid
+                        this._initGrid();
+                        this.events.fire('onGridInit', this.grid);
+                
+                        // draw
+                        this.draw();
+                
+                        //init events
+                        this._initEvents();
+                
+                        this.events.fire('onFinish');
+                
+                    }
+                </textarea>
+            <h2>基本展示</h2>
+           	<section class="main-item">
+            	<p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
+            </section>
+            <div id="chart_container" style="height:400px; width:960px;"></div>
+            <section class="main-item">
+            	<p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
+            </section>
+            <div id="chart_container1" style="height:400px; width:960px;"></div>
+            <section class="main-item">
+                <p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
+            </section>
+            <div id="chart_container2" style="height:500px; width:960px;"></div>
+            <section class="main-item">
+                <p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
+            </section>
+            <div id="chart_container3" style="height:400px; width:960px;"></div>
+
+        </section>
+>>>>>>> 48d359fc353cb0284b1a16c7e3d9598c22748ec4
     </div>
 
 	<div class="main">
