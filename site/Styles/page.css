@@ -95,7 +95,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 
 .intro-box .intro-cont p {line-height:24px;margin-top:10px;text-indent:28px;color:#777;font-size:14px;}
 
-.mark-list li { float:left;display:inline;height:30px;line-height:30px;margin-left:20px;margin-top:10px;}
+.mark-list li { float:left;display:inline;height:30px;line-height:30px;margin-left:10px;margin-top:10px;}
 .mark-list li a { display:block;padding:0 8px;color:#666;text-decoration:none;font-size:14px;vertical-align:middle;background-color:#EFEFEF;}
 .mark-list li a:hover {background-color:#444;color:#EFEFEF;}
 
