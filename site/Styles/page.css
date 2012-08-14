@@ -39,6 +39,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .link-myra:hover {background-color:#2D75BD;color:#FFF;}
 .link-desc {color:#444;text-decoration:none;}
 .link-desc:hover {color:#2D75BD;}
+.font-r {color:#f06015 !important;}
 /* css sprites */
 .isay-top,
 .isay-middle,
