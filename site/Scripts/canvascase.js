@@ -27,15 +27,15 @@ var container = document.getElementById('main_site_browsers_chart'),
 function showBrowsersPie(container, data){
     var options = {
         width: 960,
-        height: 600,
+        height: 400,
         margin:0,
         pie:{
-            radius:250,
+            radius:150,
             easing:"back-ease-out"
         },
         legend:{
-            height: 250,
-            itemType:"rect",
+            height: 200,
+            itemType:"circle",
              position:["right","top"]
         }
     };
