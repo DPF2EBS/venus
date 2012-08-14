@@ -1,5 +1,22 @@
 ;
 (function () {
+    //扩展Raphael，增加SVG g标签
+    Raphael._engine.g = function (svg) {
+        var ns = 'http://www.w3.org/2000/svg';
+        var el = document.createElementNS(ns, 'g')
+        svg.canvas && svg.canvas.appendChild(el);
+        var res = new Raphael.el.constructor(el, svg);
+        res.type = "g";
+        el.setAttributeNS(ns, 'fill', '#fff')
+        return res;
+    }
+    Raphael.fn.g = function (x, y, w, h) {
+        var out = Raphael._engine.g(this, x || 0, y || 0, w || 0, h || 0);
+        this.__set__ && this.__set__.push(out);
+        return out;
+    }
+
+
     var cacheData = function (data) {
             //covert array to object
             var allNodes = {}
@@ -231,6 +248,187 @@
             }).rotate(path.alpha, x1, y1);
 
         },
+        initController = function (group, stage, chartWidth, chartHeight, options) {
+            //缩放
+            var scaledX = 1,
+                scaledY = 1,
+                translatedX = 0,
+                translatedY = 0
+            var scale = function (lager) {
+                    if (lager) {
+                        scaledX *= 1.25;
+                        scaledY *= 1.25;
+
+                    } else {
+                        scaledX *= 0.75;
+                        scaledY *= 0.75;
+                    }
+                    group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+                },
+                move = function (x, y) {
+                    translatedX += x;
+                    translatedY += y;
+                    group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+                },
+                lastX, lastY,
+                openHandUrl = 'http://maps.gstatic.cn/intl/zh-CN_cn/mapfiles/openhand_8_8.cur',
+                closeHandUrl = 'http://maps.gstatic.cn/intl/zh-CN_cn/mapfiles/closedhand_8_8.cur'
+
+            stage.canvas.style.cursor = 'url("' + openHandUrl + '"), move';
+            this.container.style.boxShadow = "0 0 1px 1px #ccc inset";
+            //mouse scroll event
+            var mousewheel = navigator.userAgent.indexOf('Firefox') == -1 ? 'mousewheel' : 'DOMMouseScroll'
+            stage.canvas.addEventListener(mousewheel, function (e) {
+                e.preventDefault();
+                scale(e.wheelDelta !== undefined ? e.wheelDelta > 0 : e.detail < 0);
+            }, false);
+
+            //drag event
+            (new Raphael.el.constructor(stage.canvas, stage)).drag(function (dx, dy, x, y, e) {
+                //onmove
+                move(dx - lastX, dy - lastY);
+                lastX = dx;
+                lastY = dy;
+            }, function () {
+                stage.canvas.style.cursor = 'url("' + closeHandUrl + '"),move';
+                lastX = 0;
+                lastY = 0;
+            }, function () {
+                stage.canvas.style.cursor = 'url("' + openHandUrl + '"),move';
+            });
+
+            //init controller panel
+            var panel = stage.g(),
+                moveCircle, moveLeft, moveTop, moveRight, moveBottom,
+                scaleLarger, scaleSmaller,
+                cx = 31, cy = 31, r = 30, arrowPadding = 5,
+                arrowHeight = 10, arrowWeight = 6 , arrowInnerHeight = arrowHeight - arrowWeight
+
+            //init move controller
+            moveCircle = stage.circle(cx, cy, r).attr({
+                'stroke':'#ccc',
+                'stroke-width':1,
+                'fill':'#fff',
+                'cursor':'default'
+            });
+            panel.node.appendChild(moveCircle.node);
+            moveTop = stage.path().attr({
+                'path':['M', cx, arrowPadding, 'l', -arrowHeight, arrowHeight, 'h', arrowWeight, 'l', arrowInnerHeight, -arrowInnerHeight, 'l', arrowInnerHeight, arrowInnerHeight, 'h', arrowWeight, 'l', -arrowHeight, -arrowHeight, 'z'],
+                'fill':"#999999",
+                'stroke':'none',
+                'cursor':'pointer'
+            });
+            panel.node.appendChild(moveTop.node);
+            moveLeft = moveTop.clone().rotate(-90, cx, arrowPadding).translate(arrowPadding - r, arrowPadding - r).click(function (e) {
+                e.stopPropagation();
+                move(chartWidth / 10, 0);
+            });
+            panel.node.appendChild(moveLeft.node);
+            moveRight = moveTop.clone().rotate(90, cx, arrowPadding).translate(r - arrowPadding, arrowPadding - r).click(function (e) {
+                e.stopPropagation();
+                move(-chartWidth / 10, 0);
+            });
+            panel.node.appendChild(moveRight.node);
+            moveBottom = moveTop.clone().rotate(180, cx, arrowPadding).translate(0, 2 * (arrowPadding - r)).click(function (e) {
+                e.stopPropagation();
+                move(0, -chartHeight / 10);
+            })
+            panel.node.appendChild(moveBottom.node);
+
+            moveTop.click(function (e) {
+                e.stopPropagation();
+                move(0, chartHeight / 10);
+            });
+
+            //init scale controller
+            var plus, minus,
+                plusText, minusText,
+                fullScreen,
+                fullScreenArrow,
+                container = this.container,
+                marginLeft = 10, marginTop = 5,
+                rectWidth = 20
+
+            plus = stage.rect(2 * (r + 1) + marginLeft, marginTop, rectWidth, rectWidth).attr({
+                'stroke':'#000',
+                'stroke-width':1,
+                'stroke-opacity':.5,
+                'cursor':'pointer',
+                'fill':'#fff'
+            });
+            minus = plus.clone().attr({
+                'y':2 * (r + 1) - 1 - rectWidth - marginTop
+            });
+            plusText = stage.text(2 * (r + 1) + marginLeft + rectWidth / 2, marginTop + 1 + rectWidth / 2, '+').attr({
+                'font-size':16,
+                'cursor':'pointer'
+            });
+            minusText = stage.text(2 * (r + 1) + marginLeft + rectWidth / 2, 2 * (r + 1) - 1 - marginTop - 1 - rectWidth / 2, '-').attr({
+                'font-size':16,
+                'cursor':'pointer'
+            });
+
+            panel.node.appendChild(plus.node);
+            panel.node.appendChild(minus.node);
+            panel.node.appendChild(plusText.node);
+            panel.node.appendChild(minusText.node);
+
+            plus.click(function (e) {
+                e.stopPropagation();
+                scale(true);
+            });
+            plusText.click(function (e) {
+                e.stopPropagation();
+                scale(true);
+            });
+            minus.click(function (e) {
+                e.stopPropagation();
+                scale(false);
+            });
+            minusText.click(function (e) {
+                e.stopPropagation();
+                scale(false);
+            });
+
+            //full screen
+            fullScreen = plus.clone().attr({
+                'x':2 * (r + 1) + marginLeft * 2 + 2 + rectWidth
+            })
+            panel.node.appendChild(fullScreen.node);
+            fullScreen.click(function (e) {
+                var container = stage.canvas
+                container.requestFullScreen ? container.requestFullScreen() : (container.webkitRequestFullScreen ? container.webkitRequestFullScreen() : (container.mozRequestFullScreen && container.mozRequestFullScreen()));
+            });
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 2  ) + "," + 2 + 'r' + 45 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(fullScreenArrow.node);
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth + 4  ) + "," + 2 + 'r' + (-45) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(fullScreenArrow.node);
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 2  ) + "," + (rectWidth -2)+ 'r' + 135 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(fullScreenArrow.node);
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth + 4  ) + "," + (rectWidth-2) + 'r' + (-135) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(fullScreenArrow.node);
+            
+            var panelWidth = (2 * (r + 1) + marginLeft * 2 + 4 + rectWidth * 2)
+
+            function adjust() {
+                if (document.webkitIsFullScreen || document.mozFullScreen) {
+                    stage.setSize(window.screen.width, window.screen.height);
+                    stage.canvas.fill = '#fff'
+                    panel.transform('T' + (window.screen.width - panelWidth - 20) + "," + 10);
+                } else {
+                    stage.setSize(chartWidth, chartHeight);
+                    panel.transform('T' + (chartWidth - panelWidth - 20) + ',' + 10)
+                }
+            }
+
+            stage.canvas.addEventListener('webkitfullscreenchange', adjust, false);
+            document.addEventListener('mozfullscreenchange', adjust, false)
+
+            // //move to right
+            panel.transform('T' + (chartWidth - panelWidth - 20) + ',' + 10)
+
+
+        },
         PARENT_ON_TOP = 'parent_on_top',
         PARENT_ON_BOTTOM = 'parent_on_bottom',
         PARENT_TO_CHILD = 'parent_to_child',
@@ -241,7 +439,7 @@
         draw:function () {
             var options = DPChart.mix({
                     layerDirection:PARENT_ON_TOP,
-                    arrowDirection:CHILD_TO_PARENT,
+                    arrowDirection:PARENT_TO_CHILD,
                     padding:40,
                     nodeRadius:30,
                     arrowLength:10,
@@ -251,7 +449,12 @@
                         2:'#7CFC00',
                         3:'#B1C9ED'
                     },
-                    enableDrag:true,
+                    enableController:true,
+                    useAsText:'text',
+                    enableDrag:true, //是否支持拖动
+                    keepLayerWhenDrag:true, //是否只运行水平拖动
+                    moveImageURL:'',
+                    scaleImageURL:'',
                     onclick:function (data) {
                         //'this' will be parsed as circle object , data is the node data
                     }
@@ -284,7 +487,14 @@
                 _circles = stage.set(),
                 _texts = stage.set(),
                 relation = {},
-                _edges = stage.set()
+                _edges = stage.set(),
+                group = stage.g();
+
+            //宽高过于小 影响美观， 反正可以缩放和拖动
+            if (options.enableController) {
+                width < 4 * options.nodeRadius && (width = 4 * options.nodeRadius);
+                height < 4 * options.nodeRadius && (height = 4 * options.nodeRadius);
+            }
             layers.forEach(function (layer, i) {
                 var startX = (chartWidth - (layer.length - 1) * width) / 2
                 layer.forEach(function (node, j) {
@@ -295,8 +505,10 @@
                     node._y = y;
                     var color = options.colorMap[node.status] || 'green',
                         rgb = Raphael.getRGB(color),
-                        hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b)
-                    _circles.push(stage.circle(x, y, options.nodeRadius).attr({
+                        hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b),
+                        _circle, _text
+
+                    _circle = stage.circle(x, y, options.nodeRadius).attr({
                         //fill:options.colorMap[node.status],
                         fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s - .1, hsl.l - .2).hex,
                         'stroke':'none',
@@ -308,8 +520,12 @@
                                 return
                             }
                             options.onclick.call(this, node)
-                        }))
-                    _texts.push(stage.text(x, y, node.text));
+                        })
+                    group.node.appendChild(_circle.node);
+                    _circles.push(_circle);
+                    _text = stage.text(x, y, node[options.useAsText] === undefined ? node.id : node[options.useAsText])
+                    group.node.appendChild(_text.node);
+                    _texts.push(_text);
 
                 });
             });
@@ -318,6 +534,7 @@
             edges.forEach(function (layer) {
                 layer.forEach(function (edge) {
                     var _arrow = arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
+                    group.node.appendChild(_arrow.node);
                     relation[edge.node1.id] || (relation[edge.node1.id] = []);
                     relation[edge.node1.id].push({arrow:_arrow, edge:edge});
                     relation[edge.node2.id] || (relation[edge.node2.id] = []);
@@ -332,16 +549,29 @@
                         currentY
                     circle.drag(function (dx, dy, x, y, e) {
                         //onmove
+                        e.stopPropagation();
+                        var targetX ,
+                            targetY
                         this._isDragging = true;
-                        this.attr({
-                            cx:dx + currentX,
-                            cy:dy + currentY
-                        });
-                        this.data('node')._x = dx + currentX;
-                        this.data('node')._y = dy + currentY;
+                        targetX = dx + currentX;
+                        targetY = dy + currentY;
+                        if (options.keepLayerWhenDrag) {
+                            this.attr({
+                                cx:targetX
+                            });
+                            targetY = currentY;
+                        } else {
+                            this.attr({
+                                cx:targetX,
+                                cy:targetY
+                            });
+                        }
+
+                        this.data('node')._x = targetX;
+                        this.data('node')._y = targetY;
                         _texts[i].attr({
-                            x:dx + currentX,
-                            y:dy + currentY
+                            x:targetX,
+                            y:targetY
                         })
 
                         //move related edges
@@ -362,15 +592,19 @@
                         });
                     }, function (x, y, e) {
                         //onstart
+                        e.stopPropagation();
                         currentX = this.attr('cx');
                         currentY = this.attr('cy');
                     }, function (e) {
-                        e.preventDefault();
                         e.stopPropagation();
                     });
                 })
             }
 
+            //init controller
+            if (options.enableController) {
+                initController.call(this, group, stage, chartWidth, chartHeight, options);
+            }
             this._topology = {
                 allNodes:allNodes,
                 layers:layers,

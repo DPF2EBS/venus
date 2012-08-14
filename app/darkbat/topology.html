@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <title>层次拓扑图</title>
     <link rel="stylesheet" type="text/css" href="bootstrap/package/css/bootstrap.min.css"/>
+    <style>
+    </style>
 </head>
 <body>
 <div class="navbar">
@@ -119,9 +121,8 @@
         </div>
     </div>
 </div>
-</div>
 
-<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
+<script type="text/javascript" src="../../lib/raphael/raphael.js"></script>
 <script type="text/javascript" src="../../src/common/lang.js"></script>
 <script type="text/javascript" src="../../src/common/common.js"></script>
 <script type="text/javascript" src="../../src/common/customevent.js"></script>
@@ -179,6 +180,24 @@
             addTaskModal.modal()
         })
 
+        var data = [
+            {"text":2, "id":2, "parents":[6, 7], "status":2},
+            {"text":7, "id":7, "parents":[3], "status":2},
+            {"text":6, "id":6, "parents":[3, 5, 1], "status":2},
+            {"text":3, "id":3, "parents":[0], "status":2},
+            {"text":5, "id":5, "parents":[4], "status":2},
+            {"text":1, "id":1, "parents":[], "status":3},
+            {"text":0, "id":0, "parents":[], "status":1},
+            {"text":4, "id":4, "parents":[], "status":3}
+        ]
+        chartContainer.innerHTML = "";
+        var chart = new DPChart(chartContainer, data, {
+            topology:{
+                onclick:function (data) {
+                    editTaskModal.modal().find('h3').html('编辑任务' + data.id)
+                }
+            }
+        });
 
     })();
 </script>
