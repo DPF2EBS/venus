@@ -5,7 +5,7 @@
 	background-color: #E7E5DC;
 	width: 99%;
 	overflow: auto;
-	margin: 18px 0 18px 0 !important;
+	margin: 18px 0 18px 0;
 	padding-top: 1px; /* adds a little border on top when controls are hidden */
 }
 /* clear styles */
@@ -186,4 +186,4 @@
 .dp-highlighter .string { color: blue; background-color: inherit; }
 .dp-highlighter .keyword { color: #069; font-weight: bold; background-color: inherit; }
 .dp-highlighter .preprocessor { color: gray; background-color: inherit; }
-.dp-highlighter {margin: 1px 0 !important;overflow-y:hidden;border:1px solid #CCCCCC;}
+.dp-highlighter {overflow-y:hidden;border:2px solid #999;margin-left: 23px;}
