@@ -99,9 +99,10 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .mark-list li a { display:block;padding:0 8px;color:#666;text-decoration:none;font-size:14px;vertical-align:middle;background-color:#EFEFEF;}
 .mark-list li a:hover {background-color:#444;color:#EFEFEF;}
 
-.demo-list li {float:left;display:inline;margin-top:10px;}
-.demo-list li .icon { display:block; }
-.demo-list .desc {height:30px;line-height:30px;margin-top:5px;text-align:center;padding-bottom:20px;border-bottom:1px dotted #CCC;}
+.demo-list li {float:left;display:inline;margin-top:10px;margin-right:5px;}
+.demo-list img { width:236px;height:170px;}
+.demo-list li .icon { display:block;width:236px; height: 170px; border:1px solid #EFEFEF;}
+.demo-list li a:hover { opacity: 0.65;border:1px solid #EB651A;}
 
 .m-menu {width:230px;margin-left:30px;}
 .menu-top {background-position:0 0; height:4px;overflow:hidden; width: 230px;_height:1px;}
@@ -215,7 +216,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 /* right part */
 .cont-main { margin-top:30px;position:relative;}
 
-.sidebar { width: 240px; height:100%; float:left; border-right:1px solid #CCC;background-color:#FFF; }
+.sidebar { width: 240px; min-height: 600px;border-bottom: 1px solid #CCC; float:left; border-right:1px solid #CCC;background-color:#FFF; }
 .content { position:absolute;left: 240px; margin: 0 15px 0 30px; background-color:#FFF;}
 
 .sidebar h3 a, .sidebar .hovern a { display:block;padding:12px 0 12px 84px;background:url(../image/icon.png) no-repeat;}
@@ -240,5 +241,22 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .right-cont { float:left;width:800px;margin-top:30px;margin-left:20px;}
 .right-cont h2 { color: #09F;font-weight:normal;}
 .margin-t {margin-top:80px;}
+
+.footer { float:left;width:100%;margin: 0 auto;background-color: #444;}
+/*footer*/
+.footer { padding-bottom: 30px; padding-top: 20px;margin-top:30px; color: #999; border-top: 1px dashed #E4E4E4;}
+.footer a { color: #CCC;}
+.footer a:hover { text-decoration: underline; color: #FFF;}
+
+/*静态简尾*/
+.footer-static { text-align: center; border-top: 1px solid #FFF;}
+.footer-static ul { margin-bottom: 10px;}
+.footer-static li { display: inline; margin-right: 8px; color: #CCC;}
+.footer-static li a { margin-right: 10px; color: #C0C0C0;text-decoration: none;}
+.footer-static li a:hover { text-decoration: none;}
+.footer-static li.fn-tuan { background-position: 41px -674px;}
+.footer-static p a { color: #CCC;}
+.footer-static p a:hover { text-decoration: none;}
+.footer-static p a.note:hover { color: #FFF; cursor: default;}
 
 
