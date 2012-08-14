@@ -160,7 +160,7 @@
             chartContainer.innerHTML = "";
             var chart = new DPChart(chartContainer, data, {
                 topology:{
-                    onclick:function (data) {
+                    click:function (data) {
                         editTaskModal.modal().find('h3').html('编辑任务' + data.id)
                     }
                 }
@@ -191,10 +191,16 @@
             {"text":4, "id":4, "parents":[], "status":3}
         ]
         chartContainer.innerHTML = "";
+        var colors = DPChart.getColors(3);
         var chart = new DPChart(chartContainer, data, {
             topology:{
-                onclick:function (data) {
+                click:function (data) {
                     editTaskModal.modal().find('h3').html('编辑任务' + data.id)
+                },
+                colorMap:{
+                    1:colors[0],
+                    2:colors[1],
+                    3:colors[2]
                 }
             }
         });
