@@ -77,7 +77,8 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 /* ---------- index.html begins ----------- */
 .main .left-main {float:left;width:600px;}
 .main .right-main {float:right;width:350px;}
-.mark-panel, .intro-panel {width:585px;margin-bottom:20px;}
+.intro-panel {width:585px;margin-bottom:20px;}
+.mark-panel {width:248px;margin-bottom:20px;margin-left:9px;margin-top:20px;border-right:1px solid #CCC;}
 .isay-top { background-position:-3257px 0;height:1px;overflow:hidden;}
 .isay-middle  {padding:0 2px 0 23px;background-position:-1015px 0;background-repeat:repeat-y;}
 .isay-bottom {height:3px;overflow:hidden;background-position:-1649px 0;}
@@ -85,10 +86,12 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .mark-panel .banner-box {padding:22px;}
 .mark-panel .banner-box img {border:1px solid #EFEFEF;}
 .mark-panel .mark-box,.intro-panel .intro-box,.demo-panel .demo-box {padding:22px 0 22px 30px;}
-.mark-panel .mark-box h2, .intro-panel .intro-box h2,.demo-panel .demo-box h2 {float:left;font-size:18px;line-height:31px;padding-left:28px;font-weight:normal;background-position:-72px -1095px;color:#444;}
-.mark-box .mark-cont,
+.mark-panel .mark-box h2,.intro-panel .intro-box h2,.demo-panel .demo-box h2 {float:left;font-size:18px;line-height:31px;padding-left:28px;font-weight:normal;background-position:-72px -1095px;color:#444;}
 .intro-box .intro-cont,
 .demo-box .demo-cont {float:left;width:500px;}
+.mark-panel .mark-box h2 { float: none;}
+.mark-box .mark-cont {float:left;width:200px;}
+
 
 .intro-box .intro-cont p {line-height:24px;margin-top:10px;text-indent:28px;color:#777;font-size:14px;}
 
@@ -96,7 +99,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .mark-list li a { display:block;padding:0 8px;color:#666;text-decoration:none;font-size:14px;vertical-align:middle;background-color:#EFEFEF;}
 .mark-list li a:hover {background-color:#444;color:#EFEFEF;}
 
-.demo-list li {margin-top:10px;}
+.demo-list li {float:left;display:inline;margin-top:10px;}
 .demo-list li .icon { display:block; }
 .demo-list .desc {height:30px;line-height:30px;margin-top:5px;text-align:center;padding-bottom:20px;border-bottom:1px dotted #CCC;}
 
