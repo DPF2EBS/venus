@@ -319,17 +319,17 @@
                 'cursor':'pointer'
             });
             panel.node.appendChild(moveTop.node);
-            moveLeft = moveTop.clone().rotate(-90, cx, arrowPadding).translate(arrowPadding - r, arrowPadding - r).click(function (e) {
+            moveLeft = moveTop.clone().transform('r' + -90 + ',' + cx + "," + arrowPadding + 't' + (arrowPadding - r ) + "," + (arrowPadding - r)).click(function (e) {
                 e.stopPropagation();
                 move(chartWidth / 10, 0);
             });
             panel.node.appendChild(moveLeft.node);
-            moveRight = moveTop.clone().rotate(90, cx, arrowPadding).translate(r - arrowPadding, arrowPadding - r).click(function (e) {
+            moveRight = moveTop.clone().transform('r' + 90 + ',' + cx + ',' + arrowPadding + 't' + (r - arrowPadding ) + "," + (arrowPadding - r)).click(function (e) {
                 e.stopPropagation();
                 move(-chartWidth / 10, 0);
             });
             panel.node.appendChild(moveRight.node);
-            moveBottom = moveTop.clone().rotate(180, cx, arrowPadding).translate(0, 2 * (arrowPadding - r)).click(function (e) {
+            moveBottom = moveTop.clone().transform('r' + 180 + ',' + cx + ',' + arrowPadding + 't' + 0 + "," + 2 * (arrowPadding - r)).click(function (e) {
                 e.stopPropagation();
                 move(0, -chartHeight / 10);
             })
@@ -345,6 +345,8 @@
                 plusText, minusText,
                 fullScreen,
                 fullScreenArrow,
+                existFullScreen,
+                existFullScreenArrow,
                 container = this.container,
                 marginLeft = 10, marginTop = 5,
                 rectWidth = 20
@@ -391,9 +393,7 @@
             });
 
             //full screen
-            fullScreen = plus.clone().attr({
-                'x':2 * (r + 1) + marginLeft * 2 + 2 + rectWidth
-            })
+            fullScreen = plus.clone().attr('x', 2 * (r + 1) + marginLeft * 2 + 2 + rectWidth);
             panel.node.appendChild(fullScreen.node);
             fullScreen.click(function (e) {
                 var container = stage.canvas
@@ -403,11 +403,27 @@
             panel.node.appendChild(fullScreenArrow.node);
             fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth + 4  ) + "," + 2 + 'r' + (-45) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
             panel.node.appendChild(fullScreenArrow.node);
-            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 2  ) + "," + (rectWidth -2)+ 'r' + 135 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 2  ) + "," + (rectWidth - 2) + 'r' + 135 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
             panel.node.appendChild(fullScreenArrow.node);
-            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth + 4  ) + "," + (rectWidth-2) + 'r' + (-135) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            fullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth + 4  ) + "," + (rectWidth - 2) + 'r' + (-135) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
             panel.node.appendChild(fullScreenArrow.node);
-            
+
+            //exist full screen
+            existFullScreen = minus.clone().attr('x', 2 * (r + 1) + marginLeft * 2 + 2 + rectWidth);
+            panel.node.appendChild(existFullScreen.node);
+            existFullScreen.click(function (e) {
+                e.stopPropagation();
+                document.exitFullScreen ? document.existFullScreen() : (document.webkitCancelFullScreen ? document.webkitCancelFullScreen() : (document.mozCancelFullScreen && document.mozCancelFullScreen()));
+            });
+            existFullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 1.5 + 4  ) + "," + (2 * (r + 1) - rectWidth) + 'r' + (-45) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(existFullScreenArrow.node);
+            existFullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 1.5  ) + "," + (2 * r - rectWidth) + 'r' + 135 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(existFullScreenArrow.node);
+            existFullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 1.5 + 4  ) + "," + (2 * r - rectWidth) + 'r' + (-135) + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(existFullScreenArrow.node);
+            existFullScreenArrow = moveTop.clone().transform("t" + (r + 1 + marginLeft * 2 + rectWidth * 1.5  ) + "," + (2 * (r + 1) - rectWidth) + 'r' + 45 + "," + cx + "," + arrowPadding + "s.5,.5," + cx + "," + arrowPadding)
+            panel.node.appendChild(existFullScreenArrow.node);
+
             var panelWidth = (2 * (r + 1) + marginLeft * 2 + 4 + rectWidth * 2)
 
             function adjust() {
@@ -455,8 +471,12 @@
                     keepLayerWhenDrag:true, //是否只运行水平拖动
                     moveImageURL:'',
                     scaleImageURL:'',
-                    onclick:function (data) {
+                    click:function (data) {
                         //'this' will be parsed as circle object , data is the node data
+                    },
+                    mouseover:function (data) {
+                    },
+                    mouseout:function (data) {
                     }
                 }, this.options.topology),
                 stage = this.stage
@@ -514,13 +534,27 @@
                         'stroke':'none',
                         'stroke-width':1,
                         cursor:'pointer'
-                    }).data('node', node).click(function () {
+                    }).data('node', node).click(
+                        function () {
                             if (this._isDragging) {
                                 this._isDragging = false;
                                 return
                             }
-                            options.onclick.call(this, node)
-                        })
+                            options.click.call(this, node);
+                        }).mouseover(
+                        function () {
+                            if (this._isDragging) {
+                                this._isDragging = false;
+                                return;
+                            }
+                            options.mouseover.call(this, node);
+                        }).mouseout(function () {
+                            if (this._isDragging) {
+                                this._isDragging = false;
+                                return;
+                            }
+                            options.mouseout.call(this, node);
+                        });
                     group.node.appendChild(_circle.node);
                     _circles.push(_circle);
                     _text = stage.text(x, y, node[options.useAsText] === undefined ? node.id : node[options.useAsText])
