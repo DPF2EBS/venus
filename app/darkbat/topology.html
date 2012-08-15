@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>层次拓扑图</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/package/css/bootstrap.min.css"/>
+    <style>
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="brand">DarkBat</div>
+        </div>
+    </div>
+
+</div>
+<div class="container-fluid ">
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="well">
+                <ul class="nav nav-list ">
+                    <li>
+                        <a href="javascript:void(0);" id="view_task"><i class="icon-book"></i>查看任务</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" id="add_task"><i class="icon-wrench"></i>添加任务</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+        <div class="span9">
+            <div class="alert fade in alert-success hide" id="chart_message">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <span class="message"></span>
+            </div>
+            <div id="chart_container" style="height: 600px;">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade hide" id="view_task_modal">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h3>查看任务</h3>
+        </div>
+        <div class="modal-body">
+            <div class="well">
+                <table>
+                    <tr>
+                        <td>任务ID/名称</td>
+                        <td><input type="text"/></td>
+                    </tr>
+                    <tr>
+                        <td>选择类型</td>
+                        <td><select>
+                            <option>前驱</option>
+                            <option>后继</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>层级</td>
+                        <td><select>
+                            <option>1</option>
+                            <option>2</option>
+                        </select></td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Close</a>
+            <a href="#" class="btn btn-primary" id="view_task_confirm">View</a>
+        </div>
+    </div>
+    <div class="modal fade hide" id="edit_task_modal">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h3>编辑任务</h3>
+        </div>
+        <div class="modal-body">
+            <div class="well">
+                <a href="javascript:void(0);" class="btn btn-primary" id="reset_task_confirm">重置任务参数</a>
+                <a href="javascript:void(0);" class="btn btn-primary" id="edit_task_confirm">更改任务依赖</a>
+                <a href="javascript:void(0);" class="btn btn-primary" id="delete_task_confirm">删除任务</a>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Close</a>
+        </div>
+    </div>
+    <div class="modal fade hide" id="add_task_modal">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h3>新增任务</h3>
+        </div>
+        <div class="modal-body">
+            <div class="well">
+                <ul>
+                    <li>
+
+                        <select class="span1"></select>
+                        <select class="span1"></select>
+                        <select class="span1"></select>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <a class="btn btn-primary">新增依赖</a>
+                <a class="btn btn-primary">删除任务</a>
+                <a class="btn btn-primary">保存运行</a>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Close</a>
+            <a href="#" class="btn btn-primary" id="add_task_confirm">View</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../lib/raphael/raphael.js"></script>
+<script type="text/javascript" src="../../src/common/lang.js"></script>
+<script type="text/javascript" src="../../src/common/common.js"></script>
+<script type="text/javascript" src="../../src/common/customevent.js"></script>
+<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+
+<script type="text/javascript" src="../../src/svg/types/topology.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="bootstrap/package/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    (function () {
+        var navViewTask = $("#view_task"),
+                navAddTask = $("#add_task"),
+                viewTaskModal = $('#view_task_modal'),
+                addTaskModal = $("#add_task_modal"),
+                editTaskModal = $("#edit_task_modal"),
+                viewTaskConfirm = $("#view_task_confirm"),
+                chartMessage = $("#chart_message"),
+                chartContainer = document.getElementById('chart_container')
+
+        chartMessage.alert();
+        //查看任务按钮
+        viewTaskConfirm.click(function () {
+            //显示图表
+            viewTaskModal.modal('hide')
+            var data = [
+                {"text":2, "id":2, "parents":[6, 7], "status":2},
+                {"text":7, "id":7, "parents":[3], "status":2},
+                {"text":6, "id":6, "parents":[3, 5, 1], "status":2},
+                {"text":3, "id":3, "parents":[0], "status":2},
+                {"text":5, "id":5, "parents":[4], "status":2},
+                {"text":1, "id":1, "parents":[], "status":3},
+                {"text":0, "id":0, "parents":[], "status":1},
+                {"text":4, "id":4, "parents":[], "status":3}
+            ]
+            chartContainer.innerHTML = "";
+            var chart = new DPChart(chartContainer, data, {
+                topology:{
+                    click:function (data) {
+                        editTaskModal.modal().find('h3').html('编辑任务' + data.id)
+                    }
+                }
+            });
+            chartMessage.removeClass('hide').find('.message').html('成功')
+            setTimeout(function () {
+                chartMessage.alert('close')
+            }, 4000);
+
+        });
+
+        navViewTask.click(function () {
+            viewTaskModal.modal()
+        })
+
+        navAddTask.click(function () {
+            addTaskModal.modal()
+        })
+
+        var data = [
+            {"text":2, "id":2, "parents":[6, 7], "status":2},
+            {"text":7, "id":7, "parents":[3], "status":2},
+            {"text":6, "id":6, "parents":[3, 5, 1], "status":2},
+            {"text":3, "id":3, "parents":[0], "status":2},
+            {"text":5, "id":5, "parents":[4], "status":2},
+            {"text":1, "id":1, "parents":[], "status":3},
+            {"text":0, "id":0, "parents":[], "status":1},
+            {"text":4, "id":4, "parents":[], "status":3}
+        ]
+        chartContainer.innerHTML = "";
+        var colors = DPChart.getColors(3);
+        var chart = new DPChart(chartContainer, data, {
+            topology:{
+                click:function (data) {
+                    editTaskModal.modal().find('h3').html('编辑任务' + data.id)
+                },
+                colorMap:{
+                    1:colors[0],
+                    2:colors[1],
+                    3:colors[2]
+                }
+            }
+        });
+
+    })();
+</script>
+</body>
+</html>

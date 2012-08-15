@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+<!--[if IE 6]>
+    <script src="Scripts/DD_belatedPNG.js"></script>
+    <script>DD_belatedPNG.fix('.pngfix'); </script>
+<![endif]-->
+</head>
+<body>
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <ul class="btn-list clearfix">
+            <li><a href="#svgpie" class="button white">svg饼图配置</a></li>
+            <li><a href="#svgline" class="button white">svg线图配置</a></li>
+            <li><a href="#svgdot" class="button white">svg点图配置</a></li>
+            <li><a href="#svgbar" class="button white">svg柱图配置</a></li>
+        </ul>
+    </div>
+
+    <div class="cont-main clearfix">
+    	<div class="nav-side">
+        	<ul class="nav-list clearfix">
+                <li><a href="api.html">使用教程</a></li>
+                <li><a href="svgapi.html">svg配置</a></li>
+                <li><a href="#">canvas配置</a></li>
+                <li><a href="#">api</a></li>
+            </ul>
+        </div>
+        <div class="right-cont">
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="svgline">
+                        <h2 class="font-r">svg线图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            var lineOptions = {
+                // 配置画布的宽度和高度
+                width: 900, 
+                height: 400,
+                // 配置坐标轴
+                axis:{
+                    // 配置x坐标轴
+                    x:{
+                        tickWidth:50,  // 刻度间距（像素）
+                        ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] // 刻度所对应的标签字
+                    },
+                    // 配置y坐标轴
+                    y:{
+                        min:0,   // 刻度最小值
+                        max:100, // 刻度最大值
+                        tickWidth:20,  // 刻度间距（像素）
+                        tickSize:10    // 相隔刻度相差值
+                    }
+                },
+                // 对线图的配置对象
+                line:{
+                    // 配置线是曲线还是直线（smooth为true就是曲线，否则为直线）
+                    smooth:false,
+                    // 配置线图初始化动画（上升动画）
+                    beginAnimate: true,
+                    // 配置线的连接点
+                    dots: true,
+                    // 连接点的半径
+                    dotRadius: 4,
+                    // 配置阴影区域
+                    area: true,
+                    // 配置阴影区域的透明度
+                    areaOpacity: 0.5,
+                    // 是否让连接点激活tip提示
+                    dotSelect: true,
+                    // 是否需要列激活tip
+                    columnHover: true,
+                    // 线条的宽度
+                    "line-width": 2
+                },
+                // 配置网格，不配置不会有网格
+                grid:{ 
+                    // 网格配置行
+                    enableRow: true,
+                    // 网格配置列
+                    enableColumn: true
+                }
+            };
+            </textarea>
+
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="svgpie">
+                        <h2 class="font-r">svg饼图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            var pieOptions = {
+                // 配置饼图画布的宽高
+                width: 800,
+                height: 500,
+                // 饼图的主要配置
+                pie:{
+                    // 饼图的半径
+                    radius: 150,
+                    // 饼图是否需要开始动画
+                    animation: true,
+                    // 饼图开始动画所需的时间
+                    duration: 900,
+                    // 饼图开始动画的方向（1为顺时针，-1为逆时针）
+                    dir: -1,
+                    // 饼图上是否需要文字
+                    showText: true,
+                    // 饼图动画的开始角度
+                    rotate: 180,
+                    // 饼图空心的半径
+                    hollow: 8
+                },
+                // 配置图例
+                legend: {
+                    // 是否需要展示图例
+                    showLegend: true,
+                    // 图例的位置是水平还是竖直（vertical）
+                    direction: 'horizontal',
+                    // 图例的icon圆形还是方形（rect）
+                    legendType: 'circle',
+                    // 图例的位置是处于哪里，目前支持：
+                    // ['right', 'top'], ['right', 'bottom'],
+                    // ['left', 'top'], ['left', 'bottom'],
+                    // ['center', 'top'], ['center', 'bottom']
+                    legendPosition: ['center', 'bottom']
+                }
+            };
+            </textarea>
+
+        </div>
+
+    </div>
+    <!-- footer -->
+    <div class="footer footer-static clearfix">
+      <ul>
+        <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+        <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+        <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+        <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+      </ul>      
+      <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+    </div>
+    
+	<a class="toTop" id="toTop" href="#top"></a>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+    
+    <script class="javascript" src="Scripts/shCore.js"></script>
+    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
+    <script class="javascript" src="Scripts/shBrushCss.js"></script>
+
+    <script class="javascript">
+    	dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+</body>
+</html>

@@ -7,89 +7,105 @@
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 </head>
 <body>
-	<header class="header">
-    	<section class="header-cont">
-        	<div class="header-logo">
-            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
-            </div>
-            <nav class="header-nav">
+
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
             	<ul>
                 	<li><a href="index.html">首页</a></li>
-                    <li><a href="api.html">API文档</a></li>
-                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
-                    <li><a href="svgdemo.html">SVG Demo</a></li>
-                    <li><a href="svgcase.html">svg案例</a></li>
-                    <li><a href="canvascase.html">canvas案例</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
                 </ul>
-            </nav>
-        </section>
-    </header>
-    <div class="main">
-    	<section class="main-cont">
-        	<h2>主站和团购站的onload,domready,gmoze数据如下（采用线状图和柱状图）：</h2>
-			<textarea name="code" class="js" rows="50" cols="100">
-			var case = 'Case';
-            </textarea>
-            <section class="slide">
-		        <h2>主站首页onload和domready</h2>
-		        <div id="main_site_onload_domready_chart" class="chart_box">
-		        </div>
-		    </section>
-
-	        <section class="slide">
-		        <h2>主站首页onload</h2>
-		        <div id="main_site_onload_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>主站首页domready</h2>
-		        <div id="main_site_domready_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购首页onload和domready</h2>
-		        <div id="tuangou_onload_domready_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购首页onload</h2>
-		        <div id="tuangou_onload_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购首页domready</h2>
-		        <div id="tuangou_domready_chart" class="chart_box">
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购上海gomez数据</h2>
-		        <div id="tuangou_shanghai_gomez_chart" class="chart_box">
-
-		        </div>
-		    </section>
-		    
-		    <section class="slide">
-		        <h2>团购广州gomez数据</h2>
-		        <div id="tuangou_guangzhou_gomez_chart" class="chart_box">
-
-		        </div>
-		    </section>
-
-		    <section class="slide">
-		        <h2>团购北京gomez数据</h2>
-		        <div id="tuangou_beijing_gomez_chart" class="chart_box">
-
-		        </div>
-		    </section>
-
-        </section>
+            </div>
+        </div>
     </div>
 
+    <div class="main">
+    	<div class="main-cont">
+            <div class="slide">
+		        <h2>（1）主站首页onload和domready</h2>
+		        <div id="main_site_onload_domready_chart" class="svg-case">
+		        </div>
+		    </div>
+
+	        <div class="slide">
+		        <h2>（2）主站首页onload</h2>
+		        <div id="main_site_onload_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（3）主站首页domready</h2>
+		        <div id="main_site_domready_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（4）团购首页onload和domready</h2>
+		        <div id="tuangou_onload_domready_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（5）团购首页onload</h2>
+		        <div id="tuangou_onload_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（6）团购首页domready</h2>
+		        <div id="tuangou_domready_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（7）团购上海gomez数据</h2>
+		        <div id="tuangou_shanghai_gomez_chart" class="svg-case">
+		        </div>
+		    </div>
+		    
+		    <div class="slide">
+		        <h2>（8）团购广州gomez数据</h2>
+		        <div id="tuangou_guangzhou_gomez_chart" class="svg-case">
+		        </div>
+		    </div>
+
+		    <div class="slide">
+		        <h2>（9）团购北京gomez数据</h2>
+		        <div id="tuangou_beijing_gomez_chart" class="svg-case">
+		        </div>
+		    </div>
+
+        </div>
+    </div>
+    <!-- footer begins -->
+	<div class="footer footer-static clearfix">
+	  <ul>
+	    <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+	    <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+	    <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+	    <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+	  </ul>      
+	  <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+	</div>
+	<!-- footer ends -->
+	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
 	<script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../src/common/common.js"></script>
@@ -99,7 +115,13 @@
 	<script type="text/javascript" src="../src/svg/types/bar.js"></script>
 	<script type="text/javascript" src="../src/convert.js"></script>
 	<script type="text/javascript" src="Scripts/svgcase.js"></script>
-
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+	<!--
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>
     <script class="javascript" src="Scripts/shBrushCss.js"></script>
@@ -107,5 +129,6 @@
     <script class="javascript">
     	dp.SyntaxHighlighter.HighlightAll('code');
     </script>
+	-->
 </body>
 </html>

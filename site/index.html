@@ -5,271 +5,144 @@
 <title>Venus Show Stage</title>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+<!--[if IE 6]>
+    <script src="Scripts/DD_belatedPNG.js"></script>
+    <script>DD_belatedPNG.fix('.pngfix'); </script>
+<![endif]-->
 </head>
 <body>
-	<header class="header">
-    	<section class="header-cont">
-        	<div class="header-logo">
-            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
-            </div>
-            <nav class="header-nav">
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
             	<ul>
                 	<li><a href="index.html">首页</a></li>
-                    <li><a href="api.html">API文档</a></li>
-                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
-                    <li><a href="svgdemo.html">SVG Demo</a></li>
-                    <li><a href="svgcase.html">svg案例</a></li>
-                    <li><a href="canvascase.html">canvas案例</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
                 </ul>
-            </nav>
-        </section>
-    </header>
-    <div class="main">
-    	<section class="main-cont">
-        	<h2>基本简介</h2>
-           	<section class="main-profile">
-            	<p>Venus是由点评商务前端团队开发的一种前端数据可视化解决方案，基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库，基于Raphael开发适合交互性强的图形库。<p>
-            </section>
-            <h2>快速入门</h2>
-            	<textarea name="code" class="js" rows="50" cols="100">
-                    var container = document.getElementById('chart_container'),
-                        data = [25,25,40,10],
-                        options = {
-                            axis:{
-                                x:{
-                                    max:200,
-                                    ticks:['FF', 'IE', 'Chrome', 'other'],
-                                    tickWidth:40
-                                },
-                                y:{
-                                    min:0,
-                                    max:100,
-                                    tickWidth:30,
-                                    tickSize:10
-                                }
-                            }, bar:{
-                            }
-                    }
-                    var bar = new DPChart(container, data, options);
-                    /*DPChart Begin*/
-                    /*
-                     * Class DPChart
-                     * @param container{HTMLElement} container of the svg element to draw the chart
-                     * @param data{Array} Array of the data
-                     * @param options{object}
-                     */
-                    function DPChart(container, data, options) {
-                        if (!container || !container.nodeType) {
-                            return;
-                        }
-                        this.container = container;
-                        this.data = data || [];
-                        this.events = new CustomEvent();
-                        var defaultOptions = {
-                            /**
-                             *maybe here will cause a bug when a html element size is autosize or it is invisible.
-                             *chart size may provide from other way.
-                             */
-                            width:container.clientWidth,
-                            height:container.clientHeight,
-                            colors:[],
-                            axis:{
-                                y:{
-                                    rotate:90
-                                }
-                            },
-                            legend:{
-                
-                            },
-                            grid:{
-                                enableRow:true,
-                                enableColumn:false
-                            }
-                        };
-                        this.options = mix(defaultOptions, options || {});
-                        this.raphael = new Raphael(container, this.options.width, this.options.height);
-                        this.colors = colors;
-                
-                        //init data
-                        this._initData();
-                        this.events.fire('onDataInit', this.series);
-                
-                        // init axis
-                        this._initAxis();
-                        this.events.fire('onAxisInit', {});
-                
-                        //init legend
-                        this._initLegend();
-                        this.events.fire('onLegendInit', this.legend);
-                
-                        //init grid
-                        this._initGrid();
-                        this.events.fire('onGridInit', this.grid);
-                
-                        // draw
-                        this.draw();
-                
-                        //init events
-                        this._initEvents();
-                
-                        this.events.fire('onFinish');
-                
-                    }
-                </textarea>
-            <h2>基本展示</h2>
-           	<section class="main-item">
-            	<p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
-            </section>
-            <div id="chart_container" style="height:400px; width:960px;"></div>
-            <section class="main-item">
-            	<p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
-            </section>
-            <div id="chart_container1" style="height:400px; width:960px;"></div>
-            <section class="main-item">
-                <p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
-            </section>
-            <div id="chart_container2" style="height:500px; width:960px;"></div>
-            <section class="main-item">
-                <p>基于Kineticjs开发适合绘制复杂图形的通用Canvas前端基本图形库。<p>
-            </section>
-            <div id="chart_container3" style="height:400px; width:960px;"></div>
-
-        </section>
+		 </div>
+		</div>
     </div>
-    <script type="text/javascript" src="../src/common/lang.js"></script>
-	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
-    <script type="text/javascript" src="../src/common/common.js"></script>    
-    <script type="text/javascript" src="../src/common/customevent.js"></script>
-    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/pie.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/line.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/dot.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/bar.js"></script>
-    <script type="text/javascript">
-    var container = document.getElementById('chart_container'),
-        container1 = document.getElementById('chart_container1'),
-        container2 = document.getElementById('chart_container2'),
-        container3 = document.getElementById('chart_container3'),
-            data = [
-                {data:10, label:"FF"},
-                {data:40, label:"IE"},
-                {data:60, label: "Chrome"},
-                {data:10, label: "Ohter"},
-                {data:40, label: "Safari"},
-                {data:78, label: "Opera"},
-                {data:40, label: "SouGou"},
-                {data:90, label: "BaiDu"},
-                {data:40, label: "TaoBao"},
-                {data:20, label: "QQ"}
-            ],
-            dotData = [[0,0,0],[0,1,0],[0,2,0],[0,3,1],[-0,4,6],[0,5,3],[0,6,2],[0,7,0],[0,8,0],[0,9,0],[0,10,0],[0,11,0],[0,12,0],[0,13,1],[0,14,11],[0,15,8],[0,16,0],[0,17,1],[0,18,0],[0,19,3],[0,20,13],[0,21,1],[0,22,0],[0,23,2],[1,0,0],[1,1,13],[1,2,0],[1,3,0],[1,4,0],[1,5,0],[1,6,0],[1,7,0],[1,8,0],[1,9,0],[1,10,0],[1,11,0],[1,12,0],[1,13,0],[1,14,3],[1,15,5],[1,16,0],[1,17,0],[1,18,2],[1,19,0],[1,20,1],[1,21,1],[1,22,3],[1,23,1],[2,0,1],[2,1,1],[2,2,0],[2,3,0],[2,4,0],[2,5,0],[2,6,0],[2,7,10],[2,8,0],[2,9,0],[2,10,0],[2,11,0],[2,12,0],[2,13,4],[2,14,2],[2,15,0],[2,16,8],[2,17,4],[2,18,4],[2,19,0],[2,20,2],[2,21,1],[2,22,1],[2,23,0],[3,0,1],[3,1,2],[3,2,0],[3,3,0],[3,4,0],[3,5,0],[3,6,0],[3,7,0],[3,8,1],[3,9,1],[3,10,0],[3,11,1],[3,12,0],[3,13,1],[3,14,4],[3,15,3],[3,16,2],[3,17,3],[3,18,0],[3,19,0],[3,20,1],[3,21,0],[3,22,0],[3,23,0],[4,0,1],[4,1,3],[4,2,11],[4,3,2],[4,4,5],[4,5,5],[4,6,2],[4,7,0],[4,8,0],[4,9,1],[4,10,0],[4,11,0],[4,12,0],[4,13,2],[4,14,4],[4,15,6],[4,16,2],[4,17,2],[4,18,2],[4,19,0],[4,20,1],[4,21,0],[4,22,0],[4,23,0],[5,0,0],[5,1,0],[5,2,0],[5,3,0],[5,4,1],[5,5,0],[5,6,0],[5,7,0],[5,8,0],[5,9,1],[5,10,0],[5,11,0],[5,12,1],[5,13,15],[5,14,4],[5,15,14],[5,16,6],[5,17,1],[5,18,3],[5,19,2],[5,20,0],[5,21,5],[5,22,2],[5,23,2],[6,0,2],[6,1,2],[6,2,0],[6,3,0],[6,4,1],[6,5,1],[6,6,0],[6,7,0],[6,8,0],[6,9,1],[6,10,0],[6,11,0],[6,12,2],[6,13,1],[6,14,0],[6,15,0],[6,16,0],[6,17,1],[6,18,4],[6,19,0],[6,20,0],[6,21,1],[6,22,0],[6,23,0]],
-            options = {
-                width: 600,
-                height: 400,
-                margin:30,
-                pie:{
-                    radius:100,
-                    easing:"back-ease-out"
-                },
-                legend:{
-                    height: 200,
-                    itemType:"rect",
-                    position:[500,80]
-                }
 
-            },
-            options1 = {
-                    width:930,
-                    height:400,
-                    margin:100,
-                    axis:{
-                        x: {
-                            ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
-                        },
-                        y: {
-                            ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-                        }
-                    },
-                    line: {
-                        hasDot: true,
-                        smooth: true,
-                        dotRadius:5
-                    },
-                    legend:{
-                        position: ["right", "top"],
-                        height: 200,
-                        itemType:"circle"
-                    },
-                    grid: {
-                        enableXGrid: true,
-                        enableYGrid: false
-                    } 
-            },
-            options2 = {
-                width: 800,
-                height: 500,
-                margin: 70,
-                axis:{
-                    x:{ 
-                        ticks:['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p','11p']
-                    },
-                    y:{ 
-                        ticks:["",'Saturday','Friday','Thursday','Wednesday','Tuesday','Monday','Sunday']
-                    }
-                },
-                dot:{
-                    radius:1
-                }
+	<div class="main">
+		<div class="left-main">
+			<!-- introduction begins -->
+			<div class="intro-panel">
+				<div class="isay-top pngfix"></div>
+				<div class="isay-middle pngfix">
+					<div class="intro-box clearfix">
+						<h2>Venus Introdution</h2>
+						<div class="intro-cont">
+							<p>Venus is a flexible, modular JavaScript library designed for all the JavaScript developer.It give you a powerful solution for datavisualization.Venus is builded on KineticJS and Raphaël.</p>
+							<p>KineticJS is an HTML5 Canvas JavaScript library that extends the 2d context by enabling high performance path detection and pixel detection for desktop and mobile applications.</p>
+							<p>Raphaël is a small JavaScript library that should simplify your work with vector graphics on the web. If you want to create your own specific chart or image crop and rotate widget, for example, you can achieve it simply and easily with this library.</p>
+							<p>Venus currently supports Firefox 3.0+, Safari 3.0+, Chrome 5.0+, Opera 9.5+ and Internet Explorer 6.0+.</p>
+							<p>Venus Developers: quanhua.ma, zhi.cun, xinwei.wang, yongliang.li, chao.wang @dpf2e-datavisualization-team.</p>
+						</div>
+					</div>
+				</div>
+				<div class="isay-bottom pngfix"></div>
+			</div>
+			<!-- introduction ends -->
 
-            },
-            options3 = {
-                width:800,
-                height:400,
-                margin:100,
-                axis:{
-                    x: {
-                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu", "TaoBao" , 'QQ']
-                    },
-                    y: {
-                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-                    }
-                },
-                bar: { 
-                },
-                grid: {
-                    enableXGrid: true,
-                    enableYGrid: false
-                }
-            };
-    new DPChart(container, [
-                {data:0.1693, label:"IE-6"},
-                {data:0.0605, label:"IE-7"},
-                {data:0.4124, label: "IE-8"},
-                {data:0.1046, label: "IE-9"},
-                {data:0.145, label: "Chrome"},
-                {data:0.02, label: "Firefox"},
-                {data:0.035, label: "Safari"},
-                {data:0.0532, label: "Others"}
-            ], options);
+						
+			
+			<!-- example begins -->
+			<div class="demo-panel">
+				<div class="isay-top pngfix"></div>
+				<div class="isay-middle pngfix">
+					<div class="demo-box clearfix">
+						<h2>展示案例</h2>
+						<div class="demo-cont">
+							<ul class="demo-list">
+								<li><a target="_blank" class="icon" href="svgpie.html"><img src="image/example1.png" /></a></li>
+								<li><a target="_blank" class="icon" href="svgline.html"><img src="image/example2.png" /></a></li>
+								<li><a target="_blank" class="icon" href="svgdot.html"><img src="image/example3.png" /></a></li>
+								<li><a target="_blank" class="icon" href="svgbar.html"><img src="image/example4.png" /></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="isay-bottom pngfix"></div>
+			</div>
+			<!-- example ends -->
+			
 
-    new DPChart(container1, data, options1);
+		</div>
+		<div class="right-main">
+			<div class="m-menu">
+				<div class="menu-top pngfix"></div>
+				<div class="menu-middle clearfix pngfix">
+					<ul class="menu-list clearfix">
+						<li class="first"><a target="_blank" href="http://www.kineticjs.com/">KineticJS</a></li>
+						<li><a target="_blank" href="http://raphaeljs.com/">RaphaelJS</a></li>
+						<li><a target="_blank" href="http://datavlab.org/">淘宝可视化</a></li>
+                        <li><a target="_blank" href="http://f2e.dp/blog/">点评前端博客</a></li>
+                        <li><a target="_blank" href="http://f2e.dp/wiki/">点评前端wiki</a></li>
+                        <li><a target="_blank" href="https://bitbucket.org/island205/venus">Venus Git</a></li>
+					</ul>
+				</div>
+				<div class="menu-bottom pngfix"></div>
+			</div>
+			<!-- mark begins -->
+			<div class="mark-panel">
+				<div class="isay-top pngfix"></div>
+				<div class="isay-middle pngfix">
+					<div class="mark-box clearfix">
+						<h2>快捷标签</h2>
+						<div class="mark-cont">
+							<ul class="mark-list">
+								<li><a target="_blank" href="../app/darkbat/topology.html">拓扑图</a></li>
+								<li><a href="canvaspie.html">canvas饼图</a></li>
+								<li><a href="svgpie.html">svg饼图</a></li>
+								<li><a href="canvasline.html">canvas线图</a></li>
+								<li><a href="svgline.html">svg线图</a></li>
+								<li><a href="canvasdot.html">canvas点图</a></li>
+								<li><a href="svgdot.html">svg点图</a></li>
+								<li><a href="canvasbar.html">canvas柱状图</a></li>
+								<li><a href="svgbar.html">svg柱状图</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="isay-bottom pngfix"></div>
+			</div>
+			<!-- mark ends -->
+		</div>
+	</div>
 
-    new DPChart(container2, dotData, options2);
+	<!-- footer -->
+	<div class="footer footer-static clearfix">
+	  <ul>
+	    <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+	    <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+	    <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+	    <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+	  </ul>      
+	  <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+	</div>
 
-    new DPChart(container3, data, options3);
-    </script>
-    <!--
-    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
-	<script type="text/javascript" src="../src/svg/dpchart.pie.js"></script>
-    -->
-    
-    <script class="javascript" src="Scripts/shCore.js"></script>
-    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
-    <script class="javascript" src="Scripts/shBrushCss.js"></script>
-
-    <script class="javascript">
-    	dp.SyntaxHighlighter.HighlightAll('code');
-    </script>
+	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
 </body>
 </html>

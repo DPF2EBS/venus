@@ -5,253 +5,143 @@
 <title>Venus Show Stage</title>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+<!--[if IE 6]>
+    <script src="Scripts/DD_belatedPNG.js"></script>
+    <script>DD_belatedPNG.fix('.pngfix'); </script>
+<![endif]-->
 </head>
 <body>
-	<header class="header">
-    	<section class="header-cont">
-        	<div class="header-logo">
-            	<a href="#logo"><img src="image/logo.png" width="208" height="63"/></a>
-            </div>
-            <nav class="header-nav">
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
             	<ul>
                 	<li><a href="index.html">首页</a></li>
-                    <li><a href="api.html">API文档</a></li>
-                    <li><a href="canvasdemo.html">Canvas Demo</a></li>
-                    <li><a href="svgdemo.html">SVG Demo</a></li>
-					<li><a href="svgcase.html">svg案例</a></li>
-                    <li><a href="canvascase.html">canvas案例</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
                 </ul>
-            </nav>
-        </section>
-    </header>
-    <div class="main">
-    	<section class="main-cont">
-        	<h2>API大概如下：</h2>
-			<textarea name="code" class="js" rows="50" cols="100">
-				//基础类
-				Class DPChart(container,data,options)
-				@param container {DOMElement} 放置SVG的容器
-				@data {Array} 
-				@param options {Object} 配置参数，default：
-				{
-					width:
-					height:
-					//title:””,
-					//subtitle:””,
-					colors:[“red”,”green”,”yellow”], //自定义Chart颜色
-					axis:{
-					‘x’:{
-						‘enable’:true
-					max:
-							min:
-							tickSize:
-							//beginX:
-							//beginY:
-							ticks:[],
-							minorTickNum: // 一个tick中有几个minor tick ，<0 就没有
-							rotate:逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
-							radius:弯曲半径	
-
-				},
-					‘y’:{}
-					
-				},
-				legend:{
-						position：[left,top],
-						//border:
-						format:”{name}-{percent.2f}%”
-				itemType:’rect’ // circle		
-				},
-				grid:{
-					‘color’:’’
-				},
-				events:{
-				}，
-				bar:{
-					events
-				},
-				pie:{
-					x:,  //中心点x坐标
-					y:,  //中心点y坐标
-					radius: //半径
-				}
-				}
-
-
-				prototype:{
-					_initData(),
-					_initTitle(),
-					_initAxis(),
-					_initLegend(),
-					_initGrid(),
-					draw(),
-					_initEvents()，
-					update(index,key,value)
-				}
-				// 添加图表类型，必须有draw函数，实例化DPChart的时候，options里面有对应的name参数。
-				DPChart.addChart(name,methods);
-//通过new DPChart(container,options)绘制图表，options里面有对应的图表参数，则就会生成相应的图表，可以有多个类型，实现柱状图，饼图，折线图的组合图表
-				/*
-				Modules:
-				1.Class Series(data)
-				@param data 
-				data现可支持的format如下：
-				1.[1,2,3,4....] Number Array ------------>[{data:1},{data:2}...]...
-				2.[{key:value,...},.....] Object Array --->[{data:{key:value,....}}....]
-				3.[{name:’’,data:Number or Array or Object}]  no change
-				4.{key:value....} --------------------------->[{name:key,data:value}....]
-				5.[[1,2,3,4,5...],[]...]------------------------>[{data:[1,2,3,4,5,...]}........]
-
-				attribute:
-					series: {Array} 转换后的标准形式 [{name:’’,data:Number or Array or Object},....]   name 不一定有
-				prototype:
-					getSeries():返回series属性
-					getRange():返回数据的跨度 {max:，min:}
-				*/
-
-				/*
-				2.Class Title(title,subtitle)
-				@param title ,subtitle{String}
-
-				attribute:
-					title:{String}
-					subtitle:{String}
-					titleElement:Raphael Element
-					subtitleElement: Raphael Element
-
-				prototype:
-					title():get 或者set title
-					subTitle():get 或者 set subTitle
-					//其他设置直接调用titleElement的raphael方法
-				*/
-
-				/*
-				3.Class Axis(options)
-					@param options 
-						{
-							max:
-							min:
-							tickSize: 精度
-							tickWidth: 宽度
-							//beginX:
-							//beginY:
-							ticks:[],
-							//minorTickNum: // 一个tick中有几个minor tick ，<0 就没有
-							rotate:逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
-							radius:弯曲半径
-				}
-
-					attributes:
-						labelElements:[],
-				axisElement:		
-						beginX
-						beginY
-						axisLength //坐标总宽度
-					prototype:
-						getX(index), 对应的x相对于Chart左上角的绝对坐标值
-						getY(index，key),对应的y相对于Chart左上角的绝对坐标值
-						getOrigin(), 坐标轴的起始位置 return {x:,y:}
-						getAngel(index)//对应的角度，如果有radius的话
-						getStartAngle(index), 扇形的起始角度
-						getEndAngle(index),  扇形的终止角度
-						getRadius(index),  扇形或者圆形的半径
-				*/
-
-				/*
-				4. Class Legend(series ,options)
-					@param: series Series对象
-					@param: options {
-						position：[left,top],
-						direction:’vertical’ or ‘horizontal’ 
-						format:”{name}-{percent.2f}%”
-				itemType:’rect’ // circle		
-				}
-
-				prototype:{
-					set(key,value)
-					on()// events
-					off()
-				}
-				*/
-
-				/*
-				5 Class Grid(options)
-					@param options{
-						color:
-						enableRow
-						enableColumn
-				}
-
-				prototype:{
-					set(key,value)
-				}
-				*/
-
-				/*
-				6 Class Utility(options)
-					@param options{
-					
-				},
-
-				attributes:	
-
-				prototype:{
-					getColors(colorCount) //获取颜色，colorCount需要多少个颜色值
-				}
-				*/
-
-				/*
-				Events:
-				绘图流中的事件在options.events绑定listener
-				onDataInit: 
-				处理完Data之后fire
-				param：Series实例
-
-				//onTitleInit:
-					初始化title之后fire
-					param: title实例
-
-				onAxisInit:
-					初始化Axis之后fire
-					params: {x:Axis实例} 各个Axis的实例
-
-				onLegendInit：
-					初始化Legend之后fire
-					param：legend实例
-
-				onGridgroundInit:
-					初始化grid之后触发
-					param: Grid实例
-
-				onDraw:
-					画完内容后触发
-					
-
-				onFinish:
-					全部执行完后触发
-
-				*/
-
-				//其他的事件如click，mouseover等DOM事件，由各个图自己定义绑定和触发的方式以及参数，
-				//listener可以定义在events中，也可以定义在(各图自己的属性).events中
-            </textarea>
-        </section>
+            </div>
+        </div>
     </div>
-    <script type="text/javascript" src="../src/common/lang.js"></script>
-	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
-	<script type="text/javascript" src="../src/common/common.js"></script>    
-    <script type="text/javascript" src="../src/common/customevent.js"></script>
-    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/pie.js"></script>
-    <script type="text/javascript" src="../src/canvas/types/line.js"></script>
 
+    <div class="cont-main margin-t clearfix">
+    	<div class="nav-side">
+        	<ul class="nav-list clearfix">
+                <li><a href="api.html">使用教程</a></li>
+                <li><a href="svgapi.html">svg配置</a></li>
+                <li><a href="#">canvas配置</a></li>
+                <li><a href="#">api</a></li>
+            </ul>
+        </div>
+        <div class="right-cont">
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix">
+                        <h2>（1）步骤一：需要依赖的js文件</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            // 我们不需要样式，样式应该由你来定义
+            // 引入venus脚本文件
+            <script type="text/javascript" src="venus.js"></script>
+            </textarea>
 
-    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
-	<script type="text/javascript" src="../src/svg/dpchart.js"></script>
-	<script type="text/javascript" src="../src/svg/types/pie.js"></script>
-	<script type="text/javascript" src="../src/svg/types/bar.js"></script>
-	<script type="text/javascript" src="../src/svg/types/dot.js"></script>
-	<script type="text/javascript" src="../src/svg/types/line.js"></script>
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix">
+                        <h2>（2）步骤二：准备好图表容器，数据和配置三个参数</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+                // 定义一个空的div
+                <div id="chart_container" class="chart-box"></div>
+                // 容器元素
+                var container = document.getElementById('chart_container');
+                // 展示所需数据
+                var data = [
+                    {data:10, label:"FF"},
+                    {data:80, label:"IE"},
+                    {data:60, label: "Chrome"},
+                    {data:10, label: "Ohter"},
+                    {data:40, label: "Safari"},
+                    {data:78, label: "Opera"},                ];
+                // 配置参数对象
+                var options = {
+                    width:930, height:400, margin:100,
+                    axis:{
+                        x: { ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera"] },
+                        y: { ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }
+                    },
+                    line: {
+                        hasDot: true,
+                        smooth: false,
+                        dotRadius: 8,
+                        shadow: false
+                    },
+                    legend:{
+                        position:["right", "top"],
+                        height: 200,
+                        itemType:"circle"
+                    }
+                };
+            </textarea>
+
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix">
+                        <h2>（3）步骤三：完成图形</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            // 最后new DPChart对象，就这么简单！
+            new DPChart(container, data, options);
+            </textarea>
+
+        </div>
+
+    </div>
+    <!-- footer -->
+    <div class="footer footer-static clearfix">
+      <ul>
+        <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+        <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+        <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+        <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+      </ul>      
+      <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+    </div>
+    
+	<a class="toTop" id="toTop" href="#top"></a>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
     
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>

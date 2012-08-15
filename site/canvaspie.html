@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+</head>
+<body>
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav">
+		<ul class="btn-list clearfix">
+			<li><a href="canvaspie.html" class="button orange">饼状图</a></li>
+			<li><a href="canvasline.html" class="button orange">线状图</a></li>
+			<li><a href="canvasdot.html" class="button orange">点状图</a></li>
+			<li><a href="canvasbar.html" class="button orange">柱状图</a></li>
+		</ul>
+    </div>
+
+    <div class="cont-main clearfix">
+    	<div class="sidebar">
+			<h3 class="toggler first"><a href="javascript:void(0)">设置画布</a></h3>
+			<div class="accordion">
+			<ul>
+			<li><label>画布的宽度：</label><input id="J_stageWidth" type="text" class="g-input"/></li>
+			<li><label>画布的高度：</label><input id="J_stageHeight" type="text" class="g-input" /></li>
+			<li><label>画布外边距：</label><input id="J_picMargin" type="text" class="g-input" /></li>
+			<li><a id="J_stageSize" class="button white">看看</a></li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler"><a href="javascript:void(0)">设置动画</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>初始化：</label>
+				<select class="sel J_pie" data-type="initEase">
+				<option value="linear" selected="true">linear</option>
+				<option value="ease-in">ease-in</option>
+				<option value="ease-out">ease-out</option>
+				<option value="ease-in-out">ease-in-out</option>
+				<option value="back-ease-out">back-ease-out</option>
+				<option value="bounce-ease-out">bounce-ease-out</option>
+				<option value="bounce-ease-in">bounce-ease-in</option>
+				<option value="bounce-ease-in-out">bounce-ease-in-out</option>
+				<option value="strong-ease-in">strong-ease-in</option>
+				<option value="strong-ease-out">strong-ease-out</option>
+				<option value="strong-ease-in-out">strong-ease-in-out</option>
+            	</select>
+            </li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler"><a href="javascript:void(0)">英雄本色</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>饼图半径：</label>
+	            <select class="sel J_pie" data-type="radius">
+	                <option value="50">50</option>
+	                <option value="100">100</option>
+	                <option value="150" selected="true">150</option>
+	                <option value="180">180</option>
+	            </select>
+	        </li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler"><a href="javascript:void(0)">我的Tip</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>是否显示tip：</label>
+                <select class="sel J_pie" data-type="tip">
+                    <option value="0" selected="true">不需要</option>
+                    <option value="1">需要</option>
+                </select>
+			</li>
+			</ul>
+			</div>
+			
+			<h3 class="toggler last"><a href="javascript:void(0)">设置图例</a></h3>
+			<div class="accordion">
+			<ul>
+			<li>
+				<label>是否要图例：</label>
+                <select class="sel J_pie" data-type="legend">
+                    <option value="1" selected="true">需要</option>
+                    <option value="0">不需要</option>
+                </select>
+            </li>
+			<li>
+				<label>图例的位置：</label>
+                <select class="sel J_pie" data-type="legendPosition">
+                    <option value="right|top" selected="true">右上角</option>
+                    <option value="left|top">左上角</option>
+                    <option value="right|bottom">右下角</option>
+                </select>
+			</li>
+			<li>
+				<label>图例的行高：</label>
+                <select class="sel J_pie" data-type="legendHeight">
+                    <option value="100">100</option>
+                    <option value="150" selected="true">150</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                </select>		
+			</li>
+			<li>
+				<label>图例的类型：</label>
+                <select class="sel J_pie" data-type="legendType">
+                	<option value="circle" selected="true">circle</option>
+                    <option value="rect">rect</option>
+                </select>
+			</li>
+			<li>
+				<label>图例X坐标：</label>
+				(x)
+                <input type="text" id="J_legendPosX" class="g-input"/>
+			</li>
+			<li>
+				<label>图例Y坐标：</label>
+				(y)
+                <input type="text" id="J_legendPosY" class="g-input"/>
+			</li>
+			<li>
+				<a href="javascript:void(0)" class="button white" id="J_setPos">看看</a>
+			</li>
+			</ul>
+			</div>
+			
+    	</div>
+    	<div class="content">
+    		<div id="chart_container" class="chart-box"></div>
+    	</div>
+    </div>
+    <!-- footer begins -->
+	<div class="footer footer-static clearfix">
+	  <ul>
+	    <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+	    <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+	    <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+	    <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+	  </ul>      
+	  <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+	</div>
+	<!-- footer ends -->
+	<a class="toTop" id="toTop" href="#top"></a>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>    
+    <script type="text/javascript" src="../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+    <script type="text/javascript" src="../src/canvas/types/pie.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+    <script type="text/javascript">
+		/* --------------------- */
+    	var container = $('chart_container'),
+	    	data = [	
+	    		{data:0.1693, label:"IE-6"},
+		        {data:0.0605, label:"IE-7"},
+		        {data:0.4124, label: "IE-8"},
+		        {data:0.1046, label: "IE-9"},
+		        {data:0.145, label: "Chrome"},
+		        {data:0.02, label: "Firefox"},
+		        {data:0.035, label: "Safari"},
+		        {data:0.0532, label: "Others"}
+		    ],
+            options = {
+                width: 900,
+                height: 400,
+                margin: 30,
+                pie:{
+                    radius:150,
+                    easing:"ease-in"
+                },
+                legend:{
+                    height: 150,
+                    itemType:"circle",
+                    position:["right", "top"]
+                }
+            };
+    	var bing = new DPChart(container, data, options);
+    	$('J_stageSize').addEvent('click', function() {
+	    	var widthVal = $('J_stageWidth').value,
+	    		heightVal = $('J_stageHeight').value,
+	    		marginVal = $('J_picMargin').value;
+	    		
+	    	widthVal = (widthVal !== '') ? parseInt(widthVal) : 900;
+	    	heightVal = (heightVal !== '') ? parseInt(heightVal) : 400;
+	    	marginVal = (marginVal !== '') ? parseInt(marginVal) : 30;
+	    	
+	    	options.width = widthVal;
+	    	options.height = heightVal;
+	    	options.margin = marginVal;
+			bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, data, options);
+	    });
+	    
+	    $('J_setPos').addEvent('click', function() {
+	    	var posX = $('J_legendPosX').value,
+	    		posY = $('J_legendPosY').value;
+	    	posX = (posX !== '') ? parseInt(posX) : "right";
+	    	posY = (posY !== '') ? parseInt(posY) : "top";
+	
+	    	options.legend.position = [posX, posY];
+	
+	    	bing = null;
+	        container.innerHTML = '';
+	    	new DPChart(container, data, options);
+	    });
+	    // -------------------------------------------
+	    var len = $$('.J_pie').length;
+		
+		for(var i = 0; i < len; i++) {
+			
+			$$('.J_pie')[i].addEvent('change', function() {
+				
+				var _this = $(this),
+	            val = _this.value,
+	            attr = _this.getProperty('data-type');
+		        switch (attr) {
+		            case 'radius':
+		                options.pie.radius = val;
+		                break;
+		            case 'initEase':
+		            	options.pie.easing = val;
+		            	break;
+		            case 'ease':
+		                options.pie.easing = val; 
+		                break;
+		            case 'tip':
+		                if(val == '0') options.pie.needTip = false;
+		                else { options.pie.needTip = true; }
+		                break;
+		            case 'legend':
+		                if (val == '0')  options.legend = null;
+		                else {
+		                    options.legend = {
+		                        height: 200,
+		                        itemType:"rect",
+		                        position:["right","top"]
+		                    };
+		                }
+		                break;
+		            case 'legendPosition':
+		            	var arr = val.split('|');
+		            	options.legend && (options.legend.position = arr);
+		            	break;
+		            case 'legendHeight':
+		            	options.legend && (options.legend.height = val);
+		            	break;
+		            case 'legendType':
+		            	options.legend && (options.legend.itemType = val);
+		            	break;
+		            default: break;
+		        }
+		        bing = null;
+		        container.innerHTML = '';
+		        new DPChart(container, data, options);
+				
+			});
+			
+		}
+		</script>
+</body>
+</html>
