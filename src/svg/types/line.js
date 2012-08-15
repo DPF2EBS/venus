@@ -6,6 +6,9 @@
      * */
 
 
+    /*
+     * function helps calculate the Bezier
+     * */
     function getAnchors(p1x, p1y, p2x, p2y, p3x, p3y) {
         var l1 = (p2x - p1x) / 2,
             l2 = (p3x - p2x) / 2,
@@ -32,34 +35,52 @@
     Chart.addChart('line', {
         draw:function () {
             var opt = this.options,
+            /*
+             * default options of DPChart.options.line
+             * */
                 lineOpt = DPChart.mix({
-                    'line-width':2,
-                    smooth:false,
-                    dots:true,
-                    dotRadius:4,
-                    area:false,
-                    beginAnimate:false,
-                    areaOpacity:0.1,
-                    dotSelect:true,
-                    columnHover:true
+                    'line-width':2,         //width of the line
+                    smooth:false,           //straight line or curved line
+                    dots:true,              //draw dot for each value or not
+                    dotRadius:4,            //dot radius if dots enabled
+                    area:false,             //draw area under the line or not
+                    areaOpacity:0.1,        //area opacity if area enabled
+                    beginAnimate:false,     //enable begin animate or not
+                    dotSelect:true,         //enable dots select or not
+                    columnHover:true        //enable column hover or not
                 }, opt.line),
                 series = this.series,
                 axises = this.axises,
                 data = series.getSeries(),
                 self = this,
                 raphael = this.stage,
-                colors = this.colors, //this.colors,
-                elements = [], //按series 存放element
-                dotsByXAxis = {}  //按x轴存放dot
+                colors = this.colors,       //this.colors,
+                elements = [],              //save the element by series
+                dotsByXAxis = {}            //save the dots by x axis convenient for column hover
 
 
+            /*
+             * Main Function of draw a line
+             * @param arr{Array or Object} array or object of the data of each point
+             * @param indexOfSeries{Number} index of the Series
+             * @color{Color}
+             * @dotColor{Color}
+             *
+             * */
             function drawLine(arr, indexOfSeries, color, dotColor) {
                 var points = []
 
-                //put all points in the point array, ignore some miss point
+                //put all points in the point array, ignore some missing points
                 if (DPChart.isArray(arr)) {
                     arr.forEach(function (d, i) {
                         if (indexOfSeries == undefined) {
+                            /*
+                             * point object{
+                             *     x:Number x ,svg coordinate
+                             *     y:Number y ,svg coordinate
+                             *     value:Number data
+                             * }
+                             * */
                             points.push({
                                 x:axises.x.getX(i),
                                 y:axises.y.getY(i),
@@ -84,31 +105,37 @@
                     }
                 }
                 if (!points.length) {
+                    //no point ,return
                     return;
                 }
 
-                //sort by xAxis
+                //sort by xAxis to avoid wrong order
                 points.sort(function (a, b) {
                     return a.x - b.x;
                 });
-                var pathString,
-                    areaPathString,
-                    pathAnimateString,
-                    areaPathAnimateString
-                points.length <= 2 && (lineOpt.smooth = false)
+                var pathString,             //path string of the line
+                    areaPathString,         //path string of the area
+                    pathAnimateString,      //path string of the line animation
+                    areaPathAnimateString;  //path string of the area animation
+
+                //if points.length <=2 , draw straight line
+                points.length <= 2 && (lineOpt.smooth = false);
+
                 if (lineOpt.smooth) {
                     //draw smooth line
                     var x, y,
                         i, l,
                         x0, y0, x1, y1,
-                        p
+                        p;
 
-
+                    //start point
                     pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
                     areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
                     lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
                     lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
+
                     for (i = 1, l = points.length - 1; i < l; i++) {
+                        //calculate the path string use the current point , previous point and the next point
                         x0 = points[i - 1].x;
                         y0 = points[i - 1].y;
                         x = points[i].x;
@@ -118,36 +145,45 @@
                         p = getAnchors(x0, y0, x, y, x1, y1);
                         pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
                         areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
-                        lineOpt.beginAnimate && pathAnimateString.push('H', x) && areaPathAnimateString.push('H',x)
+                        lineOpt.beginAnimate && pathAnimateString.push('H', x) && areaPathAnimateString.push('H', x);
                     }
-                    pathString.push(x1, y1, x1, y1)
-                    areaPathString.push(x1, y1, x1, y1, 'V', axises.y.beginY, 'H', points[0].x, 'Z')
-                    lineOpt.beginAnimate && pathAnimateString.push('H', x1)
+                    //push the last point
+                    pathString.push(x1, y1, x1, y1);
+                    areaPathString.push(x1, y1, x1, y1, 'V', axises.y.beginY, 'H', points[0].x, 'Z');
+                    lineOpt.beginAnimate && pathAnimateString.push('H', x1);
+
                 } else {
-                    //straight line
+                    //straight line and is simpler than the smooth line
+
+                    //start point
                     pathString = ['M', points[0].x, points[0].y];
                     areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y]
                     lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
                     lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
-                    points.forEach(function (d, i) {
-                        pathString.push('L', d.x, d.y)
-                        areaPathString.push('L', d.x, d.y)
-                        lineOpt.beginAnimate && pathAnimateString.push('H', d.x)
-                        lineOpt.beginAnimate && areaPathAnimateString.push('H', d.x)
+
+                    points.forEach(function (d) {
+                        //push each point to the path string
+                        pathString.push('L', d.x, d.y);
+                        areaPathString.push('L', d.x, d.y);
+                        lineOpt.beginAnimate && pathAnimateString.push('H', d.x);
+                        lineOpt.beginAnimate && areaPathAnimateString.push('H', d.x);
                     });
-                    areaPathString.push('V', axises.y.beginY, 'H', points[0].x, 'Z')
+
+                    //close the path of the area
+                    areaPathString.push('V', axises.y.beginY, 'H', points[0].x, 'Z');
                 }
 
                 var line = raphael.path().attr({
                         'stroke-width':lineOpt['line-width'],
                         'stroke':color,
-                        path:pathAnimateString || pathString
+                        'path':pathAnimateString || pathString
                     }),
                     dots = raphael.set(),
-                    area
+                    area;
+
                 if (lineOpt.beginAnimate) {
                     //begin animate
-                    line.animate({'path':pathString}, 1000)
+                    line.animate({'path':pathString}, 1000);
                 }
                 if (lineOpt.area) {
                     //draw area path
@@ -157,8 +193,8 @@
                         'fill':color,
                         'opacity':lineOpt.areaOpacity
                     });
-                    if(lineOpt.beginAnimate){
-                        area.animate({'path':areaPathString},1000)
+                    if (lineOpt.beginAnimate) {
+                        area.animate({'path':areaPathString}, 1000);
                     }
                 }
 
@@ -169,6 +205,7 @@
                             'fill':dotColor || colors[i],
                             'stroke':'none'
                         }).hover(
+                            //hover event which shows the toolTip and make the dot bigger
                             function () {
                                 if (this._selected_) {
                                     return;
@@ -187,12 +224,14 @@
                                 }, 100);
                                 this.toolTipHide()
                             }).data('point', d);
+
                         if (lineOpt.beginAnimate) {
                             dot.attr('cy', axises.y.beginY);
                             dot.animate({'cy':d.y}, 1000)
                         }
+
                         if (lineOpt.dotSelect) {
-                            //选中dot 显示tip
+                            //bind click event which shows the toolTip and make the dot bigger and cancel the effect when click again
                             dot.click(function () {
                                 if (!this._selected_) {
                                     this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, d.value);
@@ -204,15 +243,19 @@
                             })
                         }
 
+                        //save the dots
                         dots.push(dot);
                         dotsByXAxis[d.x] || (dotsByXAxis[d.x] = raphael.set());
                         dotsByXAxis[d.x].push(dot);
                     });
                 }
+
+                //save the elements
                 elements.push({line:line, dots:dots, area:area});
             }
 
             function bindLegendEvents() {
+                //bind legend click event which toggles the line hide
                 self.legend && self.legend.on('click', (function () {
                     var arr = new Array(data.length);
                     return function (e, i) {
@@ -228,37 +271,54 @@
                             elements[i].area && elements[i].area.show();
                         }
                     }
-                })())
+                })());
             }
 
             if (data[0]) {
                 if (DPChart.isNumber(data[0].data)) {
-                    //data is simple number
+                    /*
+                    * data is Number
+                    * and draw totally one line
+                    * */
                     drawLine(data, undefined, this.colors[0], undefined);
                 } else if (DPChart.isArray(data[0].data)) {
+                    /*
+                    * data is array and series format as :
+                    * [{data:[number,...]},...]
+                    * draw a line for each item of the series
+                    *
+                    * */
                     data.forEach(function (item, i) {
-                        //item is data[0],...which is an array and draws an line
+                        //item is content of the data,draw a line
                         drawLine(item.data, i, colors[i], colors[i]);
                     });
                     bindLegendEvents();
 
-                } else {
-                    //is object
+                } else if(DPChart.isObject(data[0].data)) {
+                    /*
+                    * data is object and series format as :
+                    * [{data:{key:value},...},...]
+                    * draw a line for each item of the series
+                    * */
                     data.forEach(function (item, i) {
-                        // item is an object ,..which is an array and draws an line
-                        drawLine(item.data, i, colors[i], colors[i])
+                        // item is content of the data,draw a line
+                        drawLine(item.data, i, colors[i], colors[i]);
                     });
                     bindLegendEvents();
 
                 }
 
                 if (lineOpt.columnHover) {
+                    //enable column hover event
                     for (var x in dotsByXAxis) {
-                        //创建一条透明的rect
+                        //create an invisible rect and bind event on this rect
                         var width = axises.x.options.tickWidth,
                             height = axises.y.axisLength;
+
+                        //use closure to avoid bug : value is always the last x
                         (function (xValue) {
-                            var set = dotsByXAxis[xValue]
+                            var set = dotsByXAxis[xValue];
+
                             raphael.rect(xValue - width / 2, axises.y.beginY - height, width, height).attr({
                                 'stroke':'none', 'fill':'#fff', 'opacity':0
                             }).hover(
@@ -280,17 +340,15 @@
                                     })
                                 });
                         })(x);
-
-
                     }
 
                 }
                 if (lineOpt.area) {
-                    //把左右的点都放到最前面来 防止被盖住
+                    //put all the dots to front to avoid covered by area
                     elements.forEach(function (el) {
                         el.dots && el.dots.forEach(function (dot) {
                             dot.toFront();
-                        })
+                        });
                     })
                 }
 
