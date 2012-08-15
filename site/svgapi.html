@@ -39,10 +39,10 @@
 
     <div class="nav">
         <ul class="btn-list clearfix">
-            <li><a href="#svgpie" class="button white">svg饼图配置</a></li>
-            <li><a href="#svgline" class="button white">svg线图配置</a></li>
-            <li><a href="#svgdot" class="button white">svg点图配置</a></li>
-            <li><a href="#svgbar" class="button white">svg柱图配置</a></li>
+            <li><a href="#svgpie" class="button orange">svg饼图配置</a></li>
+            <li><a href="#svgline" class="button orange">svg线图配置</a></li>
+            <li><a href="#svgdot" class="button orange">svg点图配置</a></li>
+            <li><a href="#svgbar" class="button orange">svg柱图配置</a></li>
         </ul>
     </div>
 
@@ -51,11 +51,60 @@
         	<ul class="nav-list clearfix">
                 <li><a href="api.html">使用教程</a></li>
                 <li><a href="svgapi.html">svg配置</a></li>
-                <li><a href="#">canvas配置</a></li>
+                <li><a href="canvasapi.html">canvas配置</a></li>
                 <li><a href="#">api</a></li>
             </ul>
         </div>
         <div class="right-cont">
+			
+			<div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="svgpie">
+                        <h2 class="font-r">svg饼图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            var pieOptions = {
+                // 配置饼图画布的宽高
+                width: 800,
+                height: 500,
+                // 饼图的主要配置
+                pie:{
+                    // 饼图的半径
+                    radius: 150,
+                    // 饼图是否需要开始动画
+                    animation: true,
+                    // 饼图开始动画所需的时间
+                    duration: 900,
+                    // 饼图开始动画的方向（1为顺时针，-1为逆时针）
+                    dir: -1,
+                    // 饼图上是否需要文字
+                    showText: true,
+                    // 饼图动画的开始角度
+                    rotate: 180,
+                    // 饼图空心的半径
+                    hollow: 8
+                },
+                // 配置图例
+                legend: {
+                    // 是否需要展示图例
+                    showLegend: true,
+                    // 图例的位置是水平还是竖直（vertical）
+                    direction: 'horizontal',
+                    // 图例的icon圆形还是方形（rect）
+                    legendType: 'circle',
+                    // 图例的位置是处于哪里，目前支持：
+                    // ['right', 'top'], ['right', 'bottom'],
+                    // ['left', 'top'], ['left', 'bottom'],
+                    // ['center', 'top'], ['center', 'bottom']
+                    legendPosition: ['center', 'bottom']
+                }
+            };
+            </textarea>
+
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
@@ -120,35 +169,45 @@
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
-                    <div class="intro-box clearfix" id="svgpie">
-                        <h2 class="font-r">svg饼图配置</h2>
+                    <div class="intro-box clearfix" id="svgdot">
+                        <h2 class="font-r">svg点图配置</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
-            </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            var pieOptions = {
-                // 配置饼图画布的宽高
-                width: 800,
-                height: 500,
-                // 饼图的主要配置
-                pie:{
-                    // 饼图的半径
-                    radius: 150,
-                    // 饼图是否需要开始动画
-                    animation: true,
-                    // 饼图开始动画所需的时间
-                    duration: 900,
-                    // 饼图开始动画的方向（1为顺时针，-1为逆时针）
-                    dir: -1,
-                    // 饼图上是否需要文字
-                    showText: true,
-                    // 饼图动画的开始角度
-                    rotate: 180,
-                    // 饼图空心的半径
-                    hollow: 8
+            </div>       
+            <textarea name="code" class="js" rows="50" cols="100">  
+			var dotOptions = {
+				// 配置点图的宽度
+	        	width: 900,
+				// 配置点图的高度
+	           	height: 450,
+				// 配置坐标轴
+	            axis:{  
+					// 配置x坐标轴
+	            	x:{
+	            		max:400,  // 最大区间值
+	                	ticks:['FF', 'IE', 'Chrome', 'other'], // x坐标轴的标签
+	                	tickWidth:200 // 刻度间的像素距离
+	            	},
+					// 配置y的坐标轴
+	            	y:{
+	            		min:0,  // 最小的区间值
+	                	max:100, // 最大的区间值
+	                	tickWidth:40, // 刻度的像素距离
+	                	tickSize:10  // 刻度间差值
+	            	}
+	           	}, 
+				dot:{
+					
+				},
+				// 配置网格，不配置不会有网格
+                grid:{ 
+                    // 网格配置行
+                    enableRow: true,
+                    // 网格配置列
+                    enableColumn: true
                 },
-                // 配置图例
+				// 配置图例
                 legend: {
                     // 是否需要展示图例
                     showLegend: true,
@@ -162,9 +221,65 @@
                     // ['center', 'top'], ['center', 'bottom']
                     legendPosition: ['center', 'bottom']
                 }
-            };
-            </textarea>
-
+			};
+			</textarea>
+			
+			<div class="intro-panel">
+	            <div class="isay-top pngfix"></div>
+	            <div class="isay-middle pngfix">
+	                <div class="intro-box clearfix" id="svgbar">
+	                    <h2 class="font-r">svg柱状图配置</h2>
+	                </div>
+	            </div>
+	            <div class="isay-bottom pngfix"></div>
+	        </div>
+			
+			<textarea name="code" class="js" rows="50" cols="100">
+			var barOptions = { 
+					// 配置柱状图的宽高
+	            	width: 900, height: 500,   
+					// 配置x,y坐标轴
+	                axis:{
+	                    x:{
+	                        tickWidth:150,   // x轴刻度实际像素距离
+	                        ticks:['Q1', 'Q2', 'Q3', 'Q4']  // x轴上的标文字
+	                    },
+	                    y:{
+	                        min:0,  // 最小的值
+	                        max:100,  // 最大的值
+	                        tickWidth:30,  // y轴刻度实际像素距离
+	                        tickSize:10  // 刻度的差值
+	                    }
+	                },
+					// 开始配置柱状图
+	                bar:{
+	                    radius:2,  // 柱状图的半径
+							  beginAnimate: true, // 是否需要开始动画
+							  opacity: 0.5  //柱子的透明度
+	                },
+	                // 配置网格，不配置不会有网格
+	                grid:{ 
+	                    // 网格配置行
+	                    enableRow: true,
+	                    // 网格配置列
+	                    enableColumn: true
+	                },
+					// 配置图例
+	                legend: {
+	                    // 是否需要展示图例
+	                    showLegend: true,
+	                    // 图例的位置是水平还是竖直（vertical）
+	                    direction: 'horizontal',
+	                    // 图例的icon圆形还是方形（rect）
+	                    legendType: 'circle',
+	                    // 图例的位置是处于哪里，目前支持：
+	                    // ['right', 'top'], ['right', 'bottom'],
+	                    // ['left', 'top'], ['left', 'bottom'],
+	                    // ['center', 'top'], ['center', 'bottom']
+	                    legendPosition: ['center', 'bottom']
+	                }
+	            }
+			</textarea>
         </div>
 
     </div>
