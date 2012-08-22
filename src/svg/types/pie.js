@@ -18,27 +18,28 @@
 		
 		var rad = Math.PI / 180,
 			angleOffset=opt.endAngle-opt.startAngle,
+			path,
 			x1,y1, xm,ym, x2,y2;
 			
-			x1 = opt.x + opt.r * Math.cos(dir*opt.startAngle * rad),
-			y1 = opt.y + opt.r * Math.sin(dir*opt.startAngle * rad),			
+			x1 = opt.x + opt.r * Math.cos(dir*opt.startAngle * rad);
+			y1 = opt.y + opt.r * Math.sin(dir*opt.startAngle * rad);			
 			
-			xm = opt.x + opt.r / 2 * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad),
-            ym = opt.y + opt.r / 2 * Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad),
+			xm = opt.x + opt.r / 2 * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad);
+            ym = opt.y + opt.r / 2 * Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad);
 			
-			x2 = opt.x + opt.r * Math.cos(dir*opt.endAngle * rad),  
+			x2 = opt.x + opt.r * Math.cos(dir*opt.endAngle * rad);
 			y2 = opt.y + opt.r * Math.sin(dir*opt.endAngle * rad);
 		
 		if(parseInt(opt.hollow,10)>0){
 			var xh1,yh1, xh2,yh2;
-			xh1 = opt.x + opt.hollow * Math.cos(dir*opt.startAngle * rad),
-			yh1 = opt.y + opt.hollow * Math.sin(dir*opt.startAngle * rad),
+			xh1 = opt.x + opt.hollow * Math.cos(dir*opt.startAngle * rad);
+			yh1 = opt.y + opt.hollow * Math.sin(dir*opt.startAngle * rad);
 			
-			xm = opt.x + (opt.hollow +opt.r/2-opt.hollow/2) * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad),
-            ym = opt.y + (opt.hollow+opt.r/2-opt.hollow/2)* Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad),
+			xm = opt.x + (opt.hollow +opt.r/2-opt.hollow/2) * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad);
+            ym = opt.y + (opt.hollow+opt.r/2-opt.hollow/2)* Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad);
 			
-			xh2 = opt.x + opt.hollow * Math.cos(dir*opt.endAngle * rad),  
-			yh2 = opt.y + opt.hollow * Math.sin(dir*opt.endAngle * rad),
+			xh2 = opt.x + opt.hollow * Math.cos(dir*opt.endAngle * rad);
+			yh2 = opt.y + opt.hollow * Math.sin(dir*opt.endAngle * rad);
 			
 			path = [
 				"M", xh2, yh2,
