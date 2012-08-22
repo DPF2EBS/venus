@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ;
 (function (undefined) {
     /**
@@ -58,6 +59,68 @@
         }
 
         return {path:path, pos:{xstart:x1, ystart:y1, xmiddle:xm, ymiddle:ym, xend:x2, yend:y2}};
+=======
+;(function (undefined) {
+	/**
+	*get sector path string and position parameters
+	*@param {Object} options {
+		x:coordinate y of sector, 
+		y:coordinate x of sector, 
+		r:radius, 
+		startAngle:, 
+		endAngle:, 
+		dir:circle direction, 
+		rotate:sector rotation
+	}
+	*@return path and positions
+	*@type {Object} an object contain path and positions
+	*/
+	function getSectorPath(options){
+		var opt=options||{}, dir=opt.dir||1;
+		
+		var rad = Math.PI / 180,
+			angleOffset=opt.endAngle-opt.startAngle,
+			path,
+			x1,y1, xm,ym, x2,y2;
+			
+			x1 = opt.x + opt.r * Math.cos(dir*opt.startAngle * rad);
+			y1 = opt.y + opt.r * Math.sin(dir*opt.startAngle * rad);			
+			
+			xm = opt.x + opt.r / 2 * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad);
+            ym = opt.y + opt.r / 2 * Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad);
+			
+			x2 = opt.x + opt.r * Math.cos(dir*opt.endAngle * rad);
+			y2 = opt.y + opt.r * Math.sin(dir*opt.endAngle * rad);
+		
+		if(parseInt(opt.hollow,10)>0){
+			var xh1,yh1, xh2,yh2;
+			xh1 = opt.x + opt.hollow * Math.cos(dir*opt.startAngle * rad);
+			yh1 = opt.y + opt.hollow * Math.sin(dir*opt.startAngle * rad);
+			
+			xm = opt.x + (opt.hollow +opt.r/2-opt.hollow/2) * Math.cos(dir*(opt.startAngle + angleOffset / 2) * rad);
+            ym = opt.y + (opt.hollow+opt.r/2-opt.hollow/2)* Math.sin(dir*(opt.startAngle + angleOffset / 2) * rad);
+			
+			xh2 = opt.x + opt.hollow * Math.cos(dir*opt.endAngle * rad);
+			yh2 = opt.y + opt.hollow * Math.sin(dir*opt.endAngle * rad);
+			
+			path = [
+				"M", xh2, yh2,
+				"A", opt.hollow, opt.hollow, 0, +(Math.abs(angleOffset) > 180), +(dir*(opt.endAngle-opt.startAngle)<0), xh1, yh1,
+				"L", x1, y1,
+				"A", opt.r, opt.r, 0, +(Math.abs(angleOffset) > 180), +(dir*(opt.endAngle-opt.startAngle)>0), x2, y2,
+				"z"
+			];
+		}else{			
+			path = [
+				"M", opt.x, opt.y,
+				"L", x1, y1,
+				"A", opt.r, opt.r, 0, +(Math.abs(angleOffset) > 180), +(dir*(opt.endAngle-opt.startAngle)>0), x2, y2,
+				"z"
+			];
+		}
+			
+        return {path: path, pos:{xstart:x1,ystart:y1, xmiddle:xm,ymiddle:ym, xend:x2,yend:y2}};				
+>>>>>>> 430b12b74620da78f6aa30bc982995fd773f88da
     }
 
     /**
@@ -142,6 +205,7 @@
             paper.customAttributes.arc = function (x, y, r, hollow, startAngle, endAngle, dir) {
                 return {path:getSectorPath({x:x, y:y, r:r, hollow:hollow, startAngle:startAngle, endAngle:endAngle, dir:dir}).path};
             };
+<<<<<<< HEAD
 
             /**calculate summation of all data*/
             for (var i = 0, L = series.length; i < L; i++) {
@@ -259,3 +323,118 @@
         }
     });
 })();
+=======
+			
+			/**calculate summation of all data*/
+			for (var i = 0, L = series.length; i < L; i++) {total+=series[i].data;}
+			
+			/**draw each sector chart*/
+			for(var i=0,L=series.length;i<L;i++){
+				data=series[i].data;
+				endAngle=series[i].data/total*360+startAngle;				
+				opts.push({startAngle:startAngle, endAngle:endAngle, color:colors[i], d:options.showText&&data, time:Math.round(data/total*options.duration)});				
+				startAngle=endAngle;
+			}
+			
+			opts.forEach(function(item,i){
+				if(options.animation){
+					switch(options.animation){
+						case 'simultaneous':
+							t=0;
+							item.time=Math.max(Math.round(options.duration/opts.length),400);
+						break;
+						default:
+							i>0?t+=opts[i-1].time:t=0;
+						break;
+					}
+				}
+				
+				setTimeout(function(){
+					elements.push(SectorChart(DPChart.mix({paper:paper,
+						callback:function(){
+							this.text&&this.text.show();
+						}
+					},DPChart.mix(options,item))));
+				},t);
+			});
+			
+			/**
+			*bind sector elements event actions
+			*/
+			function bindElementsAction(){
+				elements&&elements.forEach(function(item){
+					item.hover(function(){
+						this.stop();
+						this.transform('s1.1,1.1,'+this.cx+','+this.cy);
+							
+						// this.transform('t'+(this.mx-this.cx)/5+','+(this.my-this.cy)/5);
+					}, function () {
+						this.animate({
+							transform : 's1,1,'+this.cx+','+this.cy
+						}, 500, "bounce");
+					});
+				});
+			}
+			
+			/**
+			*bind legends event actions
+			*/
+			function bindLegendsAction(){
+				if (!this.legend) {return false;}
+				
+				Array.prototype.forEach.call(this.legend.itemSet, function (item, i) {
+					var el = elements[i];
+					item.hover(
+						function () {
+							this.rotate(45);
+						
+							el.stop();
+							el.transform('t' + (el.mx - el.cx) / 5 + ',' + (el.my - el.cy) / 5);
+							if(el.text){
+								el.text.stop();
+								el.text.transform('t'+(el.mx-el.cx)/5+','+(el.my-el.cy)/5);
+							}
+						},
+						function () {
+							this.rotate(-45);
+							
+							el.animate({
+								transform : 's1,1,' + el.cx + ',' + el.cy
+							}, 500, "bounce");
+							
+							if(el.text){
+								el.text.animate({
+									transform : 't0,0'
+								}, 500, "bounce");
+							}
+						}
+					);
+				});
+				
+				this.legend.on('click', (function () {
+					var arr = new Array(series.length);
+					return function (e, i) {
+						if (arr[i] == true || arr[i] == undefined) {
+							arr[i] = false;
+							elements[i].attr('opacity', 0).text.attr('opacity', 0);
+						} else {
+							arr[i] = true;
+							elements[i].attr('opacity', 1).text.attr('opacity', 1);
+						}
+					}
+				})());
+			}
+			
+			/**
+			*initialize all event actions
+			*/
+			(function(context){
+				setTimeout(function(){
+					bindElementsAction.call(context);
+					bindLegendsAction.call(context);
+				},t);
+			})(this);
+		}
+	});
+})();
+>>>>>>> 430b12b74620da78f6aa30bc982995fd773f88da
