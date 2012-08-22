@@ -7,7 +7,7 @@
  * Pack after common.js
  */
 ;(function () {
-    var namespace = DPChart;
+    var namespace = Venus.util||{};
 
 
     var slice = Array.prototype.slice
@@ -87,5 +87,5 @@
         this.events = {};
     };
 
-    namespace.CustomEvent = CustomEvent
+    namespace.CustomEvent = CustomEvent;
 })();
