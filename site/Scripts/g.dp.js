@@ -4129,9 +4129,9 @@ TG.app.mbox.extend(new Events)
                }
            });
 // Venus obj
-var Venus = {};
+var Myra = {};
 
-Venus.app = {
+Myra.app = {
 	dropMenu: function () {
 		//console.log(11);
 		var menu = $$(".J_menu"), app = TG.app;

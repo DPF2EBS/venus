@@ -189,16 +189,17 @@
 	<a class="toTop" id="toTop" href="#top"></a>
 	<script type="text/javascript" src="Scripts/g.mt.js"></script>
     <script type="text/javascript" src="Scripts/accordion.js"></script>
-    <script type="text/javascript" src="../src/common/lang.js"></script>
+	<script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="../src/common/venus.js"></script>
     <script type="text/javascript" src="../src/common/common.js"></script>
-    <script type="text/javascript" src="../src/common/customevent.js"></script>
-    <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/common/customevent.js"></script>	
 	<script type="text/javascript" src="../src/svg/svgchart.js"></script>
 	<script type="text/javascript" src="../src/svg/types/pie.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
-		Venus.app.dropMenu();
+		Myra.app.dropMenu();
 		TG.app.toTop();
 	});
 	</script>
@@ -212,7 +213,7 @@
 	            radius: 150
 	        }
 	    };
-	    var bing = new DPChart(container, bingData, bingOptions);
+	    var bing = new Venus.SVGChart(container, bingData, bingOptions);
 	    
 	    // 设置画布
 	    $('J_stageSize').addEvent('click', function() {
@@ -227,7 +228,7 @@
 	    	
 			bing = null;
 	        container.innerHTML = '';
-	    	new DPChart(container, bingData, bingOptions);
+	    	new Venus.SVGChart(container, bingData, bingOptions);
 	    });
 	    
 	    var len = $$('select').length;
@@ -279,7 +280,7 @@
 	    		}
 	    		bing = null;
 		        container.innerHTML = '';
-		        new DPChart(container, bingData, bingOptions);
+		        new Venus.SVGChart(container, bingData, bingOptions);
 	    	});
 	    }
 	</script>
