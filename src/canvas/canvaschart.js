@@ -40,7 +40,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 (function (global, undefined) {
 
     var _DPChart = global.Venus;
-
+    var util = _DPChart.util;
     //todo del
     var mix = _DPChart.mix,
         PI = Math.PI,
@@ -99,7 +99,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
     }
 
     //see src/common/commm.js
-    mix(DPChart, _DPChart);
+    mix(DPChart, util);
 
     DPChart.prototype = {
 
