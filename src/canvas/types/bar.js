@@ -1,5 +1,5 @@
 (function () {
-    DPChart.addChart('bar', {
+    Venus.CanvasChart.addChart('bar', {
         draw: function () {
             var series = this.series.getSeries();
             var range = this.series.getRange();

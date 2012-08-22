@@ -43,7 +43,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
 
 (function () {
     var colors;
-    DPChart.addChart('pie', {
+    Venus.CanvasChart.addChart('pie', {
         draw: function () {
 
 

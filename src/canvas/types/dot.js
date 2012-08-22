@@ -1,6 +1,6 @@
 (function () {
     var colors = ["red", "blue", "green", "orange", "yellow"];
-    DPChart.addChart('dot', {
+    Venus.CanvasChart.addChart('dot', {
         draw: function () {
             var series = this.series.getSeries();
             var range = this.series.getRange();

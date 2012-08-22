@@ -33,7 +33,7 @@
             lineJoin: "round"
         }));
     }
-    DPChart.addChart('line', {
+    Venus.CanvasChart.addChart('line', {
 
         draw: function () {
 
