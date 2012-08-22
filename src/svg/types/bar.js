@@ -1,6 +1,6 @@
 ;
 (function () {
-    DPChart.addChart('bar', {
+    Venus.SVGChart.addChart('bar', {
         draw:function () {
             var series = this.series.getSeries(),
                 colors = this.colors,
@@ -11,9 +11,9 @@
                 paper = this.stage,
             /*
              * default of the bar config options
-             * which could be parsed from the DPChart.options.bar
+             * which could be parsed from the SVGChart.options.bar
              * */
-                barOptions = DPChart.mix({
+                barOptions = Venus.util.mix({
                     radius:0,               //radius of bars
                     beginAnimate:true,      //enable begin animate or not
                     opacity:1               //opacity of the bars
@@ -103,7 +103,7 @@
             // console.log('data series elements count: ', series.length);
 
             if (series.length) {
-                if (DPChart.isNumber(series[0].data)) {
+                if (Venus.util.isNumber(series[0].data)) {
                     /*
                      * if data is Number ,that means series  format as
                      * [{data:Number},{data:Number},...]
@@ -112,7 +112,7 @@
                     series.forEach(function (d, i) {
                         elements[i] = drawBar(xAxis.getX(i) - xTickWidth / 4, yAxis.getY(i), xTickWidth / 2, beginY - yAxis.getY(i), colors[i], d.data);
                     });
-                } else if (DPChart.isArray(series[0].data)) {
+                } else if (Venus.util.isArray(series[0].data)) {
                     /*
                      * if data is array,that means series format as
                      * [{data:[Number,..]},...]
@@ -126,7 +126,7 @@
                             elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], value));
                         });
                     })
-                } else if (DPChart.isObject(series[0].data)) {
+                } else if (Venus.util.isObject(series[0].data)) {
                     /*
                      * data is object ,that means series format as
                      * [{data:{key:value,...}},...]

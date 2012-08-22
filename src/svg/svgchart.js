@@ -5,16 +5,16 @@
 ;
 (function (global, undefined) {
     /*
-     * cache global.DPChart to _DPChart because DPChart will be redefined and later will mix back to DPChart
+     * cache global.DPChart to Venus because DPChart will be redefined and later will mix back to DPChart
      * */
-    var _DPChart = global.DPChart;
+    var Venus = global.Venus;
 
-    var mix = _DPChart.mix
+    var mix = Venus.util.mix
         , PI = Math.PI
-        , isArray = _DPChart.isArray
-        , isObject = _DPChart.isObject
+        , isArray = Venus.util.isArray
+        , isObject = Venus.util.isObject
         , charts = {} // charts added by using DPChart.addChart
-        , getColor = _DPChart.getColors;
+        , getColor = Venus.util.getColors;
 
     /*DPChart Begin*/
     /*
@@ -29,7 +29,7 @@
         }
         this.container = container;
         this.data = data || [];
-        this.events = new _DPChart.CustomEvent();
+        this.events = new Venus.util.CustomEvent();
 
         //default options
         var defaultOptions = {
@@ -289,7 +289,7 @@
                 isArr = false,
                 len = 0
             this.series.forEach(function (item) {
-                if (item.name && _DPChart.isNumber(item.data)) {
+                if (item.name && Venus.isNumber(item.data)) {
                     //if there is 'name',then use the name
                     labels.push(item.name)
                 }
@@ -539,7 +539,7 @@
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
                 names.push(d.name);
-            } else if (_DPChart.isNumber(d.data)) {
+            } else if (Venus.util.isNumber(d.data)) {
                 names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
             } else {
                 names.push('');
@@ -775,9 +775,9 @@
                 }
 
             !isArray(texts) && (texts = [texts]);
-            if (this._dpchart_tooltip) {
-                tip = this._dpchart_tooltip;
-                labels = this._dpchart_tooltip_labels;
+            if (this._venus_tooltip) {
+                tip = this._venus_tooltip;
+                labels = this._venus_tooltip_labels;
                 texts.forEach(function (t, i) {
                     labels[i] ? labels[i].attr('text', t) : labels.push(paper.text(0, 0, t))
                 })
@@ -801,10 +801,10 @@
                     width.push(bBox.width);
                 });
                 labels.animate({'opacity':1}, 100);
-                if (this._dpchart_tooltip_show)
+                if (this._venus_tooltip_show)
                     return;
                 p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder)
-                this._dpchart_tooltip = tip = paper.path().attr({
+                this._venus_tooltip = tip = paper.path().attr({
                     path:p.path,
                     fill:"#000000",
                     "stroke-width":4,
@@ -819,7 +819,7 @@
                         'x':p.box.left + p.box.width / 2
                     })
                 })
-                this._dpchart_tooltip_labels = labels;
+                this._venus_tooltip_labels = labels;
             }
             return toolTip;
         },
@@ -828,21 +828,19 @@
                 this.hide();
             }
             var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
-            this._dpchart_tooltip && (this._dpchart_tooltip.animate(animate) ) && (this._dpchart_tooltip_labels.animate(animate) ) && (this._dpchart_tooltip = false);
+            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) && (this._venus_tooltip = false);
         }
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
 
 
-    //add the Real DPChart to global
-    global.DPChart = DPChart;
-    //mix the properties back to DPChart
-    mix(DPChart, _DPChart);
 
     //for unit test , temporary bind Classes on DPChart
     DPChart.Series = Series;
     DPChart.Axis = Axis;
     DPChart.Legend = Legend;
     DPChart.Grid = Grid;
+
+    Venus.SVGChart = DPChart;
 
 })(this);

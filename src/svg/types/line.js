@@ -71,7 +71,7 @@
                 var points = []
 
                 //put all points in the point array, ignore some missing points
-                if (DPChart.isArray(arr)) {
+                if (Venus.util.isArray(arr)) {
                     arr.forEach(function (d, i) {
                         if (indexOfSeries == undefined) {
                             /*
@@ -275,13 +275,13 @@
             }
 
             if (data[0]) {
-                if (DPChart.isNumber(data[0].data)) {
+                if (Venus.util.isNumber(data[0].data)) {
                     /*
                     * data is Number
                     * and draw totally one line
                     * */
                     drawLine(data, undefined, this.colors[0], undefined);
-                } else if (DPChart.isArray(data[0].data)) {
+                } else if (Venus.util.isArray(data[0].data)) {
                     /*
                     * data is array and series format as :
                     * [{data:[number,...]},...]
@@ -294,7 +294,7 @@
                     });
                     bindLegendEvents();
 
-                } else if(DPChart.isObject(data[0].data)) {
+                } else if(Venus.util.isObject(data[0].data)) {
                     /*
                     * data is object and series format as :
                     * [{data:{key:value},...},...]
@@ -356,4 +356,4 @@
         }
     });
 
-})(DPChart);
+})(Venus.SVGChart);
