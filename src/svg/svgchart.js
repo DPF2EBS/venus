@@ -289,7 +289,7 @@
                 isArr = false,
                 len = 0
             this.series.forEach(function (item) {
-                if (item.name && Venus.isNumber(item.data)) {
+                if (item.name && Venus.util.isNumber(item.data)) {
                     //if there is 'name',then use the name
                     labels.push(item.name)
                 }

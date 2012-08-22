@@ -38,7 +38,7 @@
             /*
              * default options of DPChart.options.line
              * */
-                lineOpt = DPChart.mix({
+                lineOpt = Venus.util.mix({
                     'line-width':2,         //width of the line
                     smooth:false,           //straight line or curved line
                     dots:true,              //draw dot for each value or not

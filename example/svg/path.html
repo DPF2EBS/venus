@@ -10,6 +10,7 @@
 	
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>	
 	<script type="text/javascript" src="../../src/common/lang.js"></script>
+    <script type="text/javascript" src="../../src/common/venus.js"></script>
 	<script type="text/javascript" src="../../src/common/common.js"></script>
 	<script type="text/javascript" src="../../src/common/customevent.js"></script>	
 	<script type="text/javascript" src="../../src/svg/svgchart.js"></script>
@@ -18,7 +19,7 @@
 	<script type="text/javascript">
 	var container = document.getElementById('chart_container');           
     var paper= new Raphael(container);
-	var colors=DPChart.getColors(9);
+	var colors=Venus.util.getColors(9);
 	
 	var offset={x:-20,y:-10}
 
