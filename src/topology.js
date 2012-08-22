@@ -35,18 +35,18 @@
              *
              */
 
-            var layers = {},            //layers in object and finally convert to array
-                resultLayers = [],      //layers in array,convert from layers
-                nodes = {},             //nodes have been laid
-                base = 0 ,              //base layer id
+            var layers = {}, //layers in object and finally convert to array
+                resultLayers = [], //layers in array,convert from layers
+                nodes = {}, //nodes have been laid
+                base = 0 , //base layer id
 
                 lay = function (id, layer) {
                     /*
-                    * lay a node in the target layer
-                    * @param id{String} id of the node
-                    * @param layer{Number} id of the layer
-                    *
-                    * */
+                     * lay a node in the target layer
+                     * @param id{String} id of the node
+                     * @param layer{Number} id of the layer
+                     *
+                     * */
                     if (nodes[id] || !allNodes[id]) {
                         //this node has been laid or not exists
                         return false;
@@ -65,24 +65,24 @@
                 },
                 layParents = function (parents, currentLayer) {
                     /*
-                    * lay parents in the previous layer
-                    * @param parents{Array}
-                    * @param currentLayer{Number} layer of the current node in
-                    *
-                    * */
-                    if (!DPChart.isArray(parents)) {
+                     * lay parents in the previous layer
+                     * @param parents{Array}
+                     * @param currentLayer{Number} layer of the current node in
+                     *
+                     * */
+                    if (!Venus.util.isArray(parents)) {
                         return;
                     }
-                    var grandParents = [],  //grand parents
+                    var grandParents = [], //grand parents
                         grandChildren = []; //children of parents
 
                     parents.forEach(function (parent) {
                         if (lay(parent, currentLayer - 1)) {
                             //lay the parent and if returns true lay the parent's parents and children
-                            allNodes[parent] && allNodes[parent].parents && DPChart.isArray(allNodes[parent].parents) && (
+                            allNodes[parent] && allNodes[parent].parents && Venus.util.isArray(allNodes[parent].parents) && (
                                 //concat  parent's parents with the 'grandParents' above
                                 grandParents = grandParents.concat(allNodes[parent].parents));
-                            allNodes[parent] && allNodes[parent].children && DPChart.isArray(allNodes[parent].children) && (
+                            allNodes[parent] && allNodes[parent].children && Venus.util.isArray(allNodes[parent].children) && (
                                 //concat parent's children with the 'grandChildren' above
                                 grandChildren = grandChildren.concat(allNodes[parent].children));
                         }
@@ -100,16 +100,16 @@
                      *
                      * very close to layParents function
                      * */
-                    if (!DPChart.isArray(children)) {
+                    if (!Venus.util.isArray(children)) {
                         return;
                     }
                     var grandParents = [],
                         grandChildren = []
                     children.forEach(function (child, i) {
                         if (lay(child, currentLayer + 1)) {
-                            allNodes[child] && allNodes[child].parents && DPChart.isArray(allNodes[child].parents) && (
+                            allNodes[child] && allNodes[child].parents && Venus.util.isArray(allNodes[child].parents) && (
                                 grandParents = grandParents.concat(allNodes[child].parents));
-                            allNodes[child] && allNodes[child].children && DPChart.isArray(allNodes[child].children) && (
+                            allNodes[child] && allNodes[child].children && Venus.util.isArray(allNodes[child].children) && (
                                 grandChildren = grandChildren.concat(allNodes[child].children));
                         }
                     });
@@ -141,12 +141,12 @@
         },
         layEdges = function (layers, allNodes, arrowDirection) {
             /*
-            * lay edges
-            * @param layers{Array} result of layNodes function
-            * @param allNodes{Object} reference of the allNodes
-            * @param arrowDirection{String} arrow direction from child to parent or from parent to child
-            *
-            * */
+             * lay edges
+             * @param layers{Array} result of layNodes function
+             * @param allNodes{Object} reference of the allNodes
+             * @param arrowDirection{String} arrow direction from child to parent or from parent to child
+             *
+             * */
 
             var edgeGroups = []
 
@@ -159,11 +159,11 @@
                     //is the last layer and got no next layer
                     return;
                 }
-                var nextLayer = layers[index+1]
+                var nextLayer = layers[index + 1]
 
-                layer.forEach(function(node){
-                    nextLayer.forEach(function(node2){
-                          var  isRelate = false
+                layer.forEach(function (node) {
+                    nextLayer.forEach(function (node2) {
+                        var isRelate = false
                         //check whether node and node2 are related
                         node2.parents && node2.parents.forEach(function (parent) {
                             if (node.id === parent && !isRelate) {
@@ -270,19 +270,19 @@
         },
         arrowPath = function (paper, x1, y1, x2, y2, r, arrowLength, arrowWidth) {
             /*
-            * calculate the arrow path string and rotate degree
-            * arrow path is horizontal and the rotate to the target point
-            * which is easy to calculate
-            *
-            * @param paper{Object} instance of Raphael
-            * @param x1{Number}
-            * @param y1{Number}
-            * @param x2{Number}
-            * @param y2{Number}
-            * @param arrowLength{Number} length of the arrow
-            * @param arrowWidth{Number}  width of the arrow
-            *
-            * */
+             * calculate the arrow path string and rotate degree
+             * arrow path is horizontal and the rotate to the target point
+             * which is easy to calculate
+             *
+             * @param paper{Object} instance of Raphael
+             * @param x1{Number}
+             * @param y1{Number}
+             * @param x2{Number}
+             * @param y2{Number}
+             * @param arrowLength{Number} length of the arrow
+             * @param arrowWidth{Number}  width of the arrow
+             *
+             * */
 
             var length = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2)) - 2 * r,
                 degree45 = Math.PI / 4,
@@ -322,27 +322,27 @@
         },
         initController = function (group, stage, chartWidth, chartHeight, options) {
             /*
-            * init the controller panel and mouse events
-            * move , scale , full screen
-            *
-            * @param group{Object} Raphael G Element
-            * @param stage{Object} instance of raphael
-            * @param chartWidth{Number} width of the svg
-            * @param chartHeight{Number} height of the svg
-            * @param options{Object}
-            *
-            * */
-            var scaledX = 1,    //already scaled x
-                scaledY = 1,    //already scaled y
-                translatedX = 0,//already translated x
+             * init the controller panel and mouse events
+             * move , scale , full screen
+             *
+             * @param group{Object} Raphael G Element
+             * @param stage{Object} instance of raphael
+             * @param chartWidth{Number} width of the svg
+             * @param chartHeight{Number} height of the svg
+             * @param options{Object}
+             *
+             * */
+            var scaledX = 1, //already scaled x
+                scaledY = 1, //already scaled y
+                translatedX = 0, //already translated x
                 translatedY = 0 //already translated y
 
             var scale = function (lager) {
                     /*
-                    * scale the chart
-                    * @param lager{Boolean} if true scale larger else smaller
-                    *
-                    * */
+                     * scale the chart
+                     * @param lager{Boolean} if true scale larger else smaller
+                     *
+                     * */
                     if (lager) {
                         //each time 1.25 by default
                         scaledX *= 1.25;
@@ -356,18 +356,18 @@
                 },
                 move = function (x, y) {
                     /*
-                    * move the chart
-                    * @param x{Number}
-                    * @param y{Number}
-                    * x and y are relative not absolute
-                    *
-                    * */
+                     * move the chart
+                     * @param x{Number}
+                     * @param y{Number}
+                     * x and y are relative not absolute
+                     *
+                     * */
                     translatedX += x;
                     translatedY += y;
                     group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
                 },
                 lastX, lastY,
-                //use google map's hand picture
+            //use google map's hand picture
                 openHandUrl = 'http://maps.gstatic.cn/intl/zh-CN_cn/mapfiles/openhand_8_8.cur',
                 closeHandUrl = 'http://maps.gstatic.cn/intl/zh-CN_cn/mapfiles/closedhand_8_8.cur'
 
@@ -418,7 +418,7 @@
             });
 
             //init controller panel
-            var panel = stage.g(),      //controller panel is also kept in svg g element
+            var panel = stage.g(), //controller panel is also kept in svg g element
                 moveCircle, moveLeft, moveTop, moveRight, moveBottom,
                 cx = 31, cy = 31, r = 30, arrowPadding = 5,
                 arrowHeight = 10, arrowWeight = 6 , arrowInnerHeight = arrowHeight - arrowWeight
@@ -598,219 +598,223 @@
         PARENT_TO_CHILD = 'parent_to_child',
         CHILD_TO_PARENT = 'child_to_parent'
 
+    var Topology = function (container, data, opt) {
+        if (!container || !container.nodeType) {
+            return;
+        }
+        this.container = container;
+        this.data = data || [];
 
-    DPChart.addChart('topology', {
-        draw:function () {
-            var options = DPChart.mix({
-                    layerDirection:PARENT_ON_TOP,       //layer direction which is parent_on_top or parent_on_bottom
-                    arrowDirection:PARENT_TO_CHILD,     //arrow direction which is parent_to_child or child_to_parent
-                    padding:40,                         //chart padding to svg border
-                    nodeRadius:30,                      //node radius
-                    arrowLength:10,                     //arrow length
-                    arrowWidth:2,                       //arrow width
-                    colorMap:{                          //color maps the status
-                        1:'#FF0000',
-                        2:'#7CFC00',
-                        3:'#B1C9ED'
-                    },
-                    enableController:true,              //enable the controller or not
-                    useAsText:'text',                   //use which property of the data as Text
-                    enableDrag:true,                    //enable node drag or not
-                    keepLayerWhenDrag:true,             //whether keep the node on the layer when dragging it
-                    click:function (data) {
-                        //'this' will be parsed as circle object , data is the node data
-                    },
-                    mouseover:function (data) {
-                    },
-                    mouseout:function (data) {
-                    }
-                }, this.options.topology),
-                stage = this.stage
+        var options = Venus.util.mix({
+                width:container.clientWidth,
+                height:container.clientHeight,
+                layerDirection:PARENT_ON_TOP, //layer direction which is parent_on_top or parent_on_bottom
+                arrowDirection:PARENT_TO_CHILD, //arrow direction which is parent_to_child or child_to_parent
+                padding:40, //chart padding to svg border
+                nodeRadius:30, //node radius
+                arrowLength:10, //arrow length
+                arrowWidth:2, //arrow width
+                colorMap:{                          //color maps the status
+                    1:'#FF0000',
+                    2:'#7CFC00',
+                    3:'#B1C9ED'
+                },
+                enableController:true, //enable the controller or not
+                useAsText:'text', //use which property of the data as Text
+                enableDrag:true, //enable node drag or not
+                keepLayerWhenDrag:true, //whether keep the node on the layer when dragging it
+                click:function (data) {
+                    //'this' will be parsed as circle object , data is the node data
+                },
+                mouseover:function (data) {
+                },
+                mouseout:function (data) {
+                }
+            }, opt),
+            stage = this.stage = new Raphael(container, options.width, options.height);
 
-            //draw the chart now
-            var allNodes = cacheData(this.data),
-                layers = layNodes(this.data, allNodes)
+        //draw the chart now
+        var allNodes = cacheData(this.data),
+            layers = layNodes(this.data, allNodes)
 
-            if (options.layerDirection == PARENT_ON_BOTTOM) {
-                //parent is on the top by default ,if need to bottom , reverse it
-                layers.reverse();
-            }
-            var edges = layEdges(layers, allNodes, options.arrowDirection)
+        if (options.layerDirection == PARENT_ON_BOTTOM) {
+            //parent is on the top by default ,if need to bottom , reverse it
+            layers.reverse();
+        }
+        var edges = layEdges(layers, allNodes, options.arrowDirection)
 
-            reduceCrossing(edges, layers);
+        reduceCrossing(edges, layers);
 
-            if (!layers.length)return;
+        if (!layers.length)return;
 
-            var chartWidth = this.options.width,
-                chartHeight = this.options.height,
-                maxLengthInLayer = 0                //max count of nodes on layer
+        var chartWidth = options.width,
+            chartHeight = options.height,
+            maxLengthInLayer = 0                //max count of nodes on layer
 
-            maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
-                return layer.length
-            })) || 1;
-            maxLengthInLayer == 2 && (maxLengthInLayer = 3); // if max is 2 then set it to 3 to let width be half of chart
+        maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
+            return layer.length
+        })) || 1;
+        maxLengthInLayer == 2 && (maxLengthInLayer = 3); // if max is 2 then set it to 3 to let width be half of chart
 
-            //draw nodes
-            var height = layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) ,
-                width = maxLengthInLayer > 1 ? (chartWidth - options.padding * 2) / (maxLengthInLayer - 1) : 0,
-                _circles = stage.set(),
-                _texts = stage.set(),
-                relation = {},
-                _edges = stage.set(),
-                group = stage.g();      //move , scale will all operated on this element
+        //draw nodes
+        var height = layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) ,
+            width = maxLengthInLayer > 1 ? (chartWidth - options.padding * 2) / (maxLengthInLayer - 1) : 0,
+            _circles = stage.set(),
+            _texts = stage.set(),
+            relation = {},
+            _edges = stage.set(),
+            group = stage.g();      //move , scale will all operated on this element
 
-            if (options.enableController) {
-                //width is too small and set it to 4 times of node radius
-                width < 4 * options.nodeRadius && (width = 4 * options.nodeRadius);
-                height < 4 * options.nodeRadius && (height = 4 * options.nodeRadius);
-            }
-            layers.forEach(function (layer, i) {
-                //draw nodes on each layer
-                //each layer is placed in middle
-                var startX = (chartWidth - (layer.length - 1) * width) / 2
-                layer.forEach(function (node, j) {
-                    var x = startX + j * width,
-                        y = i * height + options.padding
+        if (options.enableController) {
+            //width is too small and set it to 4 times of node radius
+            width < 4 * options.nodeRadius && (width = 4 * options.nodeRadius);
+            height < 4 * options.nodeRadius && (height = 4 * options.nodeRadius);
+        }
+        layers.forEach(function (layer, i) {
+            //draw nodes on each layer
+            //each layer is placed in middle
+            var startX = (chartWidth - (layer.length - 1) * width) / 2
+            layer.forEach(function (node, j) {
+                var x = startX + j * width,
+                    y = i * height + options.padding
 
-                    node._x = x;
-                    node._y = y;
-                    var color = options.colorMap[node.status] || 'green',
-                        rgb = Raphael.getRGB(color),
-                        hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b),
-                        _circle, _text
+                node._x = x;
+                node._y = y;
+                var color = options.colorMap[node.status] || 'green',
+                    rgb = Raphael.getRGB(color),
+                    hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b),
+                    _circle, _text
 
-                    _circle = stage.circle(x, y, options.nodeRadius).attr({
-                        //fill:options.colorMap[node.status],
-                        fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s - .1, hsl.l - .2).hex,
-                        'stroke':'none',
-                        'stroke-width':1,
-                        cursor:'pointer'
-                    }).data('node', node).click(
-                        function () {
-                            //bind click event
-                            //if is dragging , don't fire it
-                            if (this._isDragging) {
-                                this._isDragging = false;
-                                return
-                            }
-                            options.click.call(this, node);
-                        }).mouseover(
-                        //mouseover
-                        function () {
-                            if (this._isDragging) {
-                                this._isDragging = false;
-                                return;
-                            }
-                            options.mouseover.call(this, node);
-                        }).mouseout(function () {
-                            //mouseout
-                            if (this._isDragging) {
-                                this._isDragging = false;
-                                return;
-                            }
-                            options.mouseout.call(this, node);
-                        });
-                    //put the node into group which is a svg g element
-                    group.node.appendChild(_circle.node);
-                    _circles.push(_circle);
-                    _text = stage.text(x, y, node[options.useAsText] === undefined ? node.id : node[options.useAsText])
-                    group.node.appendChild(_text.node);
-                    _texts.push(_text);
-                });
-            });
-
-            //draw edges
-            edges.forEach(function (layer) {
-                layer.forEach(function (edge) {
-                    var _arrow = arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
-                    group.node.appendChild(_arrow.node);
-
-                    //save the related node , drag node will use this relation object
-                    relation[edge.node1.id] || (relation[edge.node1.id] = []);
-                    relation[edge.node1.id].push({arrow:_arrow, edge:edge});
-                    relation[edge.node2.id] || (relation[edge.node2.id] = []);
-                    relation[edge.node2.id].push({arrow:_arrow, edge:edge});
-                });
-            });
-
-            //init node drag
-            if (options.enableDrag) {
-                _circles.forEach(function (circle, i) {
-                    var currentX,
-                        currentY
-                    circle.drag(function (dx, dy, x, y, e) {
-                        //on move , dx and dy are relative to the START POINT  of this drag
-                        e.stopPropagation();
-                        var targetX ,
-                            targetY
-                        this._isDragging = true; //tag _isDragging ,so that not to fire click event
-                        targetX = dx + currentX;
-                        targetY = dy + currentY;
-                        if (options.keepLayerWhenDrag) {
-                            this.attr({
-                                cx:targetX
-                            });
-                            targetY = currentY;
-                        } else {
-                            this.attr({
-                                cx:targetX,
-                                cy:targetY
-                            });
+                _circle = stage.circle(x, y, options.nodeRadius).attr({
+                    //fill:options.colorMap[node.status],
+                    fill:"r(.5,.5)" + color + "-" + Raphael.hsl2rgb(hsl.h, hsl.s - .1, hsl.l - .2).hex,
+                    'stroke':'none',
+                    'stroke-width':1,
+                    cursor:'pointer'
+                }).data('node', node).click(
+                    function () {
+                        //bind click event
+                        //if is dragging , don't fire it
+                        if (this._isDragging) {
+                            this._isDragging = false;
+                            return
                         }
-
-                        //reset _x and _y
-                        this.data('node')._x = targetX;
-                        this.data('node')._y = targetY;
-                        _texts[i].attr({
-                            x:targetX,
-                            y:targetY
-                        })
-
-                        //move related edges
-                        var id = circle.data('node').id
-                        relation[id] && relation[id].forEach(function (obj) {
-                            var edge = obj.edge,
-                                arrow = obj.arrow
-
-                            var x1 = edge.from._x,
-                                y1 = edge.from._y,
-                                x2 = edge.to._x,
-                                y2 = edge.to._y,
-                                path = arrowPath(stage, x1, y1, x2, y2, options.nodeRadius, options.arrowLength, options.arrowWidth)
-
-                            //reset the path property
-                            arrow.attr({
-                                path:path.path
-                            }).transform('R' + path.alpha + "," + x1 + "," + y1);
-                        });
-                    }, function (x, y, e) {
-                        //on start
-                        e.stopPropagation();
-                        //reset currentX,currentY to the node's current cx,cy
-                        currentX = this.attr('cx');
-                        currentY = this.attr('cy');
-                    }, function (e) {
-                        e.stopPropagation();
+                        options.click.call(this, node);
+                    }).mouseover(
+                    //mouseover
+                    function () {
+                        if (this._isDragging) {
+                            this._isDragging = false;
+                            return;
+                        }
+                        options.mouseover.call(this, node);
+                    }).mouseout(function () {
+                        //mouseout
+                        if (this._isDragging) {
+                            this._isDragging = false;
+                            return;
+                        }
+                        options.mouseout.call(this, node);
                     });
-                })
-            }
+                //put the node into group which is a svg g element
+                group.node.appendChild(_circle.node);
+                _circles.push(_circle);
+                _text = stage.text(x, y, node[options.useAsText] === undefined ? node.id : node[options.useAsText])
+                group.node.appendChild(_text.node);
+                _texts.push(_text);
+            });
+        });
 
-            //init controller
-            if (options.enableController) {
-                initController.call(this, group, stage, chartWidth, chartHeight, options);
-            }
+        //draw edges
+        edges.forEach(function (layer) {
+            layer.forEach(function (edge) {
+                var _arrow = arrow(stage, options.nodeRadius, edge, options.arrowLength, options.arrowWidth)
+                group.node.appendChild(_arrow.node);
 
-            //for unit test
-            this._topology = {
-                allNodes:allNodes,
-                layers:layers,
-                edges:edges
-            }
+                //save the related node , drag node will use this relation object
+                relation[edge.node1.id] || (relation[edge.node1.id] = []);
+                relation[edge.node1.id].push({arrow:_arrow, edge:edge});
+                relation[edge.node2.id] || (relation[edge.node2.id] = []);
+                relation[edge.node2.id].push({arrow:_arrow, edge:edge});
+            });
+        });
 
-        },
-        layNodes:layNodes,
-        cacheData:cacheData,
-        layEdges:layEdges
-    });
+        //init node drag
+        if (options.enableDrag) {
+            _circles.forEach(function (circle, i) {
+                var currentX,
+                    currentY
+                circle.drag(function (dx, dy, x, y, e) {
+                    //on move , dx and dy are relative to the START POINT  of this drag
+                    e.stopPropagation();
+                    var targetX ,
+                        targetY
+                    this._isDragging = true; //tag _isDragging ,so that not to fire click event
+                    targetX = dx + currentX;
+                    targetY = dy + currentY;
+                    if (options.keepLayerWhenDrag) {
+                        this.attr({
+                            cx:targetX
+                        });
+                        targetY = currentY;
+                    } else {
+                        this.attr({
+                            cx:targetX,
+                            cy:targetY
+                        });
+                    }
+
+                    //reset _x and _y
+                    this.data('node')._x = targetX;
+                    this.data('node')._y = targetY;
+                    _texts[i].attr({
+                        x:targetX,
+                        y:targetY
+                    })
+
+                    //move related edges
+                    var id = circle.data('node').id
+                    relation[id] && relation[id].forEach(function (obj) {
+                        var edge = obj.edge,
+                            arrow = obj.arrow
+
+                        var x1 = edge.from._x,
+                            y1 = edge.from._y,
+                            x2 = edge.to._x,
+                            y2 = edge.to._y,
+                            path = arrowPath(stage, x1, y1, x2, y2, options.nodeRadius, options.arrowLength, options.arrowWidth)
+
+                        //reset the path property
+                        arrow.attr({
+                            path:path.path
+                        }).transform('R' + path.alpha + "," + x1 + "," + y1);
+                    });
+                }, function (x, y, e) {
+                    //on start
+                    e.stopPropagation();
+                    //reset currentX,currentY to the node's current cx,cy
+                    currentX = this.attr('cx');
+                    currentY = this.attr('cy');
+                }, function (e) {
+                    e.stopPropagation();
+                });
+            })
+        }
+
+        //init controller
+        if (options.enableController) {
+            initController.call(this, group, stage, chartWidth, chartHeight, options);
+        }
+
+        //for unit test
+        this._topology = {
+            allNodes:allNodes,
+            layers:layers,
+            edges:edges
+        }
+    }
+
+    Venus.Topology = Topology;
+
 })();
 
