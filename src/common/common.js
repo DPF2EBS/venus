@@ -1,5 +1,5 @@
 ;(function () {
-    var Venus=Venus.util||{};
+    var util=Venus.util||{};
     var _hsv2rgb = function (h, s, v) {
         var hi, f, p, q, t, result = [];
         hi = Math.floor(h / 60) % 6;
@@ -40,7 +40,7 @@
      * @return a group of colors in type of rgb().
      * @type {Array}
      */
-    Venus.getColors = function (colorCount) {
+    util.getColors = function (colorCount) {
         var H=[.6, .2, .05, .1333, .75, 0], S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
 		
 		//if colorCount is not provide, set colorCount default value 20
@@ -62,12 +62,12 @@
     /*
      * mix
      * */
-    Venus.mix = function (o1, o2) {
+    util.mix = function (o1, o2) {
         for (var attr in o2) {
             if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
                 o1[attr] = o2[attr];
             } else {
-                DPChart.mix(o1[attr], o2[attr]);
+                util.mix(o1[attr], o2[attr]);
             }
         }
         return o1;
@@ -78,22 +78,22 @@
     * isArray
     * */
 
-   Venus.isArray =  function (arr) {
+   util.isArray =  function (arr) {
         return __type(arr, "array");
     }
 
     /*
      * isObject
      */
-    Venus.isObject = function(obj){
+    util.isObject = function(obj){
         return __type(obj, "object");
     }
 
-    Venus.isNumber = function(nub){
+    util.isNumber = function(nub){
         return __type(nub, "number");
     }
 	
-	Venus.isFunction=function(func){
+	util.isFunction=function(func){
 		return __type(func,"function");
 	}
 

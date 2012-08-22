@@ -8,7 +8,7 @@
             var xAxis = this.axises.x,
                 yAxis = this.axises.y;
 
-            var colors = DPChart.getColors(series.length);
+            var colors = Venus.util.getColors(series.length);
 
             var options, stage = this.stage;
 

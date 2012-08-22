@@ -42,7 +42,7 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
     var _DPChart = global.Venus;
     var util = _DPChart.util;
     //todo del
-    var mix = _DPChart.mix,
+    var mix = util.mix,
         PI = Math.PI,
         charts = {}; // charts added by using DPChart.addChart
 
