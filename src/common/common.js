@@ -1,6 +1,5 @@
 ;(function () {
-    var DPChart = this.DPChart || {};
-
+    var Venus=Venus.util||{};
     var _hsv2rgb = function (h, s, v) {
         var hi, f, p, q, t, result = [];
         hi = Math.floor(h / 60) % 6;
@@ -41,7 +40,7 @@
      * @return a group of colors in type of rgb().
      * @type {Array}
      */
-    DPChart.getColors = function (colorCount) {
+    Venus.getColors = function (colorCount) {
         var H=[.6, .2, .05, .1333, .75, 0], S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
 		
 		//if colorCount is not provide, set colorCount default value 20
@@ -63,7 +62,7 @@
     /*
      * mix
      * */
-    DPChart.mix = function (o1, o2) {
+    Venus.mix = function (o1, o2) {
         for (var attr in o2) {
             if (typeof  o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
                 o1[attr] = o2[attr];
@@ -79,26 +78,24 @@
     * isArray
     * */
 
-   DPChart.isArray =  function (arr) {
+   Venus.isArray =  function (arr) {
         return __type(arr, "array");
     }
 
     /*
      * isObject
      */
-    DPChart.isObject = function(obj){
+    Venus.isObject = function(obj){
         return __type(obj, "object");
     }
 
-    DPChart.isNumber = function(nub){
+    Venus.isNumber = function(nub){
         return __type(nub, "number");
     }
 	
-	DPChart.isFunction=function(func){
+	Venus.isFunction=function(func){
 		return __type(func,"function");
 	}
-
-    this.DPChart = DPChart;
 
     /**
     *get variable true type 
