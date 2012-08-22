@@ -1,6 +1,6 @@
 (function () {
     var colors = ["red", "blue", "green", "orange", "yellow"];
-    DPChart.addChart('dot', {
+    Venus.CanvasChart.addChart('dot', {
         draw: function () {
             var series = this.series.getSeries();
             var range = this.series.getRange();
@@ -14,7 +14,7 @@
 
             var x, y, dotOptions;
 
-			dotOptions = DPChart.mix({
+			dotOptions = Venus.util.mix({
 				radius: 2,
 				easing: 'elastic-ease-out'
 			}, options.dot);
@@ -40,7 +40,7 @@
                     x: x,
                     y: y,
                     radius: 0,
-                    fill: DPChart.getColors(data[2])[data[2] - 1]
+                    fill: Venus.util.getColors(data[2])[data[2] - 1]
                 });
 
                 layer.add(circle);

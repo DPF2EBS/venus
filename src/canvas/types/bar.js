@@ -1,5 +1,5 @@
 (function () {
-    DPChart.addChart('bar', {
+    Venus.CanvasChart.addChart('bar', {
         draw: function () {
             var series = this.series.getSeries();
             var range = this.series.getRange();
@@ -8,7 +8,7 @@
             var xAxis = this.axises.x,
                 yAxis = this.axises.y;
 
-            var colors = DPChart.getColors(series.length);
+            var colors = Venus.util.getColors(series.length);
 
             var options, stage = this.stage;
 
@@ -52,7 +52,7 @@
                     newRect.on('mouseover', function (evt) {
 
 
-                        newLayer = DPChart.tooltips(opt.x + opt.width / 2, y, points[i].val, 'top');
+                        newLayer = Venus.tooltips(opt.x + opt.width / 2, y, points[i].val, 'top');
 
                         stage.add(newLayer);
 
@@ -69,7 +69,7 @@
                     });
                     newRect.on('mouseout', function (evt) {
 
-                        DPChart.toolTipHide(newLayer);
+                        Venus.toolTipHide(newLayer);
                         this.transitionTo({
                             alpha: 1,
                             duration: 0.2

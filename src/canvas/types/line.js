@@ -33,7 +33,7 @@
             lineJoin: "round"
         }));
     }
-    DPChart.addChart('line', {
+    Venus.CanvasChart.addChart('line', {
 
         draw: function () {
 
@@ -41,7 +41,7 @@
                 lineOptions,
                 points = [];
 
-            lineOptions = DPChart.mix({
+            lineOptions = Venus.util.mix({
                 smooth: false,
                 lineStroke: '#4FEE30',
                 hasDot: true,
@@ -68,7 +68,7 @@
             var yOrigin = yAxis.getOrigin();
 
 
-            var colors = DPChart.getColors(series.length + 1);
+            var colors = Venus.util.getColors(series.length + 1);
 
             var data, posOffset = {
                 x: 0,
@@ -250,7 +250,7 @@
                     
                     dot.on('mouseover', function (evt) {
                         if (newLayer) {
-                            DPChart.toolTipHide(newLayer);
+                            Venus.toolTipHide(newLayer);
                         }
                         this.transitionTo({
                             radius: {
@@ -259,8 +259,7 @@
                             },
                             duration: 0.2
                         });
-
-                        newLayer = DPChart.tooltips(d.x, d.y, points[i].label + ':' + points[i].val, lineOptions.tipPos);
+                        newLayer = Venus.tooltips(d.x, d.y, points[i].label + ':' + points[i].val, lineOptions.tipPos);
 
                         stage.add(newLayer);
 
@@ -272,7 +271,7 @@
                                 y: lineOptions.dotRadius
                             },
                             duration: 0.2
-                        }); !! lineOptions.autoMouseOut && DPChart.toolTipHide(newLayer);
+                        }); !! lineOptions.autoMouseOut && Venus.toolTipHide(newLayer);
                     });
                      
                     if(lineOptions.easing) {
