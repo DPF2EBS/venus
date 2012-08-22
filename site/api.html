@@ -40,9 +40,9 @@
     <div class="cont-main margin-t clearfix">
     	<div class="nav-side">
         	<ul class="nav-list clearfix">
-                <li><a href="#">使用教程</a></li>
-                <li><a href="#">svg配置</a></li>
-                <li><a href="#">canvas配置</a></li>
+                <li><a href="api.html">使用教程</a></li>
+                <li><a href="svgapi.html">svg配置</a></li>
+                <li><a href="canvasapi.html">canvas配置</a></li>
                 <li><a href="#">api</a></li>
             </ul>
         </div>
@@ -51,284 +51,88 @@
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（1）步骤一：用户配置初始化代码</h2>
+                        <h2>（1）步骤一：需要依赖的js文件</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
             <textarea name="code" class="js" rows="50" cols="100">
-                // 生成饼图
-                var container = document.getElementById('chart_container'),
-                    bingData = [25,30,40,10,60,15,9,20,25,33],
-                    bingOptions = {
-                        pie:{
-                            /*x:220,
-                            y:220,
-                            radius:90*/
-                        }
-                    };
-                new DPChart(container, bingData, bingOptions);
+            // 我们不需要样式，样式应该由你来定义
+            // 引入venus脚本文件
+            <script type="text/javascript" src="venus.js"></script>
             </textarea>
 
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（2）步骤二：发生了什么？利用原型来实现构造函数</h2>
+                        <h2>（2）步骤二：准备好图表容器，数据和配置三个参数</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
             <textarea name="code" class="js" rows="50" cols="100">
-            /*
-             * Class DPChart
-             * @param container{HTMLElement} container for Kinetic
-             * @param data{Array} Array of the data to draw
-             * @param options{object}
-             */
-            function DPChart(container, data, options) {
-                if (!container || !container.nodeType) {
-                    return;
-                }
-
-                var defaultOptions = {
-                    width: container.clientWidth,
-                    height: container.clientHeight,
-                    margin: 10
+                // 定义一个空的div
+                <div id="chart_container" class="chart-box"></div>
+                // 容器元素
+                var container = document.getElementById('chart_container');
+                // 展示所需数据
+                var data = [
+                    {data:10, label:"FF"},
+                    {data:80, label:"IE"},
+                    {data:60, label: "Chrome"},
+                    {data:10, label: "Ohter"},
+                    {data:40, label: "Safari"},
+                    {data:78, label: "Opera"},                ];
+                // 配置参数对象
+                var options = {
+                    width:930, height:400, margin:100,
+                    axis:{
+                        x: { ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera"] },
+                        y: { ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }
+                    },
+                    line: {
+                        hasDot: true,
+                        smooth: false,
+                        dotRadius: 8,
+                        shadow: false
+                    },
+                    legend:{
+                        position:["right", "top"],
+                        height: 200,
+                        itemType:"circle"
+                    }
                 };
-
-                this.container = container;
-                this.data = data || [];
-                this.events = new DPChart.CustomEvent();
-
-                this.options = mix(defaultOptions, options || {});
-
-                //initCanvas
-                this._initCanvas();
-                this.fire('onCanvasInit', this.stage, this.layer);
-                //init data
-                this._initData();
-                this.fire('onDataInit', this.series);
-
-                // init axis
-                this._initAxis();
-                this.fire('onAxisInit', {});
-
-                //init legend
-                this._initLegend();
-                this.fire('onLegendInit', this.legend);
-
-                //init grid
-                this._initGrid();
-                this.fire('onGridInit', this.grid);
-
-                // draw
-                this.draw();
-
-                //init events
-                this._initEvents();
-
-                this.events.fire('onFinish');
-
-            }
             </textarea>
 
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（3）步骤三：调用charts中某类型的draw方法</h2>
+                        <h2>（3）步骤三：完成图形</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
             <textarea name="code" class="js" rows="50" cols="100">
-            /*
-             * add graph type in types
-             * @params  name{String} graph name
-             * @params  graphType{Object} graphType
-             */
-            DPChart.addChart = function (name, graphType) {
-                charts[name] = graphType;
-            }
-            </textarea>
-
-            <div class="intro-panel">
-                <div class="isay-top pngfix"></div>
-                <div class="isay-middle pngfix">
-                    <div class="intro-box clearfix">
-                        <h2>（4）步骤四：某类型图形所执行的draw方法的具体实现细节</h2>
-                    </div>
-                </div>
-                <div class="isay-bottom pngfix"></div>
-            </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            DPChart.addChart('pie', {
-                draw: function () {
-
-
-                    //排序
-                    var series = this.series.getSeries().sort(function (a, b) {
-                        return b.data - a.data ;
-                    });
-                    var colors = ["skyblue", "orangered",  "yellow", "orange", "violet", "fuchsia", "yellowgreen", "khaki"];
-
-                    var layer = this.layer,
-                        stage = this.stage;
-
-                    var percentLayer = this.percentLayer = new Kinetic.Layer();
-
-                    var options = this.options,
-                        pieOptions;
-
-                    pieOptions = DPChart.mix({
-                        easing: false,
-                        radius: 50,
-                        needTip: false
-                    }, options.pie);
-
-                    //计算饼图的圆心
-                    var centerX = this.options.width / 2;
-                    var centerY = this.options.height / 2;
-
-                    var sum = 0,
-                        path, data;
-                    for (var i = 0, L = series.length; i < L; i++) {
-                        data = series[i];
-                        sum += data.data;
-                    }
-
-                    for (var i = 0, L = series.length; i < L; i++) {
-                        data = series[i];
-                        data.percent = data.data / sum;
-                    }
-                    var startAngle = 0,
-                        endAngle = 0,
-                        sector,
-                        text,
-                        tip, sumAngle = 0,
-                        newLayer,
-                        stage = this.stage;
-
-                    for (var i = 0, L = series.length; i < L; i++) {
-
-                        data = series[i];
-                        endAngle = startAngle + 360 * data.percent;
-
-                        (function (startAngle, endAngle, percent) {
-
-                            //添加扇形
-                            var textAngle = (startAngle + endAngle)/2,
-                                thisAngle = endAngle - startAngle,
-                                textRadius = 0.6 * pieOptions.radius,
-                                tipRadius = pieOptions.radius;
-
-                            sumAngle += thisAngle;
-                            var tipAngle = sumAngle - thisAngle/2;
-                            sector = new Kinetic.Sector({
-                                x: centerX,
-                                y: centerY,
-                                radius: (pieOptions.easing ? 0 : pieOptions.radius),
-                                startAngle: (pieOptions.easing ? 0 : pieOptions.radius),
-                                endAngle: (pieOptions.easing ? 0 : pieOptions.radius),
-                                fill: colors[i],
-                                stroke:"white",
-                                strokeWidth:1,
-                                shadow: {
-                                    color: "#000",
-                                    blur: 6,
-                                    alpha: 0.2
-                                }
-                            });
-                            layer.add(sector);
-                            var tipX = centerX + Math.cos(tipAngle * Math.PI /180) * tipRadius;
-                            var tipY = centerY + Math.sin(tipAngle * Math.PI /180) * tipRadius;
-                            
-                            tipAngle = parseInt(tipAngle);
-
-                            
-
-                            //添加扇形上的文字
-                            if(percent > 0.14){
-                                text = new Kinetic.Text({
-                                    text:(percent*100).toFixed(2),
-                                    x:centerX + Math.cos(textAngle * Math.PI /180) * textRadius,
-                                    y:centerY + Math.sin(textAngle * Math.PI /180) * textRadius,
-                                    textFill:"black",
-                                    align:"center",
-                                    width:30,
-                                    offset:{
-                                        x: 12
-                                    }
-                                });
-                                percentLayer.add(text);
-                            }
-                            (function(sector){
-                                if ( !! pieOptions.easing) {
-                                    sector.transitionTo({
-                                        radius: options.pie.radius,
-                                        duration: .5,
-                                        startAngle: startAngle,
-                                        endAngle: endAngle,
-                                        easing: pieOptions.easing,
-                                        callback:function(){
-                                            bindMouseEvent(sector);
-                                        }
-                                    });
-                                }else{
-                                    bindMouseEvent(sector);
-                                }
-
-                                function bindMouseEvent(sector){
-                                    sector.on("mouseover", function () {
-                                        
-                                        this.transitionTo({
-                                            radius: options.pie.radius * 1.1,
-                                            duration: 0.2,
-                                            easing: "ease-in"
-                                        });
-                                        
-                                        if(pieOptions.needTip) {
-                                            var direction = '';
-                                            if(tipAngle > 0 && tipAngle < 45) { direction = 'right';}
-                                            if(tipAngle > 315 && tipAngle < 360) {
-                                                direction = 'right';
-                                            } else if(tipAngle >= 45 && tipAngle < 135) {
-                                                direction = 'bottom';
-                                            } else if(tipAngle >= 135 && tipAngle < 225) {
-                                                direction = 'left';
-                                            } else {
-                                                direction = 'top';
-                                            }
-                                            newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
-                                            stage.add(newLayer);
-                                        }
-                                    });
-                                    sector.on("mouseout", function () {
-                                        this.transitionTo({
-                                            radius: options.pie.radius,
-                                            duration: 0.2,
-                                            easing: "ease-out"
-                                        });
-                                        pieOptions.needTip && DPChart.toolTipHide(newLayer);
-                                    });
-                                }
-
-                            }(sector));
-                            
-
-                        })(startAngle, endAngle, data.data);
-
-                        startAngle = endAngle;
-
-                    }
-                }
-            });
+            // 最后new DPChart对象，就这么简单！
+            new DPChart(container, data, options);
             </textarea>
 
         </div>
 
     </div>
+    <!-- footer -->
+    <div class="footer footer-static clearfix">
+      <ul>
+        <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+        <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+        <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+        <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+      </ul>      
+      <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+    </div>
+    
 	<a class="toTop" id="toTop" href="#top"></a>
     <script type="text/javascript" src="Scripts/g.mt.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Venus Show Stage</title>
+<link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
+<link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
+<!--[if IE 6]>
+    <script src="Scripts/DD_belatedPNG.js"></script>
+    <script>DD_belatedPNG.fix('.pngfix'); </script>
+<![endif]-->
+</head>
+<body>
+	<div class="header">
+    	<div class="header-cont clearfix">
+            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <div class="header-nav">
+            	<ul>
+                	<li><a href="index.html">首页</a></li>
+                    <li><a href="api.html">接口文档</a></li>
+                    <li class="J_menu">
+						<a href="canvaspie.html" class="J_trigger">演示</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvaspie.html">canvas</a></li>
+							<li><a href="svgpie.html">svg</a></li>
+						</ul>
+					</li>
+                    <li class="J_menu">
+						<a href="canvascase.html" class="J_trigger">案例</a>
+						<ul class="demo-menu J_list Hide">
+							<li><a href="canvascase.html">canvas</a></li>
+							<li><a href="svgcase.html">svg</a></li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <ul class="btn-list clearfix">
+            <li><a href="#canvaspie" class="button orange">canvas饼图配置</a></li>
+            <li><a href="#canvasline" class="button orange">canvas线图配置</a></li>
+            <li><a href="#canvasdot" class="button orange">canvas点图配置</a></li>
+            <li><a href="#canvasbar" class="button orange">canvas柱图配置</a></li>
+        </ul>
+    </div>
+
+    <div class="cont-main clearfix">
+    	<div class="nav-side">
+        	<ul class="nav-list clearfix">
+                <li><a href="api.html">使用教程</a></li>
+                <li><a href="svgapi.html">svg配置</a></li>
+                <li><a href="canvasapi.html">canvas配置</a></li>
+                <li><a href="#">api</a></li>
+            </ul>
+        </div>
+        <div class="right-cont">
+			
+			<div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="canvaspie">
+                        <h2 class="font-r">canvas饼图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+			var pieOptions = { 
+					// 配置饼图的宽高和外边距
+	                width: 900,
+	                height: 400,
+	                margin: 30,   
+					// 饼图的主要配置
+	                pie:{
+	                    radius:150,  // 饼图的半径
+	                    easing:"ease-in" // 饼图的初始化动画效果
+						needTip: true   // 是否需要tip效果
+	                },
+					// 配置图例，不写就等于没有图例
+	                legend:{
+	                    height: 150,  //图例的行高
+	                    itemType:"circle",  // 图例的类型
+	                    position:["right", "top"]  // 图例的位置
+	                }
+	        };
+            </textarea>
+
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="canvasline">
+                        <h2 class="font-r">canvas线图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>
+            <textarea name="code" class="js" rows="50" cols="100">
+            var lineOptions = {
+				   	// 配置线图的宽高和外边距
+	                width:930,
+	                height:400,
+	                margin:100,
+	                // 配置x,y坐标轴
+	                axis:{  
+	                // 配置x坐标轴
+	                    x: {
+	                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu"]  //x坐标的标签文字
+	                    },
+	                    // 配置y坐标轴
+	                    y: {
+	                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  // y坐标的标签文字
+	                    }
+	                },    
+	                // 线图的主要配置
+	                line: {
+	                    hasDot: true,  // 线图是否有连接点
+	                    smooth: false, // 线图类型（光滑还是直线）
+	                    dotRadius: 8,  // 连接点的半径
+	                    shadow: false,  // 是否具有阴影区域,
+						lineStroke: 'red',  // 线条颜色
+						tipPos: 'right'  // line图tip的位置('right', 'top', 'left', 'bottom')
+	                },
+	                // 配置网格
+	                grid: {
+	                    enableXGrid: false,  // 横网格
+	                    enableYGrid: false   // 竖网格
+	                } ,
+	                // 配置图例
+	                legend:{
+	                    position:["right", "top"], // 图例位置
+	                    height: 200,               // 图例的行高, 相当于line-height
+	                    itemType:"circle"          // 图例icon的类型('circle', 'rect')
+	                }
+	        	};
+            </textarea>
+
+            <div class="intro-panel">
+                <div class="isay-top pngfix"></div>
+                <div class="isay-middle pngfix">
+                    <div class="intro-box clearfix" id="canvasdot">
+                        <h2 class="font-r">canvas点图配置</h2>
+                    </div>
+                </div>
+                <div class="isay-bottom pngfix"></div>
+            </div>       
+            <textarea name="code" class="js" rows="50" cols="100">  
+			var dotOptions = { 
+							// 配置点图的宽高外边距
+	                width: 800,
+	                height: 500,
+	                margin: 70,
+	                axis:{
+	                    x:{     // 配置x坐标的标签文字
+	                        ticks:['12a','1a','2a','3a','4a','5a','6a','7a',
+							  		'8a','9a','10a','11a','12p','1p','2p','3p',
+									'4p','5p','6p','7p','8p','9p','10p','11p']
+	                    },
+	                    y:{     // 配置y坐标的标签文字 
+	                        ticks:["",'Saturday','Friday','Thursday',
+									'Wednesday','Tuesday','Monday','Sunday']
+	                    }
+	                },
+	                // 点图的主要配置
+	                dot:{
+	                    radius:1,   // 点图的半径 
+						easing: 'elastic-ease-out' // 点图的初始化动画效果
+						// 动画效果有：ease-in,ease-out,ease-in-out,back-ease-out,bounce-ease-out,
+						// bounce-ease-in,elastic-ease-out
+					    // bounce-ease-in-out,strong-ease-in,strong-ease-out,strong-ease-in-out
+	                },
+	                // 配置网格
+	                grid: {
+	                    enableXGrid: false,  // 横网格
+	                    enableYGrid: false   // 竖网格
+	                } ,
+	                // 配置图例
+	                legend:{
+	                    position:["right", "top"], // 图例位置
+	                    height: 200,               // 图例的行高, 相当于line-height
+	                    itemType:"circle"          // 图例icon的类型('circle', 'rect')
+	                }
+	            };
+			</textarea>
+			
+			<div class="intro-panel">
+	            <div class="isay-top pngfix"></div>
+	            <div class="isay-middle pngfix">
+	                <div class="intro-box clearfix" id="canvasbar">
+	                    <h2 class="font-r">canvas柱状图配置</h2>
+	                </div>
+	            </div>
+	            <div class="isay-bottom pngfix"></div>
+	        </div>
+			
+			<textarea name="code" class="js" rows="50" cols="100">
+			var barOptions = {
+					// 配置柱状图的宽外边距
+					width:800,
+	                height:400,
+	                margin:100, 
+	                // 配置x,y坐标轴
+	                axis:{
+	                    x: {
+	                        ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera", "SouGou", "BaiDu"]  // x轴上的标签文字 
+	                    },
+	                    y: {
+	                        ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  // y轴上的标签文字
+	                    }
+	                },
+	                // 柱状图的主要配置（还不完善）
+	                bar: { 
+	                },
+	                // 配置网格
+	                grid: {
+	                    enableXGrid: false,  // 横网格
+	                    enableYGrid: false   // 竖网格
+	                } ,
+	                // 配置图例
+	                legend:{
+	                    position:["right", "top"], // 图例位置
+	                    height: 200,               // 图例的行高, 相当于line-height
+	                    itemType:"circle"          // 图例icon的类型('circle', 'rect')
+	                }
+	        };
+			</textarea>
+        </div>
+
+    </div>
+    <!-- footer -->
+    <div class="footer footer-static clearfix">
+      <ul>
+        <li><a target="_blank" href="http://www.dianping.com/aboutus" rel="nofollow">关于大众点评</a>|</li>
+        <li><a target="_blank" href="http://www.dianping.com/" rel="nofollow">大众点评网</a>|</li>
+        <li><a target="_blank" href="http://t.dianping.com/" rel="nofollow">点评团</a>|</li>
+        <li><a target="_blank" href="index.html" rel="nofollow">关于我们</a></li>
+      </ul>      
+      <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
+    </div>
+    
+	<a class="toTop" id="toTop" href="#top"></a>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
+	<script type="text/javascript">
+	window.addEvent('domready', function() {
+		Venus.app.dropMenu();
+		TG.app.toTop();
+	});
+	</script>
+    
+    <script class="javascript" src="Scripts/shCore.js"></script>
+    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
+    <script class="javascript" src="Scripts/shBrushCss.js"></script>
+
+    <script class="javascript">
+    	dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+</body>
+</html>
