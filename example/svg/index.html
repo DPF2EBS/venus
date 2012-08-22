@@ -16,9 +16,10 @@
 <body>	
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
 	<script type="text/javascript" src="../../src/common/lang.js"></script>
+    <script type="text/javascript" src="../../src/common/venus.js"></script>
 	<script type="text/javascript" src="../../src/common/common.js"></script>
 	<script type="text/javascript" src="../../src/common/customevent.js"></script>
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../../src/svg/svgchart.js"></script>
 	
 	<!-- components -->
 	<script type="text/javascript" src="../../src/svg/types/bar.js"></script>
@@ -37,7 +38,7 @@
 		<dd>
 		<script type="text/javascript">
 		var L=60;
-		var c=DPChart.getColors(L);
+		var c=Venus.util.getColors(L);
 		for(var i=0;i<L;i++){
 			var a=document.createElement('input');
 			a.type='text';
@@ -71,7 +72,7 @@
                 }
 
             }
-    var bar = new DPChart(container, data, options);
+    var bar = new Venus.SVGChart(container, data, options);
 		</script>
 		</dd>
 		
@@ -101,7 +102,7 @@
 					direction:'v'
 				}
             }
-    var dot = new DPChart(container, data, options);
+    var dot = new Venus.SVGChart(container, data, options);
 		</script>
 		</dd>
 		
@@ -134,7 +135,7 @@
 				
 				}
             }
-    var pie = new DPChart(container, data, options);
+    var pie = new Venus.SVGChart(container, data, options);
 		</script>
 		</dd>
 		
@@ -172,7 +173,7 @@
         }
 
     }
-    var line = new DPChart(container, data, options);
+    var line = new Venus.SVGChart(container, data, options);
 		</script>
 		</dd>
 	</dl>

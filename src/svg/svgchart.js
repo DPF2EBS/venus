@@ -4,19 +4,23 @@
 
 ;
 (function (global, undefined) {
-    var _DPChart = global.DPChart;
-    var mix = _DPChart.mix
+    /*
+     * cache global.DPChart to Venus because DPChart will be redefined and later will mix back to DPChart
+     * */
+    var Venus = global.Venus;
+
+    var mix = Venus.util.mix
         , PI = Math.PI
-        , isArray = _DPChart.isArray
-        , isObject = _DPChart.isObject
+        , isArray = Venus.util.isArray
+        , isObject = Venus.util.isObject
         , charts = {} // charts added by using DPChart.addChart
-        , getColor = _DPChart.getColors;
+        , getColor = Venus.util.getColors;
 
     /*DPChart Begin*/
     /*
      * Class DPChart
      * @param container{HTMLElement} container of the svg element to draw the chart
-     * @param data{Array} Array of the data
+     * @param data{Array,Object} data can be array or object
      * @param options{object}
      */
     function DPChart(container, data, options) {
@@ -25,17 +29,31 @@
         }
         this.container = container;
         this.data = data || [];
-        this.events = new _DPChart.CustomEvent();
+        this.events = new Venus.util.CustomEvent();
+
+        //default options
         var defaultOptions = {
-            /**
-             *maybe here will cause a bug when a html element size is autosize or it is invisible.
-             *chart size may provide from other way.
-             */
+            /*
+             * width and height  equals the containers width and height by default
+             * but when the container is invisible ,please parse the width and height manually
+             * */
             width:container.clientWidth,
             height:container.clientHeight,
+            /*
+             * colors will be auto generated , but if you want you can parse an array
+             * */
             colors:[],
+            /*
+             * axises usually are x and y .For detail see Class Axis
+             * */
             axis:{
             },
+            /*
+             * grid under the chart has two config options:
+             * enableRow
+             * enableColumn
+             * no grid by default
+             * */
             grid:{
 //                enableRow:true,
 //                enableColumn:false
@@ -49,7 +67,7 @@
         this._initData();
         this.events.fire('onDataInit', this.series);
 
-        this.colors = getColor(this.series.getSeries().length);
+        this.colors = this.options.colors && this.options.colors.length ? this.options.colors : getColor(this.series.getSeries().length);
 
         // init axis
         this._initAxis();
@@ -90,9 +108,12 @@
                 beginY
 
             for (axis in axisOption) {
+                //init each axis in options.axis
                 if ((thisAxisOption = axisOption[axis])) {
+                    //set rotate 90 for y axis by default
                     (axis == 'y' && thisAxisOption.rotate == undefined) && (thisAxisOption.rotate = 90);
                     if (axis == "y" && (!thisAxisOption.ticks || thisAxisOption.ticks.length == 0)) {
+                        //if y axis has no ticks , then auto generate ticks use series.getRange()
                         range = this.series.getRange();
                         if (thisAxisOption.max === undefined) {
                             thisAxisOption.max = range.max
@@ -102,8 +123,11 @@
                         }
                     }
                     if (axis == "x") {
+                        //set pop=1 for x Axis by default
                         (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1); //前面空一格
                         if (!thisAxisOption.ticks) {
+                            //if x axis has no ticks , then auto generate ticks use series.getLabels()
+                            //but getLabels() sometimes returns array of empty string depends on the data
                             thisAxisOption.ticks = this.series.getLabels();
                         }
                     }
@@ -111,6 +135,7 @@
                     thisAxisOption._svgWidth = this.options.width;
                     thisAxisOption._svgHeight = this.options.height;
                     axises[axis] = new Axis(thisAxisOption, this.series, this.stage);
+                    //put the axis in middle by default
                     !thisAxisOption.beginX && axis == "x" && (beginX = (opt.width - axises[axis].axisLength) / 2);
                     !thisAxisOption.beginY && axis == "y" && (beginY = (opt.height - axises[axis].axisLength) / 2 + axises[axis].axisLength);
                 }
@@ -124,6 +149,10 @@
             this.axises = axises;
         },
         _initLegend:function () {
+            /*
+             * init legend
+             * */
+
             var opt = this.options,
                 legendOption = opt.legend;
             if (legendOption && this.series.getSeries().length) {
@@ -136,6 +165,7 @@
         },
         _initGrid:function () {
             var gridOption = this.options.grid
+            //generate positions of  rows and columns
             gridOption.enableRow && this.axises.y && (gridOption.rows = this.axises.y.getTicksPos().y) && (gridOption._x = this.axises.y.beginX) && this.axises.x && (gridOption.width = this.axises.x.axisLength)
             gridOption.enableColumn && this.axises.x && (gridOption.columns = this.axises.x.getTicksPos().x) && (gridOption._y = this.axises.x.beginY) && this.axises.y && (gridOption.height = this.axises.y.axisLength)
             this.grid = new Grid(gridOption, this.stage);
@@ -146,13 +176,13 @@
         draw:function () {
             for (var chart in charts) {
                 if (this.options[chart]) {
-                    //draw that chart
+                    //draw each chart in options , so you can put several type of charts in one svg
                     charts[chart].draw && charts[chart].draw.call(this, this.options[chart]);
                 }
             }
         },
         update:function () {
-
+            //TODO
         }
     };
     DPChart.addChart = function (name, methods) {
@@ -160,7 +190,20 @@
     }
     DPChart.charts = charts;
 
+    /*DPChart End*/
+
     var Series = function (data) {
+        /*
+         * init the series object which deal with the data
+         * data can be Array or Object and format like :
+         * [number,number,....] or [{},...] or [[number,..],..]
+         * or {name:data,name:data,.....}
+         *
+         * all the above will be convert to
+         * [{data:(number or array or object),name:(if has)},....]
+         * and save as series property
+         *
+         * */
         var series = []
         if (isArray(data)) {
             data.forEach(function (d, i) {
@@ -196,9 +239,18 @@
     Series.prototype = {
         constructor:Series,
         getRange:function () {
-            //get the data range
+            /*
+             * get the max and min value of data
+             * return Object
+             * {
+             *     max:
+             *     min:
+             * }
+             * */
+
             var max , min
             this.series.forEach(function (data) {
+                //get the max and min value depends on the data format
                 var d = data.data
                 if (isArray(d)) {
                     var iMax = Math.max.apply(Math, d),
@@ -225,23 +277,33 @@
             return this.series;
         },
         getLabels:function () {
+            /*
+             * return labels for auto generated x Axis
+             * labels depends on the data
+             * so sometimes labels will be array of empty string
+             * */
+
             var labels = [],
                 _labels = {},
                 isObj = false,
                 isArr = false,
                 len = 0
             this.series.forEach(function (item) {
-                if (item.name && _DPChart.isNumber(item.data)) {
+                if (item.name && Venus.util.isNumber(item.data)) {
+                    //if there is 'name',then use the name
                     labels.push(item.name)
                 }
                 else {
                     var data = item.data;
                     if (isArray(data)) {
+                        //if data is array ,that means got no labels
                         isArr = true;
                         len = Math.max(data.length, len)
                     }
                     else if (isObject(data)) {
                         for (var o in data) {
+                            //cache the labels in the object _labels first , this will avoid duplicated labels
+                            //and later will convert it to array
                             isObj = true;
                             _labels[o] = true;
                         }
@@ -258,7 +320,7 @@
                 }
             }
             if (isArr) {
-                // data is Array ,create an array of Math Length
+                // data is Array ,create an array of empty string,length = len
                 labels = new Array(len);
                 // DON'T USE forEach , it won't work here
                 for (var i = 0; i < len; i++) {
@@ -274,18 +336,18 @@
         var defaultOptions = {
                 max:0,
                 min:0,
-                tickSize:1,
-                tickWidth:30,
-                ticks:[],
-                minorTickNum:0, // 一个tick中有几个minor tick ，<0 就没有
-                rotate:0, //逆时针旋转的角度，0为水平向右，没有radius就按0点 ，有radius就按圆心
-                radius:0, //弯曲半径
-                pop:0, // 前面空掉几个刻度的位置
+                tickSize:1,         //tick size in value
+                tickWidth:30,       //tick size in pixel
+                ticks:[],           //ticks
+                minorTickNum:0,     // won't work in this version ,TODO
+                rotate:0,           //rotate 0-360 in counter-clockwise
+                radius:0,           //axis could be circular but no in this version,TODO
+                pop:0,              // empty ticks before
                 _svgWidth:0,
                 _svgHeight:0,
-                labelRotate:0,
-                enable:true,
-                fontSize:12
+                labelRotate:0,      //rotate 0-360 of the labels in clockwise
+                enable:true,        //visible or not
+                fontSize:12         //label font size
             }
             , axisElement
             , labelElements = []
@@ -301,6 +363,7 @@
         this.series = series;
 
         if (!opt.ticks.length) {
+            //if got no ticks , auto generate ticks using min,mix ,tickSize
             tick = opt.min;
             while (tick < opt.max) {
                 opt.ticks.push(tick)
@@ -313,7 +376,7 @@
         this.beginX = beginX = opt.beginX || 30;
         this.beginY = beginY = opt.beginY || opt._svgHeight - 30;
 
-        //if get ticks, use ticks
+        //use ticks to generate the DOM
         pathString += ("M" + beginX + " " + beginY);
         for (i = 0, l = opt.pop; i < l; i++) {
             pathString += ("h" + opt.tickWidth + "v" + tickHeight + "v" + -tickHeight);
@@ -332,20 +395,24 @@
             }
         }
 
+        //axis element of Raphael Path Element
         axisElement = this.axisElement = paper.path(pathString);
         this.labelElements = labelElements;
         if (!opt.enable) {
-            axisElement.attr('opacity', 0);
+            //if invisible ,hide the elements
+            //but the coordinate is actually exist
+            axisElement.hide();
             labelElements.forEach(function (item) {
-                item.attr('opacity', 0);
+                item.hide();
             })
         }
         //rotate
         axisElement.rotate(rotate, beginX, beginY);
 
         //TODO compute 1 -1
-        opt.rotate > 0 && axisElement.scale(1, -1, beginX, beginY)
+        opt.rotate > 0 && axisElement.scale(1, -1, beginX, beginY);
 
+        // length of the axis in pixel
         this.axisLength = opt.tickWidth * (opt.ticks.length + opt.pop - 1)
     };
     Axis.prototype = {
@@ -375,15 +442,18 @@
             }
         },
         getOrigin:function () {
+            //get the origin position in svg coordinate
             return {
                 x:this.beginX,
                 y:this.beginY
             }
         },
         getAngel:function () {
-
+            //TODO
         },
         setPosition:function (x, y) {
+            //set the origin position of the axis
+            //transform the whole axis elements
             var left = x - this.beginX,
                 top = y - this.beginY
             this.beginX = x;
@@ -394,7 +464,13 @@
             });
         },
         getTicksPos:function () {
-            //刻度的位置
+            /*each coordinate position of ticks
+             * return {
+             *     x:[],
+             *     y:[]
+             * }
+             *
+             * */
             var left = [],
                 top = [],
                 beginX = this.beginX,
@@ -420,19 +496,26 @@
     }
 
     var Legend = function (series, options, paper) {
+        /*
+         * Class Legend
+         * @param series{Series} instance of Series
+         * @param options{Object}
+         * @param paper{Raphael} instance of Raphael
+         *
+         * */
         var defaultOption = {
-                position:['right', 'top'],
-                format:'{name}',
-                fontSize:12,
-                colors:[],
-                direction:'vertical',
-                itemType:'rect'// circle
+                position:['right', 'top'],      //position of the legend contains two elements (horizontal and vertical) each could be string and number
+                format:'{name}',                //format of the texts
+                fontSize:12,                    //text font size
+                colors:[],                      //colors ,parsed as the dpchart.colors
+                direction:'vertical',           //how to layout the items
+                itemType:'rect'                 // or circle
             }, i, l
             , data = series.getSeries()
-            , width = 15 //item width
-            , lineHeight = 20 // item line height
-            , span = 10 //distance between item and text
-            , border // rect element of border
+            , width = 15                        //item width
+            , lineHeight = 20                   // item line height
+            , span = 10                         //distance between item and text
+            , border                            // rect element of border
             , startX = 0
             , startY = 0
             , item
@@ -440,9 +523,9 @@
             , textWidth
             , totalWidth = []
             , totalHeight = []
-            , itemSet // set of items
-            , textSet // set of texts
-            , margin = 10 // margin to svg boundary
+            , itemSet                           // set of items
+            , textSet                           // set of texts
+            , margin = 10                       // margin to svg boundary
             , padding = 10
             , names = []
             , colors
@@ -456,7 +539,7 @@
         data.forEach(function (d, j) {
             if (d.name !== undefined) {
                 names.push(d.name);
-            } else if (_DPChart.isNumber(d.data)) {
+            } else if (Venus.util.isNumber(d.data)) {
                 names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
             } else {
                 names.push('');
@@ -465,6 +548,7 @@
         isVertical = opt.direction == 'vertical';
         isVertical ? totalWidth = [] : totalWidth = 0;
         for (i = 0, l = data.length; i < l; i++) {
+            //create the raphael elements
             var _x , _y;
             if (isVertical) {
                 _x = startX + padding;
@@ -560,11 +644,14 @@
     Legend.prototype = {
         constructor:Legend,
         setPosition:function (left, top) {
+            //set the position of the legend
+            //relative ,not absolute
             this.itemSet.translate(left, top);
             this.textSet.translate(left, top);
             this.border.translate(left, top);
         },
         on:function (name, fn) {
+            //bind DOM Events on legend item
             var event
             if ((event = this.itemSet[name] ) && typeof event == "function") {
                 //has function such as click, mouseover
@@ -580,19 +667,20 @@
 
     var Grid = function (options, paper) {
         var defaultOption = {
-                'color':'#ccc',
-                'rows':[],
+                'color':'#ccc', //color of the grid
+                'rows':[], //coordinate
                 'columns':[],
-                'width':0,
-                'height':0,
+                'width':0, //length of the row
+                'height':0, //length of the column
                 'stroke-width':1,
                 'opacity':0.2,
-                _x:0, //y轴的x坐标
-                _y:0  //x轴的y坐标
+                _x:0, //x coordinate of y axis
+                _y:0  //y coordinate of x axis ,these are used as the start position
             },
             options = this.options = mix(defaultOption, options)
 
         if (options.rows.length) {
+            //draw rows
             options.rows.forEach(function (value) {
                 paper.path('M' + options._x + "," + value + "h" + options.width).attr({
                     stroke:options.color,
@@ -602,6 +690,7 @@
             })
         }
         if (options.columns.length) {
+            //draw columns
             options.columns.forEach(function (value) {
                 paper.path('M' + value + "," + options._y + "v" + -options.height).attr({
                     stroke:options.color,
@@ -615,6 +704,7 @@
 
 
     var toolTip = function (paper, x, y, texts, side) {
+            //extend the Raphael Element and provide the toolTip Function
             //@param x , y position of the tip
             //@texts{Array or String} each line of text
             //@side{String} 'left','top','right' or 'bottom'
@@ -684,16 +774,14 @@
                     };
                 }
 
-            !DPChart.isArray(texts) && (texts = [texts]);
-            if (this._dpchart_tooltip) {
-                tip = this._dpchart_tooltip;
-                labels = this._dpchart_tooltip_labels;
+            !isArray(texts) && (texts = [texts]);
+            if (this._venus_tooltip) {
+                tip = this._venus_tooltip;
+                labels = this._venus_tooltip_labels;
                 texts.forEach(function (t, i) {
                     labels[i] ? labels[i].attr('text', t) : labels.push(paper.text(0, 0, t))
                 })
             } else {
-
-
                 labels = paper.set();
                 var width = [], height = 0,
                     bBox,
@@ -713,10 +801,10 @@
                     width.push(bBox.width);
                 });
                 labels.animate({'opacity':1}, 100);
-                if (this._dpchart_tooltip_show)
+                if (this._venus_tooltip_show)
                     return;
                 p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder)
-                this._dpchart_tooltip = tip = paper.path().attr({
+                this._venus_tooltip = tip = paper.path().attr({
                     path:p.path,
                     fill:"#000000",
                     "stroke-width":4,
@@ -731,7 +819,7 @@
                         'x':p.box.left + p.box.width / 2
                     })
                 })
-                this._dpchart_tooltip_labels = labels;
+                this._venus_tooltip_labels = labels;
             }
             return toolTip;
         },
@@ -740,15 +828,11 @@
                 this.hide();
             }
             var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
-            this._dpchart_tooltip && (this._dpchart_tooltip.animate(animate) ) && (this._dpchart_tooltip_labels.animate(animate) ) && (this._dpchart_tooltip = false);
+            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) && (this._venus_tooltip = false);
         }
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
 
-
-//add to global
-    global.DPChart = DPChart;
-    mix(DPChart, _DPChart);
 
 
     //for unit test , temporary bind Classes on DPChart
@@ -756,5 +840,7 @@
     DPChart.Axis = Axis;
     DPChart.Legend = Legend;
     DPChart.Grid = Grid;
+
+    Venus.SVGChart = DPChart;
 
 })(this);

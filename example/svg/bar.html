@@ -6,9 +6,10 @@
 <body style="margin: 0;">
 	<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
 	<script type="text/javascript" src="../../src/common/lang.js"></script>
-	<script type="text/javascript" src="../../src/common/common.js"></script>
+    <script type="text/javascript" src="../../src/common/venus.js"></script>
+    <script type="text/javascript" src="../../src/common/common.js"></script>
 	<script type="text/javascript" src="../../src/common/customevent.js"></script>	
-	<script type="text/javascript" src="../../src/svg/dpchart.js"></script>
+	<script type="text/javascript" src="../../src/svg/svgchart.js"></script>
 	
 	<script type="text/javascript" src="../../src/svg/types/bar.js"></script>
 
@@ -52,8 +53,7 @@
         })
         data.push({name:i, data:arr})
     }
-	console.log(data);
-    var bar = new DPChart(container, data, options);
+    var bar = new Venus.SVGChart(container, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
@@ -89,7 +89,7 @@
     })
 
 
-    var bar2 = new DPChart(container2, data2, options2);
+    var bar2 = new Venus.SVGChart(container2, data2, options2);
 </script>
 </body>
 </html>
