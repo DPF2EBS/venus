@@ -52,7 +52,7 @@
                     newRect.on('mouseover', function (evt) {
 
 
-                        newLayer = DPChart.tooltips(opt.x + opt.width / 2, y, points[i].val, 'top');
+                        newLayer = Venus.tooltips(opt.x + opt.width / 2, y, points[i].val, 'top');
 
                         stage.add(newLayer);
 
@@ -69,7 +69,7 @@
                     });
                     newRect.on('mouseout', function (evt) {
 
-                        DPChart.toolTipHide(newLayer);
+                        Venus.toolTipHide(newLayer);
                         this.transitionTo({
                             alpha: 1,
                             duration: 0.2

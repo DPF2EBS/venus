@@ -61,7 +61,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
             var options = this.options,
                 pieOptions;
 
-            pieOptions = DPChart.mix({
+            pieOptions = Venus.util.mix({
                 easing: false,
                 radius: 50,
                 needTip: false
@@ -180,7 +180,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                                     } else {
                                         direction = 'top';
                                     }
-                                    newLayer = DPChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
+                                    newLayer = Venus.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
                                     stage.add(newLayer);
                                 }
                             });
@@ -190,7 +190,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                                     duration: 0.2,
                                     easing: "ease-out"
                                 });
-                                pieOptions.needTip && DPChart.toolTipHide(newLayer);
+                                pieOptions.needTip && Venus.toolTipHide(newLayer);
                             });
                         }
 
