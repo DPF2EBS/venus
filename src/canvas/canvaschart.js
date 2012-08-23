@@ -39,8 +39,8 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 ;
 (function (global, undefined) {
 
-    var _DPChart = global.Venus;
-    var util = _DPChart.util;
+    var V = global.Venus,
+		util = V.util;
     //todo del
     var mix = util.mix,
         PI = Math.PI,
@@ -689,14 +689,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         function toolTipHide(newLayer) {
             newLayer.clear();
         }
-
-    global.Venus.CanvasChart = DPChart;
+    
+	V.CanvasChart = DPChart; 
 	
-	global.Venus.CanvasChart.tooltips = tooltips;
+	V.CanvasChart.tooltips = tooltips;
 	 
-	global.Venus.CanvasChart.toolTipHide = toolTipHide;
+	V.CanvasChart.toolTipHide = toolTipHide;
 
-    //for test
-    global.Series = Series;
 
 })(this);
