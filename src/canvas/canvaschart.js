@@ -689,11 +689,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
         function toolTipHide(newLayer) {
             newLayer.clear();
         }
-    global.Venus.tooltips = tooltips;
-
-    global.Venus.toolTipHide = toolTipHide;
 
     global.Venus.CanvasChart = DPChart;
+	
+	global.Venus.CanvasChart.tooltips = tooltips;
+	 
+	global.Venus.CanvasChart.toolTipHide = toolTipHide;
 
     //for test
     global.Series = Series;
