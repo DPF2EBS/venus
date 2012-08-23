@@ -690,11 +690,12 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
             newLayer.clear();
         }
     
-	V.CanvasChart = DPChart; 
 	
-	V.CanvasChart.tooltips = tooltips;
-	 
-	V.CanvasChart.toolTipHide = toolTipHide;
-
-
+	
+	DPChart.tooltips = tooltips;
+	
+	DPChart.toolTipHide =  toolTipHide;
+	
+	V.ChanvasChart = DPChart;
+	
 })(this);
