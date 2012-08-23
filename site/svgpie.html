@@ -213,7 +213,7 @@
 	            radius: 150
 	        }
 	    };
-	    var bing = new Venus.SVGChart(container, bingData, bingOptions);
+	    var bing = new Venus.SvgChart(container, bingData, bingOptions);
 	    
 	    // 设置画布
 	    $('J_stageSize').addEvent('click', function() {
@@ -228,7 +228,7 @@
 	    	
 			bing = null;
 	        container.innerHTML = '';
-	    	new Venus.SVGChart(container, bingData, bingOptions);
+	    	new Venus.SvgChart(container, bingData, bingOptions);
 	    });
 	    
 	    var len = $$('select').length;
@@ -280,7 +280,7 @@
 	    		}
 	    		bing = null;
 		        container.innerHTML = '';
-		        new Venus.SVGChart(container, bingData, bingOptions);
+		        new Venus.SvgChart(container, bingData, bingOptions);
 	    	});
 	    }
 	</script>

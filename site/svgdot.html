@@ -199,7 +199,7 @@
         data.push({name:options.axis.x.ticks[i], data:arr})
     }
     
-    var dot = new Venus.SVGChart(container, data, options);
+    var dot = new Venus.SvgChart(container, data, options);
 
 	// 
 	$('J_stageSize').addEvent('click', function() {
@@ -214,7 +214,7 @@
 		
 		dot = null;
 		container.innerHTML = '';
-		new Venus.SVGChart(container, data, options);
+		new Venus.SvgChart(container, data, options);
 	});
 	// 操作点
 	$$('.accordion select').addEvent('change', function () {
@@ -249,7 +249,7 @@
 		}
 		dot = null;
 		container.innerHTML = '';
-		new Venus.SVGChart(container, data, options);
+		new Venus.SvgChart(container, data, options);
 	});
     </script>
     

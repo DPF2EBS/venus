@@ -237,7 +237,7 @@
         for (var j = 0; j < 12; j++) {
             arr.push(parseInt(Math.random() * 100));
         };
-    var line = new Venus.SVGChart(container, lineData, lineOptions);
+    var line = new Venus.SvgChart(container, lineData, lineOptions);
 	// some codes to opearte the svg chart
 	// 设置画布
 	$('J_stageSize').addEvent('click', function() {
@@ -252,7 +252,7 @@
 		
 		line = null;
 		container.innerHTML = '';
-		new Venus.SVGChart(container, lineData, lineOptions);
+		new Venus.SvgChart(container, lineData, lineOptions);
 	});
 	// 设置
 	$$('.accordion select').addEvent('change', function () {
@@ -311,7 +311,7 @@
             arr.push(parseInt(Math.random() * 100));
         };
 		container.innerHTML = '';
-		new Venus.SVGChart(container, lineData, lineOptions);
+		new Venus.SvgChart(container, lineData, lineOptions);
 	});
 	</script>
 </body>

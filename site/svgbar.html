@@ -233,7 +233,7 @@ var container = document.getElementById('chart_container'),
         })
         barData.push({name:i, data:arr});
     }
-    var bar = new Venus.SVGChart(container, barData, barOptions);
+    var bar = new Venus.SvgChart(container, barData, barOptions);
 
 	//
 	$('J_stageSize').addEvent('click', function() {
@@ -248,7 +248,7 @@ var container = document.getElementById('chart_container'),
 		
 		bar = null;
 		container.innerHTML = '';
-		new Venus.SVGChart(container, barData, barOptions);
+		new Venus.SvgChart(container, barData, barOptions);
 	});
 
 	//
@@ -302,7 +302,7 @@ var container = document.getElementById('chart_container'),
 		}
 		bar = null;
 		container.innerHTML = '';
-		new Venus.SVGChart(container, barData, barOptions);
+		new Venus.SvgChart(container, barData, barOptions);
 	});
 	</script>
     
