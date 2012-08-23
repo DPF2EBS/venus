@@ -696,6 +696,6 @@ Kinetic.SimpleText = Kinetic.Shape.extend({
 	
 	DPChart.toolTipHide =  toolTipHide;
 	
-	V.ChanvasChart = DPChart;
+	V.CanvasChart = DPChart;
 	
 })(this);
