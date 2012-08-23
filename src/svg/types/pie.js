@@ -1,5 +1,8 @@
 ;
 (function (undefined) {
+    var util = Venus.util;
+
+
     /**
      *get sector path string and position parameters
      *@param {Object} options {
@@ -82,7 +85,7 @@
             opt = options || {},
             angleOffset = opt.endAngle - opt.startAngle,
             sectorPath = getSectorPath(opt),
-            strokeOpt = Venus.util.mix({'stroke-width':1, 'stroke':'#dedede', "stroke-linejoin":"round", 'fill':opt.color}, opt.stroke);
+            strokeOpt = util.mix({'stroke-width':1, 'stroke':'#dedede', "stroke-linejoin":"round", 'fill':opt.color}, opt.stroke);
 
         if (!opt.animation) {
             sector = Math.abs(angleOffset) === 360 ? opt.paper.circle(opt.x, opt.y, opt.r) : opt.paper.path(sectorPath.path.join(' '));
@@ -96,15 +99,15 @@
 
         opt.animation && opt.d && text.hide();
 
-        Venus.util.mix(sector, {cx:opt.x, cy:opt.y, mx:sectorPath.pos.xmiddle, my:sectorPath.pos.ymiddle, text:text});
+        util.mix(sector, {cx:opt.x, cy:opt.y, mx:sectorPath.pos.xmiddle, my:sectorPath.pos.ymiddle, text:text});
 
         return sector;
     }
 
-    Venus.SVGChart.addChart('pie', {
+    Venus.SvgChart.addChart('pie', {
         draw:function (options) {
             /**initialize chart options*/
-            options = Venus.util.mix({
+            options = util.mix({
                 x:this.options.width / 2,
                 y:this.options.height / 2,
                 radius:Math.min(this.options.width, this.options.height) / 2.5,
@@ -170,11 +173,11 @@
                 }
 
                 setTimeout(function () {
-                    elements.push(SectorChart(Venus.util.mix({paper:paper,
+                    elements.push(SectorChart(util.mix({paper:paper,
                         callback:function () {
                             this.text && this.text.show();
                         }
-                    }, Venus.util.mix(options, item))));
+                    }, util.mix(options, item))));
                 }, t);
             });
 

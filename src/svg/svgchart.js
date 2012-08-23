@@ -9,12 +9,13 @@
      * */
     var Venus = global.Venus;
 
-    var mix = Venus.util.mix
+    var util = Venus.util,
+        mix = util.mix
         , PI = Math.PI
-        , isArray = Venus.util.isArray
-        , isObject = Venus.util.isObject
+        , isArray = util.isArray
+        , isObject = util.isObject
         , charts = {} // charts added by using DPChart.addChart
-        , getColor = Venus.util.getColors;
+        , getColor = util.getColors;
 
     /*DPChart Begin*/
     /*
@@ -841,6 +842,6 @@
     DPChart.Legend = Legend;
     DPChart.Grid = Grid;
 
-    Venus.SVGChart = DPChart;
+    Venus.SvgChart = DPChart;
 
 })(this);
