@@ -1,4 +1,5 @@
 (function () {
+    var util = Venus.util;
 	function DotChart(paper, x, y, r, color, d) {
 		var dot;
 
@@ -16,7 +17,7 @@
 		return dot;
 	}
 	
-	Venus.SVGChart.addChart('dot', {
+	Venus.SvgChart.addChart('dot', {
 		draw : function () {
 			var series = this.series.getSeries(),
 				colors = this.colors,
@@ -33,15 +34,15 @@
 			
 			/**calculate summation of all data*/
 			for (var i = 0, L = series.length; i < L; i++) {
-				if(Venus.util.isArray(series[i].data)){
+				if(util.isArray(series[i].data)){
 					series[i].data.forEach(function(item){
 						total+=item;
 					});
-				}else if(Venus.util.isObject(series[i].data)){
+				}else if(util.isObject(series[i].data)){
 					for(var key in series[i].data){
 						total+=series[i].data[key];
 					}
-				}else if(Venus.util.isNumber(series[i].data)){
+				}else if(util.isNumber(series[i].data)){
 					total+=series[i].data;
 				}
 			}
@@ -49,7 +50,7 @@
 			
 			for (var i = 0, L = series.length; i < L; i++) {
 				elements.push([]);
-				if(Venus.util.isArray(series[i].data)){
+				if(util.isArray(series[i].data)){
 					series[i].data.forEach(function(item,j){
 						data = item;
 						posX = xAxis.getX(i,j);
@@ -58,7 +59,7 @@
 
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
 					});
-				}else if(Venus.util.isObject(series[i].data)){
+				}else if(util.isObject(series[i].data)){
 					var j=0;
 					for(var key in series[i].data){
 						data =series[i].data[key];
@@ -69,7 +70,7 @@
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
 						j++;
 					}
-				}else if(Venus.util.isNumber(series[i].data)){
+				}else if(util.isNumber(series[i].data)){
 					data=series[i].data;
 					posX = xAxis.getX(i);
 					posY = yAxis.getY(i);

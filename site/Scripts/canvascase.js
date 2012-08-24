@@ -40,5 +40,5 @@ function showBrowsersPie(container, data){
         }
     };
     container.innerHTML = "";
-    new DPChart(container, data, options);
+    new Venus.CanvasChart(container, data, options);
 }

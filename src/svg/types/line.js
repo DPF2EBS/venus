@@ -34,11 +34,12 @@
 
     Chart.addChart('line', {
         draw:function () {
-            var opt = this.options,
+            var util = Venus.util,
+             opt = this.options,
             /*
              * default options of DPChart.options.line
              * */
-                lineOpt = Venus.util.mix({
+                lineOpt = util.mix({
                     'line-width':2,         //width of the line
                     smooth:false,           //straight line or curved line
                     dots:true,              //draw dot for each value or not
@@ -71,7 +72,7 @@
                 var points = []
 
                 //put all points in the point array, ignore some missing points
-                if (Venus.util.isArray(arr)) {
+                if (util.isArray(arr)) {
                     arr.forEach(function (d, i) {
                         if (indexOfSeries == undefined) {
                             /*
@@ -275,13 +276,13 @@
             }
 
             if (data[0]) {
-                if (Venus.util.isNumber(data[0].data)) {
+                if (util.isNumber(data[0].data)) {
                     /*
                     * data is Number
                     * and draw totally one line
                     * */
                     drawLine(data, undefined, this.colors[0], undefined);
-                } else if (Venus.util.isArray(data[0].data)) {
+                } else if (util.isArray(data[0].data)) {
                     /*
                     * data is array and series format as :
                     * [{data:[number,...]},...]
@@ -294,7 +295,7 @@
                     });
                     bindLegendEvents();
 
-                } else if(Venus.util.isObject(data[0].data)) {
+                } else if(util.isObject(data[0].data)) {
                     /*
                     * data is object and series format as :
                     * [{data:{key:value},...},...]
@@ -356,4 +357,4 @@
         }
     });
 
-})(Venus.SVGChart);
+})(Venus.SvgChart);

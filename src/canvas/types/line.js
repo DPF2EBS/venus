@@ -250,7 +250,7 @@
                     
                     dot.on('mouseover', function (evt) {
                         if (newLayer) {
-                            Venus.toolTipHide(newLayer);
+                            Venus.CanvasChart.toolTipHide(newLayer);
                         }
                         this.transitionTo({
                             radius: {
@@ -259,7 +259,7 @@
                             },
                             duration: 0.2
                         });
-                        newLayer = Venus.tooltips(d.x, d.y, points[i].label + ':' + points[i].val, lineOptions.tipPos);
+                        newLayer = Venus.CanvasChart.tooltips(d.x, d.y, points[i].label + ':' + points[i].val, lineOptions.tipPos);
 
                         stage.add(newLayer);
 
@@ -271,7 +271,7 @@
                                 y: lineOptions.dotRadius
                             },
                             duration: 0.2
-                        }); !! lineOptions.autoMouseOut && Venus.toolTipHide(newLayer);
+                        }); !! lineOptions.autoMouseOut && Venus.CanvasChart.toolTipHide(newLayer);
                     });
                      
                     if(lineOptions.easing) {

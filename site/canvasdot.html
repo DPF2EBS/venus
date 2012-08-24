@@ -106,14 +106,15 @@
     <script type="text/javascript" src="Scripts/accordion.js"></script>
     <script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
-    <script type="text/javascript" src="../src/common/common.js"></script>    
-    <script type="text/javascript" src="../src/common/customevent.js"></script>
-    <script type="text/javascript" src="../src/canvas/dpchart.js"></script>
+	<script type="text/javascript" src="../src/common/venus.js"></script>
+	<script type="text/javascript" src="../src/common/common.js"></script>
+	<script type="text/javascript" src="../src/common/customevent.js"></script>
+	<script type="text/javascript" src="../src/canvas/canvaschart.js"></script>
     <script type="text/javascript" src="../src/canvas/types/dot.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
-		Venus.app.dropMenu();
+		Myra.app.dropMenu();
 		TG.app.toTop();
 	});
 	</script>
@@ -136,7 +137,7 @@
                     radius:1
                 }
             };
-    	var bing = new DPChart(container, data, options);
+    	var bing = new Venus.CanvasChart(container, data, options);
     	
 	    $('J_stageSize').addEvent('click', function() {
 	    	var widthVal = $('J_stageWidth').value,
@@ -152,7 +153,7 @@
 	    	options.margin = marginVal;
 			bing = null;
 	        container.innerHTML = '';
-	    	new DPChart(container, data, options);
+	    	new Venus.CanvasChart(container, data, options);
 	    });
 	    var len = $$('.J_dot').length;
 	    for(var i = 0; i < len; i++) {
@@ -171,7 +172,7 @@
 		        }
 		        bing = null;
 		        container.innerHTML = '';
-		    	new DPChart(container, data, options);
+		    	new Venus.CanvasChart(container, data, options);
 	    	});
 	    }
 	  	</script>

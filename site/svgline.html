@@ -193,16 +193,17 @@
 	<a class="toTop" id="toTop" href="#top"></a>
 	<script type="text/javascript" src="Scripts/g.mt.js"></script>
     <script type="text/javascript" src="Scripts/accordion.js"></script>
-    <script type="text/javascript" src="../src/common/lang.js"></script>
-    <script type="text/javascript" src="../src/common/common.js"></script>
-    <script type="text/javascript" src="../src/common/customevent.js"></script>
     <script type="text/javascript" src="../lib/raphael/raphael-min.js"></script>
+	<script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="../src/common/venus.js"></script>
+    <script type="text/javascript" src="../src/common/common.js"></script>
+	<script type="text/javascript" src="../src/common/customevent.js"></script>	
 	<script type="text/javascript" src="../src/svg/svgchart.js"></script>
 	<script type="text/javascript" src="../src/svg/types/line.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
-		Venus.app.dropMenu();
+		Myra.app.dropMenu();
 		TG.app.toTop();
 	});
 	</script>
@@ -236,7 +237,7 @@
         for (var j = 0; j < 12; j++) {
             arr.push(parseInt(Math.random() * 100));
         };
-    var line = new DPChart(container, lineData, lineOptions);
+    var line = new Venus.SvgChart(container, lineData, lineOptions);
 	// some codes to opearte the svg chart
 	// 设置画布
 	$('J_stageSize').addEvent('click', function() {
@@ -251,7 +252,7 @@
 		
 		line = null;
 		container.innerHTML = '';
-		new DPChart(container, lineData, lineOptions);
+		new Venus.SvgChart(container, lineData, lineOptions);
 	});
 	// 设置
 	$$('.accordion select').addEvent('change', function () {
@@ -310,7 +311,7 @@
             arr.push(parseInt(Math.random() * 100));
         };
 		container.innerHTML = '';
-		new DPChart(container, lineData, lineOptions);
+		new Venus.SvgChart(container, lineData, lineOptions);
 	});
 	</script>
 </body>

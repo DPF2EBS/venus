@@ -94,7 +94,7 @@ var containerGs = [containerG, containerG1, containerG2],
 
 for(var n = 0; n < leng; n++) {
         containerGs[n].innerHTML = "";
-        new DPChart(containerGs[n],dataGs[n],{
+        new Venus.SvgChart(containerGs[n],dataGs[n],{
             axis:{
                 x:{
                     tickWidth:containerGs[n].clientWidth * .8 / 7,
@@ -131,7 +131,7 @@ var containers = [container, container1,container2, containerT, containerT1, con
     for(var m = 0; m < len; m++ ) {
             containers[m].innerHTML = "";
 
-            new DPChart(containers[m], datas[m], {
+            new Venus.SvgChart(containers[m], datas[m], {
                     axis:{
                         x:{
                             tickWidth:container.clientWidth * .8 / 35,

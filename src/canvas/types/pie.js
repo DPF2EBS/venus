@@ -180,7 +180,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                                     } else {
                                         direction = 'top';
                                     }
-                                    newLayer = Venus.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
+                                    newLayer = Venus.CanvasChart.tooltips(tipX, tipY, (percent*100).toFixed(2), direction);
                                     stage.add(newLayer);
                                 }
                             });
@@ -190,7 +190,7 @@ Kinetic.Node.addGettersSetters(Kinetic.Sector, ['radius', "startAngle", "endAngl
                                     duration: 0.2,
                                     easing: "ease-out"
                                 });
-                                pieOptions.needTip && Venus.toolTipHide(newLayer);
+                                pieOptions.needTip && Venus.CanvasChart.toolTipHide(newLayer);
                             });
                         }
 
