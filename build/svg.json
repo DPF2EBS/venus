@@ -1,7 +1,7 @@
 {
     "input":[
-        "../src/common/lang.js",
         "../lib/raphael/raphael-min.js",
+        "../src/common/lang.js",
         "../src/common/venus.js",
         "../src/common/common.js",
         "../src/common/customevent.js",
@@ -11,5 +11,5 @@
         "../src/svg/types/line.js",
         "../src/svg/types/pie.js"
     ],
-    "output":"svgchart.js"
+    "output":"svgchart"
 }

@@ -1,6 +1,6 @@
 var fs = require("fs"),
     path = require('path');
-var combo = function (jsonFile) {
+var compress = function (jsonFile) {
     var filePath = path.resolve(__filename),
         buildPath = path.resolve(filePath, '../..'),
         jsonPath = path.resolve(buildPath, jsonFile)
@@ -18,24 +18,26 @@ var combo = function (jsonFile) {
     input.forEach(function (file) {
         content.push(fs.readFileSync(path.resolve(jsonPath, "../" + file)).toString());
     });
+    content = content.join('\n');
     var outputPath = path.resolve(jsonPath, "../" + output);
+    fs.writeFile(outputPath + ".js", content, 'utf-8');
 
-    console.log("merge successfully \n", "...");
+    console.log("merge successfully at:" + outputPath + ".js\n", "...");
 
     //compress
     var jsp = require('uglify-js').parser,
         pro = require('uglify-js').uglify;
 
-    var code = content.join('\n'),
+    var code = content,
         ast = jsp.parse(code);
 
     ast = pro.ast_mangle(ast);
-    ast = pro.ast_squeeze(ast);
+    ast = pro.ast_squeeze(ast,{make_seqs:false});
     code = pro.gen_code(ast);
-    fs.writeFile(outputPath, code, 'utf-8');
-    console.log('compress successfully at ' + outputPath);
+    fs.writeFile(outputPath+".min.js", code, 'utf-8');
+    console.log('compress successfully at:' + outputPath+".min.js");
 
 
 }
 
-exports.combo = combo;
+exports.compress = compress;
