@@ -14,8 +14,8 @@
 	<script type="text/javascript" src="../../src/svg/types/bar.js"></script>
 
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-<div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-<div id="chart_container3" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+    <div id="chart_container3" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
+    <div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
@@ -28,13 +28,14 @@
                     },
                     y:{
                         min:0,
-                        max:100,
-                        tickWidth:65,
-                        tickSize:10
+                        max:300,
+                        tickWidth:40,
+                        tickSize:20
                     }
                 },
                 bar:{
-                    radius:2
+                    radius:2,
+                    multiple:'nestification'
                 },
                 grid:{
                     enableRow:true,
@@ -54,6 +55,11 @@
         data.push({name:i, data:arr})
     }
     var bar = new Venus.SvgChart(container, data, options);
+    options.bar.multiple = 'sidebyside';
+    options.axis.y.max = 100;
+    options.axis.y.tickWidth = 60;
+    container3 = document.getElementById('chart_container3');
+    var bar = new Venus.SvgChart(container3, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),

@@ -253,30 +253,32 @@
 	                },
 					// 开始配置柱状图
 	                bar:{
-	                    radius:2,  // 柱状图的半径
+	                    radius:2,  // 柱子圆角半径
 							  beginAnimate: true, // 是否需要开始动画
-							  opacity: 0.5  //柱子的透明度
+							  opacity: 0.5,  //柱子的透明度
+                        multiple:"sidebyside"  //一个刻度多个柱子的排列方式，sidebyside并排，nesification 叠起来
 	                },
 	                // 配置网格，不配置不会有网格
 	                grid:{ 
-	                    // 网格配置行
+	                    // 是否需要网格横线
 	                    enableRow: true,
-	                    // 网格配置列
-	                    enableColumn: true
+	                    // 是否需要网格竖线
+	                    enableColumn: true,
+                        //网格透明度
+                        opacity:0.2
 	                },
 					// 配置图例
 	                legend: {
-	                    // 是否需要展示图例
-	                    showLegend: true,
 	                    // 图例的位置是水平还是竖直（vertical）
 	                    direction: 'horizontal',
 	                    // 图例的icon圆形还是方形（rect）
-	                    legendType: 'circle',
+                        itemType: 'circle',
 	                    // 图例的位置是处于哪里，目前支持：
 	                    // ['right', 'top'], ['right', 'bottom'],
 	                    // ['left', 'top'], ['left', 'bottom'],
 	                    // ['center', 'top'], ['center', 'bottom']
-	                    legendPosition: ['center', 'bottom']
+                        // 或者用数值代替
+                        position: ['center', 'bottom']
 	                }
 	            }
 			</textarea>

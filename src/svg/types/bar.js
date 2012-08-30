@@ -10,6 +10,9 @@
                 yAxis = this.axises.y,
                 beginY = yAxis.beginY,
                 paper = this.stage,
+                sideBySide = "sidebyside",
+                nestification = "nestification",
+                sumY = [],
             /*
              * default of the bar config options
              * which could be parsed from the SvgChart.options.bar
@@ -17,7 +20,8 @@
                 barOptions = util.mix({
                     radius:0,               //radius of bars
                     beginAnimate:true,      //enable begin animate or not
-                    opacity:1               //opacity of the bars
+                    opacity:1,              //opacity of the bars
+                    multiple:'sidebyside'   //how to layout bars when there are multiple bars in one tick, sidebyside or nestification
                 }, this.options.bar),
                 elements = [],
                 self = this
@@ -72,13 +76,14 @@
                 })());
             }
 
-            function getPositions(i, j) {
+            function getPositions(i, j,sumY) {
                 /*
                  * when there are several bars on one tick
                  * this function returns each position of the bar
                  *
                  * @param i{Number} index of series
                  * @param j{Number} index of bar on the tick
+                 * @param sumY{Number} current height of the bar
                  *
                  * return {
                  *  x:Number,
@@ -87,17 +92,31 @@
                  *  height:Number
                  * }
                  * */
-                var times = 5, // width/space=times
-                    total = xTickWidth * .8,
-                    space = total / ((times + 1) * series.length + 1),
-                    bWidth = times * space,
-                    x = xAxis.getX(j) - total / 2 + i * bWidth + (i + 1) * space,
-                    y = yAxis.getY(i, j)
-                return {
-                    x:x,
-                    y:y,
-                    width:bWidth,
-                    height:beginY - y
+
+
+                var oX = xAxis.getX(j),
+                    oY = yAxis.getY(i,j);
+
+                if (barOptions.multiple == sideBySide) {
+                    var times = 5, // width/space=times
+                        total = xTickWidth * .8,
+                        space = total / ((times + 1) * series.length + 1),
+                        bWidth = times * space,
+                        x = oX - total / 2 + i * bWidth + (i + 1) * space,
+                        y = oY;
+                    return {
+                        x:x,
+                        y:y,
+                        width:bWidth,
+                        height:beginY - y
+                    }
+                }else{
+                    return {
+                        x:oX - xTickWidth / 4,
+                        y:oY - sumY,
+                        width:xTickWidth / 2,
+                        height:beginY - oY
+                    }
                 }
             }
 
@@ -120,26 +139,35 @@
                      * draw each data data.length bar
                      *
                      * */
+
+
                     series.forEach(function (d, i) {
                         elements[i] = paper.set();
                         d.data.forEach(function (value, j) {
-                            var p = getPositions(i, j)
+                            sumY[j] = sumY[j] || 0;
+                            var p = getPositions(i, j, sumY[j]);
+                            sumY[j] += p.height;
                             elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], value));
                         });
-                    })
+                    });
                 } else if (util.isObject(series[0].data)) {
                     /*
                      * data is object ,that means series format as
                      * [{data:{key:value,...}},...]
                      * draw each data keys.length bar
                      * */
+
                     series.forEach(function (d, i) {
-                        elements[i] = paper.set()
-                        for (var o in d.data) {
-                            var p = getPositions(i, o)
+                        var j = 0, o;
+                        elements[i] = paper.set();
+                        for (o in d.data) {
+                            sumY[j] = sumY[j] || 0;
+                            var p = getPositions(i, o, sumY[j]);
+                            sumY[j] += p.height;
                             elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], d.data[o]));
+                            j++;
                         }
-                    })
+                    });
                 }
                 bindLegendEvents();
             }
