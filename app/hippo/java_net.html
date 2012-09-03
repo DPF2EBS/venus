@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="convert.js"></script>
+
+    <script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
+    <script type="text/javascript" src="../../src/common/lang.js"></script>
+    <script type="text/javascript" src="../../src/common/venus.js"></script>
+    <script type="text/javascript" src="../../src/common/common.js"></script>
+    <script type="text/javascript" src="../../src/common/customevent.js"></script>
+    <script type="text/javascript" src="../../src/svg/svgchart.js"></script>
+    <script type="text/javascript" src="../../src/svg/types/line.js"></script>
+</head>
+<body>
+<div id="chart" style="width: 1000px; height: 600px;"></div>
+<script type="text/javascript">
+    (function () {
+        var java =[["2633.9746","1806.1101","2012-08-17 00:00:00"],["2140.0482","1406.5633","2012-08-18 00:00:00"],["2045.2954","1337.5718","2012-08-19 00:00:00"],["2283.3467","1549.5104","2012-08-20 00:00:00"],["1988.2344","1364.7390","2012-08-21 00:00:00"],["1384.7266","935.2083","2012-08-22 00:00:00"],["1315.1715","890.4815","2012-08-23 00:00:00"],["1223.1063","848.2999","2012-08-24 00:00:00"],["1176.3008","775.7439","2012-08-25 00:00:00"],["1122.5966","744.4034","2012-08-26 00:00:00"],["1355.8212","919.8803","2012-08-27 00:00:00"],["1415.7620","963.3501","2012-08-28 00:00:00"],["1458.1611","984.4261","2012-08-29 00:00:00"],["1473.8650","996.1048","2012-08-30 00:00:00"],["1448.2986","979.2605","2012-08-31 00:00:00"],["1298.2248","853.6965","2012-09-01 00:00:00"],["1388.9474","913.3421","2012-09-02 00:00:00"]],
+                net =[];
+
+        java = __convertToType(java);
+
+        new Venus.SvgChart(document.getElementById('chart'),java,{
+            axis:{
+                x:{
+                    tickWidth:30,
+                    labelRotate:90
+                },
+                y:{
+                    min:0,
+                    tickWidth:100,
+                    tickSize:1
+                }
+            },
+            line:{
+                columnHover:false
+            },
+            grid:{
+                enableRow:true,
+                enableColumn:true
+            },
+            legend:{
+                position:['center','top'],
+                direction:'horizontal'
+            }
+        })
+
+    })();
+</script>
+
+</body>
+</html>
