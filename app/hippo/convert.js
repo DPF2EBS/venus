@@ -20,7 +20,7 @@ window.__convertToBrowser = function (arr, name) {
     }
 }
 
-window.__convertToType = function (arr) {
+window.__convertToType = function (arr,noYear) {
     var
         onloadData = {},
         onload = {name:'onload', data:onloadData},
@@ -30,6 +30,10 @@ window.__convertToType = function (arr) {
 
     arr.forEach(function (item) {
         var date = item[2].split(' ')[0]
+        if(noYear){
+            date = date.split(/-|\//);
+            date = date[1]+'-'+date[2];
+        }
         onloadData[date] = (item[0] / 1000).toFixed(2);
         domreadyData[date] = (item[1] / 1000).toFixed(2);
     })
