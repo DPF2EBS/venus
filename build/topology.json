@@ -1,0 +1,11 @@
+{
+    "input":[
+        "../lib/raphael/raphael-min.js",
+        "../src/common/lang.js",
+        "../src/common/venus.js",
+        "../src/common/common.js",
+        "../src/common/customevent.js",
+        "../src/topology/topology.js"
+    ],
+    "output":"topology"
+}
