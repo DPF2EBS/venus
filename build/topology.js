@@ -491,7 +491,7 @@ Venus.config={
                         var isRelate = false
                         //check whether node and node2 are related
                         node2.parents && node2.parents.forEach(function (parent) {
-                            if (node.id === parent && !isRelate) {
+                            if (node.id == parent && !isRelate) {
                                 isRelate = true;
                                 var edge = {
                                     node1:node,
@@ -508,7 +508,7 @@ Venus.config={
                             }
                         });
                         !isRelate && node2.children && node2.children.forEach(function (child) {
-                            if (node.id === child && !isRelate) {
+                            if (node.id == child && !isRelate) {
                                 isRelate = true;
                                 var edge = {
                                     node1:node,
@@ -936,6 +936,7 @@ Venus.config={
                 layerDirection:PARENT_ON_TOP, //layer direction which is parent_on_top or parent_on_bottom
                 arrowDirection:PARENT_TO_CHILD, //arrow direction which is parent_to_child or child_to_parent
                 padding:40, //chart padding to svg border
+                layerHeight:null,
                 nodeRadius:30, //node radius
                 arrowLength:10, //arrow length
                 arrowWidth:2, //arrow width
@@ -974,7 +975,7 @@ Venus.config={
 
         var chartWidth = options.width,
             chartHeight = options.height,
-            maxLengthInLayer = 0                //max count of nodes on layer
+            maxLengthInLayer = 0;                //max count of nodes on layer
 
         maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
             return layer.length
@@ -982,7 +983,7 @@ Venus.config={
         maxLengthInLayer == 2 && (maxLengthInLayer = 3); // if max is 2 then set it to 3 to let width be half of chart
 
         //draw nodes
-        var height = layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) ,
+        var height = options.layerHeight || (layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) ),
             width = maxLengthInLayer > 1 ? (chartWidth - options.padding * 2) / (maxLengthInLayer - 1) : 0,
             _circles = stage.set(),
             _texts = stage.set(),
@@ -1017,29 +1018,29 @@ Venus.config={
                     'stroke-width':1,
                     cursor:'pointer'
                 }).data('node', node).click(
-                    function () {
+                    function (e) {
                         //bind click event
                         //if is dragging , don't fire it
                         if (this._isDragging) {
                             this._isDragging = false;
                             return
                         }
-                        options.click.call(this, node);
+                        options.click.call(this,e, node);
                     }).mouseover(
                     //mouseover
-                    function () {
+                    function (e) {
                         if (this._isDragging) {
                             this._isDragging = false;
                             return;
                         }
-                        options.mouseover.call(this, node);
-                    }).mouseout(function () {
+                        options.mouseover.call(this,e, node);
+                    }).mouseout(function (e) {
                         //mouseout
                         if (this._isDragging) {
                             this._isDragging = false;
                             return;
                         }
-                        options.mouseout.call(this, node);
+                        options.mouseout.call(this,e, node);
                     });
                 //put the node into group which is a svg g element
                 group.node.appendChild(_circle.node);
