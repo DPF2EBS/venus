@@ -34,21 +34,33 @@
         </div>
     </div>
 
-    <div class="main">
-    	<div class="main-cont">
-            <div class="slide">
-		        <h2>（1）主站浏览器分布</h2>
-		        <div id="main_site_browsers_chart" class="chart_box">
-		        </div>
-		    </div>
-
-		    <div class="slide">
-		        <h2>（2）团购浏览器分布</h2>
-		        <div id="tuangou_browsers_chart" class="chart_box">
-		        </div>
-		    </div>
-
-        </div>
+    <div class="nav">
+		<div class="svg-load">
+			<h2>svg下载</h2>
+		    <div class="cont">
+		       <span>（一）直接copy链接地址</span><input id="J_svg" type="text" value="http://venus.dp/build/svgchart.min.js"/>
+			   <a id="copylink" class="button orange">复制地址</a>
+			</div>
+			<div class="cont">
+			   <span>（二）直接打开源代码</span><a href="http://venus.dp/build/svgchart.min.js" class="ml30 button orange">打开svgchart</a> 
+			</div>
+			<div class="cont">
+			   <span>（三）到git中下载</span><a target="_blank" href="https://bitbucket.org/island205/venus/downloads" class="ml30 button orange">进入git</a> 
+			</div>
+		</div>
+		<div class="canvas-load">
+			<h2>canvas下载</h2>
+		    <div class="cont">
+		       <span>（一）直接copy链接地址</span><input id="J_canvas" type="text" value="http://venus.dp/build/canvaschart.min.js"/>
+			   <a id="copylink1" class="button orange">复制地址</a>
+			</div>
+			<div class="cont">
+			   <span>（二）直接打开源代码</span><a href="http://venus.dp/build/canvaschart.min.js" class="ml30 button orange">打开canvaschart</a> 
+			</div>
+			<div class="cont">
+			   <span>（三）到git中下载</span><a target="_blank" href="https://bitbucket.org/island205/venus/downloads" class="ml30 button orange">进入git</a> 
+			</div>
+		</div>
     </div>
     <!-- footer begins -->
 	<div class="footer footer-static clearfix">
@@ -62,20 +74,42 @@
 	</div>
 	<!-- footer ends -->
 	<a class="toTop" id="toTop" href="#top"></a>
-	<script type="text/javascript" src="Scripts/g.mt.js"></script>
-	<script type="text/javascript" src="Scripts/g.dp.js"></script>
-    <script type="text/javascript" src="../src/common/lang.js"></script>
+    <script type="text/javascript" src="Scripts/g.mt.js"></script>
+    <script type="text/javascript" src="Scripts/accordion.js"></script>
+	<script type="text/javascript" src="../src/common/lang.js"></script>
 	<script type="text/javascript" src="../lib/KineticJS/dist/kinetic-core.js"></script>
 	<script type="text/javascript" src="../src/common/venus.js"></script>
 	<script type="text/javascript" src="../src/common/common.js"></script>
 	<script type="text/javascript" src="../src/common/customevent.js"></script>
 	<script type="text/javascript" src="../src/canvas/canvaschart.js"></script>
 	<script type="text/javascript" src="../src/canvas/types/pie.js"></script>
-	<script type="text/javascript" src="Scripts/canvascase.js"></script>
+	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
 		Myra.app.dropMenu();
 		TG.app.toTop();
+		$('copylink').addEvent('click', function() {
+			  copyShareUrl('copylink', 'J_svg');
+		});
+		$('copylink1').addEvent('click', function() {
+			  copyShareUrl('copylink1', 'J_canvas');
+		});
+		// 复制地址的链接
+		function copyShareUrl(copyShareId, inputId) {
+		  if (!document.getElementById(inputId)) return;
+		  if (window.clipboardData) {
+		    var copyText = document.getElementById(inputId).value;
+		    window.clipboardData.clearData();
+		    window.clipboardData.setData("Text", copyText);
+		    alert("复制成功!");
+		    if (!document.getElementById(copyShareId)) return;
+		    document.getElementById(copyShareId).style.display = "none";
+		  } else {
+		    alert("您使用的浏览器不支持此复制功能，请使用Ctrl+C或鼠标右键。");
+		    document.getElementById(inputId).select();
+		  }
+		  return false;
+		}
 	});
 	</script>
 </body>

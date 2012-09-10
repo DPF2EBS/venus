@@ -260,4 +260,9 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .footer-static p a:hover { text-decoration: none;}
 .footer-static p a.note:hover { color: #FFF; cursor: default;}
 
+.nav h2 { height:42px;border:1px solid #CCC; line-height: 42px;padding-left: 40px; font-size: 24px;background-color:#666;color:#FFF;font-weight:normal;}
+.nav .cont {margin-top:10px;margin-bottom:10px;padding-left:60px;height:60px;line-height:60px;background-color:#FFF;border:1px solid #CCC;}
+.nav input { width: 240px; height: 24px;margin:0 30px ; padding:1px 2px;}
+.ml30 {margin-left:30px;}
+
 
