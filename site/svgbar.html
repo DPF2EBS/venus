@@ -100,7 +100,7 @@
 				<label>柱状排列：</label>
 				<select class="sel" data-type="multiple">
 					<option value="nesification">层叠</option>
-					<option value="sidebyside">并排</option>
+					<option value="sidebyside" selected="true">并排</option>
             	</select>
 			</li>
 			
@@ -276,8 +276,9 @@ var container = document.getElementById('chart_container'),
 			case 'opacity':
 				barOptions.bar.opacity = parseFloat(val);
 				break;
-		    case 'multiple':
-				barOptions.bar.multiple = val;
+		    case 'multiple':                  
+				barOptions.bar.multiple = val; 
+				break;
 			case 'enableRow':
 				if(val == '0') barOptions.grid.enableRow = true;
 				else { barOptions.grid.enableRow = false; }
