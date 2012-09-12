@@ -71,6 +71,27 @@
 			<h3 class="toggler"><a href="javascript:void(0)">英雄本色</a></h3>
 			<div class="accordion">
 			<ul>
+			
+			<li>
+				<label>横轴柱宽：</label>
+				<select class="sel" data-type="XWidth">
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="150" selected="true">150</option>
+					<option value="150">200</option>
+            	</select>
+			</li>
+			
+			<li>
+				<label>竖轴柱宽：</label>
+				<select class="sel" data-type="YWidth">
+					<option value="10">10</option>
+					<option value="20">20</option>
+					<option value="30" selected="true">30</option>
+					<option value="40">40</option>
+            	</select>
+			</li>
+			
 			<li>
 				<label>动画的半径：</label>
 				<select class="sel" data-type="radius">
@@ -275,6 +296,12 @@ var container = document.getElementById('chart_container'),
 				break;
 			case 'opacity':
 				barOptions.bar.opacity = parseFloat(val);
+				break; 
+			case 'XWidth':
+				barOptions.axis.x.tickWidth = val;
+				break;
+			case 'YWidth':
+				barOptions.axis.y.tickWidth = val;
 				break;
 		    case 'multiple':                  
 				barOptions.bar.multiple = val; 
