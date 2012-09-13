@@ -630,7 +630,8 @@
                 mouseover:function (data) {
                 },
                 mouseout:function (data) {
-                }
+                },
+                reduceCrossing :true
             }, opt),
             stage = this.stage = new Raphael(container, options.width, options.height);
 
@@ -644,7 +645,7 @@
         }
         var edges = layEdges(layers, allNodes, options.arrowDirection)
 
-        reduceCrossing(edges, layers);
+        options.reduceCrossing && reduceCrossing(edges, layers);
 
         if (!layers.length)return;
 
