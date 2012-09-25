@@ -129,6 +129,16 @@
                         range = this.series.getRange();
                         thisAxisOption.max === undefined && (thisAxisOption.max = range.max);
                         thisAxisOption.min === undefined && (thisAxisOption.min = range.min);
+                        thisAxisOption.ticks = [];
+                        var tick = thisAxisOption.min;
+                        while (tick < thisAxisOption.max) {
+                            thisAxisOption.ticks.push(tick);
+                            tick += (thisAxisOption.tickSize || 1);
+                        }
+                        thisAxisOption.ticks.push(tick)
+                    }
+                    if(axis == "y" && thisAxisOption.autoWidth){
+                        thisAxisOption.tickWidth = this.options.height / (thisAxisOption.ticks.length ||1);
                     }
                     if (axis == "x") {
                         //set pop=1 for x Axis by default
@@ -138,6 +148,9 @@
                         //but getLabels() sometimes returns array of empty string depends on the data
                         if (!thisAxisOption.ticks) {
                             thisAxisOption.ticks = this.series.getLabels();
+                        }
+                        if(thisAxisOption.autoWidth){
+                            thisAxisOption.tickWidth = this.options.width / (thisAxisOption.ticks.length ||1);
                         }
                     }
 
@@ -358,6 +371,8 @@
                 rotate:0,           //rotate 0-360 in counter-clockwise
                 radius:0,           //axis could be circular but no in this version,TODO
                 pop:0,              // empty ticks before
+                autoWidth:false,
+                maxTickNumber:null,
                 _svgWidth:0,
                 _svgHeight:0,
                 labelRotate:0,      //rotate 0-360 of the labels in clockwise
@@ -374,6 +389,7 @@
             , tickHeight = 3
             , rotate = 360 - opt.rotate
             , tick
+            , span = 1;
 
         this.series = series;
 
@@ -386,6 +402,9 @@
             }
             opt.ticks.push(tick)
         }
+        if(opt.maxTickNumber){
+            span = parseInt(opt.ticks.length/opt.maxTickNumber);
+        }
 
         //beginX,beginY ,can be adjust later
         this.beginX = beginX = opt.beginX || 30;
@@ -396,10 +415,10 @@
         for (i = 0, l = opt.pop; i < l; i++) {
             pathString += ("h" + opt.tickWidth + "v" + tickHeight + "v" + -tickHeight);
         }
-        for (i = 0, l = opt.ticks.length; i < l; i++) {
+        for (i = 0, l = opt.ticks.length; i < l; i+=span) {
             //horizontal draw the axis and later rotate it
             if (i !== 0) {
-                pathString += (  "h" + opt.tickWidth + "v" + tickHeight + "v" + -tickHeight );
+                pathString += (  "h" + opt.tickWidth*span + "v" + tickHeight + "v" + -tickHeight );
             }
             labelElements[i] = paper.text((beginX + (i + opt.pop) * opt.tickWidth), beginY + labelMarginTop * (opt.rotate > 0 ? -1 : 1), opt.ticks[i]).rotate(rotate, beginX, beginY).attr({
                 'font-size':opt.fontSize
@@ -418,7 +437,7 @@
             //but the coordinate is actually exist
             axisElement.hide();
             labelElements.forEach(function (item) {
-                item.hide();
+              item && item.hide();
             })
         }
         //rotate

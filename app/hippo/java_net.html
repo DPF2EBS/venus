@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="convert.js"></script>
-    <script type="text/javascript" src="http://venus.dp/build/svgchart.min.js"></script>
+    <script type="text/javascript" src="http://192.168.63.92/venus/build/svgchart.latest.js"></script>
 </head>
 <body>
 <div style="width: 1200px; margin: 0 auto ;">
@@ -22,16 +22,12 @@
         java = __convertToType(java,true);
         net = __convertToType(net,true);
 
-        new Venus.SvgChart(document.getElementById('chart'),java,{
+       window.chart =   new Venus.SvgChart(document.getElementById('chart'),java,{
             axis:{
                 x:{
-                    tickWidth:25,
                     labelRotate:90
                 },
                 y:{
-                    min:0,
-                    tickWidth:100,
-                    tickSize:1
                 }
             },
             line:{
@@ -44,7 +40,10 @@
             legend:{
                 position:['center','top'],
                 direction:'horizontal'
-            }
+            },
+           tooltip:function(obj){
+               return obj.x+" "+obj.y+" "+obj.label
+           }
         });
     })();
 </script>
