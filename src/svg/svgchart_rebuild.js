@@ -188,7 +188,7 @@
                     yTick:yTick
                 }
             }
-        }
+        };
 
 
         //init data
@@ -267,6 +267,9 @@
                 coordinate = this.coordinate;
 
             for (axis in axisOption) {
+                if (!axisOption.hasOwnProperty(axis)) {
+                    continue;
+                }
                 //init each axis in options.axis
                 if ((thisAxisOption = axisOption[axis])) {
                     //set rotate 90 for y axis by default
@@ -315,11 +318,14 @@
                     if (axis.indexOf('x') == 0) {
                         beginX = Math.min(beginX || opt.width, (opt.width - thisAxis.model.totalWidth) / 2);
                     } else if (axis.indexOf('y') == 0) {
-                        beginY = Math.min(beginY ||opt.width, (opt.height - thisAxis.model.totalWidth)/2);
+                        beginY = Math.min(beginY || opt.width, (opt.height - thisAxis.model.totalWidth) / 2);
                     }
                 }
             }
             for (axis in coordinate.axises) {
+                if (!coordinate.axises.hasOwnProperty(axis)) {
+                    continue;
+                }
                 coordinate.axises[axis].model.beginX = beginX;
                 coordinate.axises[axis].model.beginY = opt.height - beginY;
             }
@@ -330,11 +336,12 @@
             //it will be changed to true in _renderAxis method
             this.axisRendered = false;
         },
-        _renderAxis:function(){
-          for(var o in this.coordinate.axises){
-              this.coordinate.axises[o].render();
-          }
-          this.axisRendered = true;
+        _renderAxis:function () {
+            var o , axises = this.coordinate.axises;
+            for (o in axises) {
+                axises.hasOwnProperty(o) && (axises[o].axisRendered = true) && axises[o].render();
+            }
+            this.axisRendered = true;
         },
         _initLegend:function () {
             /*
@@ -379,7 +386,6 @@
                 gridOption.width = coordinate.x.model.totalWidth;
                 gridOption._x = coordinate.x.model.beginX;
             }
-
 
             this.grid = new Grid(gridOption, this.stage);
         },
@@ -583,8 +589,8 @@
             total:0,                //how many ticks to be shown
             max:0,
             min:0,
-            tickSize:0,             //tick size in value
-            tickWidth:0,            //tick size in pixel
+            tickSize:0,             //tick size in value , optional
+            tickWidth:0,            //tick size in pixel , optional
             ticks:[],               //ticks
             rotate:0,               //rotate 0-360 in counter-clockwise
             pop:0,                  // empty ticks before
@@ -593,7 +599,7 @@
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             enable:true,            //visible or not
             fontSize:12             //label font size
-        }
+        };
 
         this.options = mix(defaultOptions, options || {});
 
@@ -601,10 +607,9 @@
 
         this.events = new Venus.util.CustomEvent();
 
-        this.model = {
-
-        };
+        this.model = {};
         this.view = {};
+        this.events = new util.CustomEvent();
 
         this.autoModel();
 
@@ -615,7 +620,18 @@
         autoModel:function () {
             /*
              * auto compute visible ticks ,according to width ,origin ticks , data and so on
-             *
+             * model got key attribute below
+             * {
+             *     max,
+             *     min,
+             *     total,
+             *     ticks,
+             *     tickSize,
+             *     tickWidth,
+             *     totalWidth,
+             *     pop,
+             *     rotate,
+             * }
              * */
             var opt = this.options,
                 model = this.model,
@@ -623,7 +639,7 @@
                 beta = (opt.rotate || 0) * PI / 180,
                 percent = opt.percent,
                 maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
-                total;
+                total, i,l;
 
             model.pop = opt.pop || 0;
             model.rotate = opt.rotate;
@@ -655,7 +671,7 @@
 
                 }
                 total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
-                for (var i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
+                for ( i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
                     model.ticks.push(i);
                 }
                 if (i == l) {
@@ -666,7 +682,7 @@
                 model.total = total;
             } else {
                 //got min and max
-                var range = this.autoRange(opt.min, opt.max,opt.total);
+                var range = this.autoRange(opt.min, opt.max, opt.total);
                 model.max = range.max;
                 model.min = range.min;
 //                if(opt.total){
@@ -681,7 +697,7 @@
 
                 model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop-1);
                 model.totalWidth = model.tickWidth * (model.total + model.pop-1);
-                for (var i = model.min, l = model.max; i < l; i+=model.tickSize) {
+                for ( i = model.min, l = model.max; i < l; i+=model.tickSize) {
                     model.ticks.push(i);
                 }
                 model.ticks.push(i);
@@ -697,6 +713,9 @@
             var change = false;
             if (isObject(key)) {
                 for (var o in key) {
+                    if(!key.hasOwnProperty(o)){
+                        continue;
+                    }
                     if (this.options[o] != key[o]) {
                         this.options[o] = key[o];
                         change = true;
@@ -711,6 +730,7 @@
             if (change && this.axisRendered) {
                 this.autoModel();
                 this.render();
+                this.events.fire('model_change',this.model);
             }
 
          },
@@ -722,11 +742,12 @@
             var iDelta = max - min,
                 iExp,
                 iMultiplier,
-                dSolution = [],
+                dSolution ,
                 dMultiCal,
                 dInterval,
-                start, end,
-                totalTick = totalTick || 5
+                start, end;
+
+            totalTick = totalTick || 5;
 
             if (iDelta < 1) { //Modify this by your requirement.
                 max += ( 1 - iDelta) / 2.0;
@@ -771,7 +792,8 @@
                 i, l,count=0,
                 tickHeight = 2,
                 labelMarginTop = 10,
-                hasTicks = opt.ticks && opt.ticks.length;
+                hasTicks = opt.ticks && opt.ticks.length,
+                bbox;
 
             if (!view.axisElement) {
                 view.axisElement = stage.path();
@@ -804,7 +826,7 @@
                     'font-size':this.options.fontSize
                 }));
                 if (this.options.labelRotate) {
-                    var bbox = view.labelElements[count].getBBox();
+                    bbox = view.labelElements[count].getBBox();
                     view.labelElements[count].rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
                 }
 
@@ -818,7 +840,7 @@
                     'font-size':this.options.fontSize
                 }));
                 if (this.options.labelRotate) {
-                    var bbox = view.labelElements[count].getBBox();
+                    bbox = view.labelElements[count].getBBox();
                     view.labelElements[count].rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
                 }
             }
@@ -827,7 +849,8 @@
                 path:pathString
             });
             if(model.rotate){
-                view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
+               // view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
+                view.axisElement.transform('R'+(360-model.rotate)+","+model.beginX+','+model.beginY)
             }
 
             if (!this.options.enable) {
@@ -836,6 +859,9 @@
                 view.axisElement.hide();
                 view.labelElements.hide();
             }
+        },
+        on:function(fn){
+            this.events.on('model_change',fn);
         }
     };
 
@@ -870,16 +896,17 @@
             , item
             , text
             , textWidth
-            , totalWidth = []
-            , totalHeight = []
+            , totalWidth
+            , totalHeight
             , itemSet                           // set of items
             , textSet                           // set of texts
             , margin = 10                       // margin to svg boundary
             , padding = 10
-            , names = []
+            , names
             , colors
             , isVertical,
             left , top,
+            active,activeEvent,
             opt = this.options = mix(defaultOption, options);
 
         //Raphael Set to contain the elements
@@ -988,20 +1015,25 @@
 
         this.setPosition(left, top);
 
+        //init active , all is active
+        active =  this.active = [];
+        itemSet.forEach(function(){
+            active.push(true);
+        });
+        activeEvent =  this.activeEvent = new util.CustomEvent();
+
 
         //bind default click event
-        this.on('click', (function () {
-            var arr = new Array(data.length);
-            return function (e, i) {
-                if (arr[i] == true || arr[i] == undefined) {
-                    arr[i] = false;
-                    this.attr('fill', 'gray');
-                } else {
-                    arr[i] = true;
-                    this.attr('fill', colors[i]);
-                }
-            }
-        })());
+        this.on('click', function (e, i) {
+            active[i] ? active[i] = false : active[i] = true;
+            active[i] ? this.attr('fill', colors[i]) : this.attr('fill', 'gray');
+            var activeArray = [];
+            active.forEach(function(truth,index){
+                truth && activeArray.push(index)
+            });
+
+            activeEvent.fire('change',active,activeArray);
+        });
     };
     Legend.prototype = {
         constructor:Legend,
@@ -1014,16 +1046,19 @@
         },
         on:function (name, fn) {
             //bind DOM Events on legend item
-            var event
-            if ((event = this.itemSet[name] ) && typeof event == "function") {
+            var event;
+            if ((event = this.itemSet[name] ) && util.isFunction(event)) {
                 //has function such as click, mouseover
                 this.itemSet.forEach(function (item, i) {
                     item[name](function (e) {
                         fn.call(item, e, i);
-                    })
+                    });
                 })
             }
             return this;
+        },
+        onActiveChange:function (fn) {
+            this.activeEvent.on('change', fn);
         }
     }
 
@@ -1043,8 +1078,8 @@
                 'opacity':0.2,
                 _x:0, //x coordinate of y axis
                 _y:0                    //y coordinate of x axis ,these are used as the start position
-            },
-            options = this.options = mix(defaultOption, options)
+            };
+        options = this.options = mix(defaultOption, options);
 
         if (options.rows.length) {
             //draw rows
@@ -1203,7 +1238,7 @@
             }
             var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
             this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) && (this._venus_tooltip = false);
-        }
+        };
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
 

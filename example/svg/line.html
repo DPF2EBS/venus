@@ -30,7 +30,8 @@
                 },
                 line:{
                     smooth:true,
-                    columnHover:false
+                    columnHover:false,
+                    area:false
                 },
                 grid:{
                     enableRow:true,
@@ -46,6 +47,10 @@
         })
         data.push({name:i, data:arr})
     }
+    data.push({
+        name:i,
+        data:[1,2,1,2,1,2,1,2,1,2,1,2]
+    })
     var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">

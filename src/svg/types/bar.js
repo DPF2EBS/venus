@@ -26,7 +26,7 @@
                     multiple:'sidebyside'   //how to layout bars when there are multiple bars in one tick, sidebyside or nestification
                 }, this.options.bar),
                 elements = [],
-                self = this
+                self = this;
 
 
             /*
@@ -61,21 +61,14 @@
 
             function bindLegendEvents() {
                 /*
-                 * bind legend click event
-                 * when click the related bar toggles hide
+                 * bind legend active change event
+                 * related bar toggles hide
                  * */
-                self.legend && self.legend.on('click', (function () {
-                    var arr = new Array(series.length);
-                    return function (e, i) {
-                        if (arr[i] == true || arr[i] == undefined) {
-                            arr[i] = false;
-                            elements[i].hide();
-                        } else {
-                            arr[i] = true;
-                            elements[i].show();
-                        }
-                    }
-                })());
+                self.legend && self.legend.onActiveChange(function (active) {
+                    active.forEach(function (truth, i) {
+                        truth ? elements[i].show() : elements[i].hide();
+                    });
+                });
             }
 
             function getPositions(x, y,i,sumY) {

@@ -57,8 +57,22 @@
                 colors = this.colors,       //this.colors,
                 elements = [],              //save the element by series
                 dotsByXAxis = {},            //save the dots by x axis convenient for column hover
-                coordinate = self.coordinate
+                coordinate = self.coordinate;
 
+
+            function pointBindModel(x, y) {
+                function set() {
+                    var xy = coordinate.get(x, y);
+                    point.x = xy.x;
+                    point.y = xy.y;
+                    point.xTick = xy.xTick;
+                    point.yTick = xy.yTick;
+                }
+                var point = {};
+                coordinate.y.on(set);
+                set();
+                return point;
+            }
 
             /*
              * Main Function of draw a line
@@ -68,72 +82,35 @@
              * @dotColor{Color}
              *
              * */
-            function drawLine(arr, indexOfSeries, color, dotColor,label) {
+             function drawLine(arr, indexOfSeries, color, dotColor,label) {
                 var points = []
 
                 //put all points in the point array, ignore some missing points
                 if (util.isArray(arr)) {
-
                     arr.forEach(function (d, i) {
-                        var value, xy
+                        var value, point;
                         if (util.isObject(d)) {
                             value = d.data;
                             label = self.labels[i];
                         } else {
                             value = d;
                         }
-                        xy = coordinate.get(i, value);
-                        points.push({
-                            x:xy.x,
-                            y:xy.y,
-                            xTick:xy.xTick,
-                            yTick:xy.yTick,
-                            label:label
-                        });
-
-
-//                        if (indexOfSeries == undefined) {
-//                            /*
-//                             * point object{
-//                             *     x:Number x ,svg coordinate
-//                             *     y:Number y ,svg coordinate
-//                             *     value:Number data
-//                             * }
-//                             * */
-//                             points.push({
-//                                x:axises.x.getX(i),
-//                                y:axises.y.getY(i),
-//                                value:arr[i].data
-//                            })
-//                        } else {
-//                            points.push({
-//                                x:axises.x.getX(i),
-//                                y:axises.y.getY(indexOfSeries, i),
-//                                value:arr[i]
-//                            });
-//                        }
-                    })
+                        point =  pointBindModel(i,value);
+                        point.label = label;
+                        points.push(point);
+                    });
                 } else {
                     //arr is object
                     for (var o in arr) {
-                        var xy = coordinate.get(o, arr[o]);
-                        points.push({
-                            x:xy.x,
-                            y:xy.y,
-                            xTick:xy.xTick,
-                            yTick:xy.yTick,
-                            label:label
-                        })
-//                        points.push({
-//                            x:axises.x.getX(o),
-//                            y:axises.y.getY(indexOfSeries, o),
-//                            value:arr[o]
-//                        })
+                        var point = pointBindModel(o,arr[o])
+                        point.label = label;
+                        points.push(point);
                     }
                 }
+
                 if (!points.length) {
                     //no point ,return
-                    elements.push({})
+                    elements.push({});
                     return;
                 }
 
@@ -149,58 +126,62 @@
                 //if points.length <=2 , draw straight line
                 points.length <= 2 && (lineOpt.smooth = false);
 
-                if (lineOpt.smooth) {
-                    //draw smooth line
-                    var x, y,
-                        i, l,
-                        x0, y0, x1, y1,
-                        p;
+                 function path() {
+                     if (lineOpt.smooth) {
+                         //draw smooth line
+                         var x, y,
+                             i, l,
+                             x0, y0, x1, y1,
+                             p;
 
-                    //start point
-                    pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
-                    areaPathString = ['M', points[0].x, coordinate.y.model.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
-                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
-                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                         //start point
+                         pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
+                         areaPathString = ['M', points[0].x, coordinate.y.model.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
+                         lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                         lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
 
-                    for (i = 1, l = points.length - 1; i < l; i++) {
-                        //calculate the path string use the current point , previous point and the next point
-                        x0 = points[i - 1].x;
-                        y0 = points[i - 1].y;
-                        x = points[i].x;
-                        y = points[i].y;
-                        x1 = points[i + 1].x;
-                        y1 = points[i + 1].y;
-                        p = getAnchors(x0, y0, x, y, x1, y1);
-                        pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
-                        areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
-                        lineOpt.beginAnimate && pathAnimateString.push('H', x) && areaPathAnimateString.push('H', x);
-                    }
-                    //push the last point
-                    pathString.push(x1, y1, x1, y1);
-                    areaPathString.push(x1, y1, x1, y1, 'V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
-                    lineOpt.beginAnimate && pathAnimateString.push('H', x1);
+                         for (i = 1, l = points.length - 1; i < l; i++) {
+                             //calculate the path string use the current point , previous point and the next point
+                             x0 = points[i - 1].x;
+                             y0 = points[i - 1].y;
+                             x = points[i].x;
+                             y = points[i].y;
+                             x1 = points[i + 1].x;
+                             y1 = points[i + 1].y;
+                             p = getAnchors(x0, y0, x, y, x1, y1);
+                             pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
+                             areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
+                             lineOpt.beginAnimate && pathAnimateString.push('H', x) && areaPathAnimateString.push('H', x);
+                         }
+                         //push the last point
+                         pathString.push(x1, y1, x1, y1);
+                         areaPathString.push(x1, y1, x1, y1, 'V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
+                         lineOpt.beginAnimate && pathAnimateString.push('H', x1);
 
-                } else {
-                    //straight line and is simpler than the smooth line
+                     } else {
+                         //straight line and is simpler than the smooth line
 
-                    //start point
-                    pathString = ['M', points[0].x, points[0].y];
-                    areaPathString = ['M', points[0].x, coordinate.y.beginY, 'V', points[0].y]
-                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
-                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                         //start point
+                         pathString = ['M', points[0].x, points[0].y];
+                         areaPathString = ['M', points[0].x, coordinate.y.beginY, 'V', points[0].y]
+                         lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                         lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
 
-                    points.forEach(function (d) {
-                        //push each point to the path string
-                        pathString.push('L', d.x, d.y);
-                        areaPathString.push('L', d.x, d.y);
-                        lineOpt.beginAnimate && pathAnimateString.push('H', d.x);
-                        lineOpt.beginAnimate && areaPathAnimateString.push('H', d.x);
-                    });
+                         points.forEach(function (d) {
+                             //push each point to the path string
+                             pathString.push('L', d.x, d.y);
+                             areaPathString.push('L', d.x, d.y);
+                             lineOpt.beginAnimate && pathAnimateString.push('H', d.x);
+                             lineOpt.beginAnimate && areaPathAnimateString.push('H', d.x);
+                         });
 
-                    //close the path of the area
-                    areaPathString.push('V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
-                }
+                         //close the path of the area
+                         areaPathString.push('V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
+                     }
 
+                 }
+
+                 path();
                 var line = raphael.path().attr({
                         'stroke-width':lineOpt['line-width'],
                         'stroke':color,
@@ -290,30 +271,56 @@
 
                 //save the elements
                 elements.push({line:line, dots:dots, area:area});
+
+                //bind model
+                 coordinate.y.on(function () {
+                     var duration = 500
+                     path();
+                     line.animate({
+                         path:pathString
+                     }, duration);
+                     dots.forEach(function (dot, i) {
+                         dot.animate({
+                             cx:points[i].x,
+                             cy:points[i].y
+                         }, duration);
+                     });
+                     area && area.animate({
+                         path:areaPathString
+                     }, duration);
+                 });
+
+
             }
 
             function bindLegendEvents() {
                 //bind legend click event which toggles the line hide
-                self.legend && self.legend.on('click', (function () {
-                    var arr = new Array(data.length);
-                    return function (e, i) {
-                        if (arr[i] == true || arr[i] == undefined) {
-                            arr[i] = false;
-                            try{
-                            elements[i].line.hide();
-                            elements[i].dots.hide();
-                            elements[i].area && elements[i].area.hide();
-                            }catch(e){}
+                self.legend && self.legend.onActiveChange(function(active,activeArray){
+                    active.forEach(function (truth, i) {
+                        if (truth) {
+                            try {
+                                elements[i].line.show();
+                                elements[i].dots.show();
+                                elements[i].area && elements[i].area.show();
+                            } catch (e) {
+                            }
                         } else {
-                            arr[i] = true;
-                            try{
-                            elements[i].line.show();
-                            elements[i].dots.show();
-                            elements[i].area && elements[i].area.show();
-                            }catch(e){}
+                            try {
+                                elements[i].line.hide();
+                                elements[i].dots.hide();
+                                elements[i].area && elements[i].area.hide();
+                            } catch (e) {
+                            }
                         }
+                    });
+                    if((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length )&& activeArray.length){
+                        var range = series.getRange(activeArray);
+                        coordinate.y.set({
+                            min:range.min,
+                            max:range.max
+                        });
                     }
-                })());
+                });
             }
 
             if (data[0]) {
