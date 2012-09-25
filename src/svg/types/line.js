@@ -51,13 +51,13 @@
                     columnHover:true        //enable column hover or not
                 }, opt.line),
                 series = this.series,
-                axises = this.axises,
                 data = series.getSeries(),
                 self = this,
                 raphael = this.stage,
                 colors = this.colors,       //this.colors,
                 elements = [],              //save the element by series
-                dotsByXAxis = {}            //save the dots by x axis convenient for column hover
+                dotsByXAxis = {},            //save the dots by x axis convenient for column hover
+                coordinate = self.coordinate
 
 
             /*
@@ -68,45 +68,72 @@
              * @dotColor{Color}
              *
              * */
-            function drawLine(arr, indexOfSeries, color, dotColor) {
+            function drawLine(arr, indexOfSeries, color, dotColor,label) {
                 var points = []
 
                 //put all points in the point array, ignore some missing points
                 if (util.isArray(arr)) {
+
                     arr.forEach(function (d, i) {
-                        if (indexOfSeries == undefined) {
-                            /*
-                             * point object{
-                             *     x:Number x ,svg coordinate
-                             *     y:Number y ,svg coordinate
-                             *     value:Number data
-                             * }
-                             * */
-                            points.push({
-                                x:axises.x.getX(i),
-                                y:axises.y.getY(i),
-                                value:arr[i].data
-                            })
+                        var value, xy
+                        if (util.isObject(d)) {
+                            value = d.data;
+                            label = self.labels[i];
                         } else {
-                            points.push({
-                                x:axises.x.getX(i),
-                                y:axises.y.getY(indexOfSeries, i),
-                                value:arr[i]
-                            });
+                            value = d;
                         }
+                        xy = coordinate.get(i, value);
+                        points.push({
+                            x:xy.x,
+                            y:xy.y,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick,
+                            label:label
+                        });
+
+
+//                        if (indexOfSeries == undefined) {
+//                            /*
+//                             * point object{
+//                             *     x:Number x ,svg coordinate
+//                             *     y:Number y ,svg coordinate
+//                             *     value:Number data
+//                             * }
+//                             * */
+//                             points.push({
+//                                x:axises.x.getX(i),
+//                                y:axises.y.getY(i),
+//                                value:arr[i].data
+//                            })
+//                        } else {
+//                            points.push({
+//                                x:axises.x.getX(i),
+//                                y:axises.y.getY(indexOfSeries, i),
+//                                value:arr[i]
+//                            });
+//                        }
                     })
                 } else {
                     //arr is object
                     for (var o in arr) {
+                        var xy = coordinate.get(o, arr[o]);
                         points.push({
-                            x:axises.x.getX(o),
-                            y:axises.y.getY(indexOfSeries, o),
-                            value:arr[o]
+                            x:xy.x,
+                            y:xy.y,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick,
+                            label:label
                         })
+//                        points.push({
+//                            x:axises.x.getX(o),
+//                            y:axises.y.getY(indexOfSeries, o),
+//                            value:arr[o]
+//                        })
                     }
                 }
                 if (!points.length) {
                     //no point ,return
+                    elements.push({})
                     return;
                 }
 
@@ -131,9 +158,9 @@
 
                     //start point
                     pathString = [ 'M' , points[0].x , points[0].y, 'C', points[0].x, points[0].y];
-                    areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
-                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
-                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
+                    areaPathString = ['M', points[0].x, coordinate.y.model.beginY, 'V', points[0].y, 'C', points[0].x, points[0].y];
+                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
 
                     for (i = 1, l = points.length - 1; i < l; i++) {
                         //calculate the path string use the current point , previous point and the next point
@@ -150,7 +177,7 @@
                     }
                     //push the last point
                     pathString.push(x1, y1, x1, y1);
-                    areaPathString.push(x1, y1, x1, y1, 'V', axises.y.beginY, 'H', points[0].x, 'Z');
+                    areaPathString.push(x1, y1, x1, y1, 'V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
                     lineOpt.beginAnimate && pathAnimateString.push('H', x1);
 
                 } else {
@@ -158,9 +185,9 @@
 
                     //start point
                     pathString = ['M', points[0].x, points[0].y];
-                    areaPathString = ['M', points[0].x, axises.y.beginY, 'V', points[0].y]
-                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, axises.y.beginY]);
-                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, axises.y.beginY]);
+                    areaPathString = ['M', points[0].x, coordinate.y.beginY, 'V', points[0].y]
+                    lineOpt.beginAnimate && (pathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
+                    lineOpt.beginAnimate && (areaPathAnimateString = ['M', points[0].x, coordinate.y.model.beginY]);
 
                     points.forEach(function (d) {
                         //push each point to the path string
@@ -171,7 +198,7 @@
                     });
 
                     //close the path of the area
-                    areaPathString.push('V', axises.y.beginY, 'H', points[0].x, 'Z');
+                    areaPathString.push('V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
                 }
 
                 var line = raphael.path().attr({
@@ -214,7 +241,11 @@
                                 this.animate({
                                     r:lineOpt.dotRadius * 2
                                 }, 100);
-                                this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, d.value);
+                                this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, self.options.tooltip.call(self,{
+                                    x:d.xTick,
+                                    y:d.yTick,
+                                    label:d.label
+                                }));
                             },
                             function () {
                                 if (this._selected_) {
@@ -226,8 +257,10 @@
                                 this.toolTipHide()
                             }).data('point', d);
 
+
+
                         if (lineOpt.beginAnimate) {
-                            dot.attr('cy', axises.y.beginY);
+                            dot.attr('cy', coordinate.y.model.beginY);
                             dot.animate({'cy':d.y}, 1000)
                         }
 
@@ -235,7 +268,11 @@
                             //bind click event which shows the toolTip and make the dot bigger and cancel the effect when click again
                             dot.click(function () {
                                 if (!this._selected_) {
-                                    this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, d.value);
+                                    this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, self.options.tooltip.call(self,{
+                                        x:d.xTick,
+                                        y:d.yTick,
+                                        label:d.label
+                                    }));
                                     this._selected_ = true;
                                 } else {
                                     this._selected_ = false;
@@ -262,14 +299,18 @@
                     return function (e, i) {
                         if (arr[i] == true || arr[i] == undefined) {
                             arr[i] = false;
+                            try{
                             elements[i].line.hide();
                             elements[i].dots.hide();
                             elements[i].area && elements[i].area.hide();
+                            }catch(e){}
                         } else {
                             arr[i] = true;
+                            try{
                             elements[i].line.show();
                             elements[i].dots.show();
                             elements[i].area && elements[i].area.show();
+                            }catch(e){}
                         }
                     }
                 })());
@@ -281,7 +322,7 @@
                     * data is Number
                     * and draw totally one line
                     * */
-                    drawLine(data, undefined, this.colors[0], undefined);
+                     drawLine(data, undefined, this.colors[0], undefined);
                 } else if (util.isArray(data[0].data)) {
                     /*
                     * data is array and series format as :
@@ -291,7 +332,7 @@
                     * */
                     data.forEach(function (item, i) {
                         //item is content of the data,draw a line
-                        drawLine(item.data, i, colors[i], colors[i]);
+                        drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
                     });
                     bindLegendEvents();
 
@@ -303,7 +344,7 @@
                     * */
                     data.forEach(function (item, i) {
                         // item is content of the data,draw a line
-                        drawLine(item.data, i, colors[i], colors[i]);
+                        drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
                     });
                     bindLegendEvents();
 
@@ -313,14 +354,14 @@
                     //enable column hover event
                     for (var x in dotsByXAxis) {
                         //create an invisible rect and bind event on this rect
-                        var width = axises.x.options.tickWidth,
-                            height = axises.y.axisLength;
+                        var width = coordinate.x.model.tickWidth,
+                            height = coordinate.y.model.totalWidth;
 
                         //use closure to avoid bug : value is always the last x
                         (function (xValue) {
                             var set = dotsByXAxis[xValue];
 
-                            raphael.rect(xValue - width / 2, axises.y.beginY - height, width, height).attr({
+                            raphael.rect(xValue - width / 2, coordinate.y.model.beginY - height, width, height).attr({
                                 'stroke':'none', 'fill':'#fff', 'opacity':0
                             }).hover(
                                 function () {
@@ -329,7 +370,11 @@
                                             return;
                                         }
                                         d.animate({r:lineOpt.dotRadius * 2}, 100);
-                                        d.node.style.display !== 'none' && (d.toolTip(raphael, d.attr('cx'), d.attr('cy') - 10, d.data('point').value));
+                                        d.node.style.display !== 'none' && (d.toolTip(raphael, d.attr('cx'), d.attr('cy') - 10, self.options.tooltip.call(self,{
+                                            x:d.data('point').xTick,
+                                            y:d.data('point').yTick,
+                                            label:d.data('point').label
+                                        })));
                                     })
                                 }, function () {
                                     set.forEach(function (d) {

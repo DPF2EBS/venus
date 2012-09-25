@@ -5,10 +5,12 @@
         draw:function () {
             var series = this.series.getSeries(),
                 colors = this.colors,
-                xAxis = this.axises.x,
-                xTickWidth = xAxis.options.tickWidth,
-                yAxis = this.axises.y,
-                beginY = yAxis.beginY,
+                coordinate = this.coordinate,
+                xAxis = coordinate.x,
+                xTickWidth = xAxis.model.tickWidth,
+                xTickSize = xAxis.model.tickSize,
+                yAxis = coordinate.y,
+                beginY = yAxis.model.beginY,
                 paper = this.stage,
                 sideBySide = "sidebyside",
                 nestification = "nestification",
@@ -37,10 +39,10 @@
              * @param value{String} Text of the toolTip
              *
              * */
-            function drawBar(x, y, width, height, color, value) {
+            function drawBar(x, y, width, height, color, tipObj) {
                 var bar
                 if (barOptions.beginAnimate) {
-                    bar = paper.rect(x, yAxis.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500)
+                    bar = paper.rect(x, beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500)
                 } else {
                     bar = paper.rect(x, y, width, height, barOptions.radius)
                 }
@@ -50,7 +52,7 @@
                     'stroke-width':0,
                     'opacity':barOptions.opacity || 1
                 }).hover(function (e) {
-                        this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), value);
+                        this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
                     }, function () {
                         this.toolTipHide()
                     })
@@ -76,13 +78,14 @@
                 })());
             }
 
-            function getPositions(i, j,sumY) {
+            function getPositions(x, y,i,sumY) {
                 /*
                  * when there are several bars on one tick
                  * this function returns each position of the bar
                  *
+                 * @param x{Number} x tick
+                 * @param y{Number} y value
                  * @param i{Number} index of series
-                 * @param j{Number} index of bar on the tick
                  * @param sumY{Number} current height of the bar
                  *
                  * return {
@@ -93,13 +96,13 @@
                  * }
                  * */
 
-
-                var oX = xAxis.getX(j),
-                    oY = yAxis.getY(i,j);
+                var xy = coordinate.get(x, y),
+                    oX = xy.x,
+                    oY = xy.y;
 
                 if (barOptions.multiple == sideBySide) {
                     var times = 5, // width/space=times
-                        total = xTickWidth * .8,
+                        total = xTickWidth /xTickSize * .8,
                         space = total / ((times + 1) * series.length + 1),
                         bWidth = times * space,
                         x = oX - total / 2 + i * bWidth + (i + 1) * space,
@@ -108,14 +111,18 @@
                         x:x,
                         y:y,
                         width:bWidth,
-                        height:beginY - y
+                        height:beginY - y,
+                        xTick:xy.xTick,
+                        yTick:xy.yTick
                     }
                 }else{
                     return {
                         x:oX - xTickWidth / 4,
                         y:oY - sumY,
                         width:xTickWidth / 2,
-                        height:beginY - oY
+                        height:beginY - oY,
+                        xTick:xy.xTick,
+                        yTick:xy.yTick
                     }
                 }
             }
@@ -130,7 +137,12 @@
                      * draw each data a bar
                      * */
                     series.forEach(function (d, i) {
-                        elements[i] = drawBar(xAxis.getX(i) - xTickWidth / 4, yAxis.getY(i), xTickWidth / 2, beginY - yAxis.getY(i), colors[i], d.data);
+                        var xy =coordinate.get(i, d.data);
+                        elements[i] = drawBar(xy.x - xTickWidth / 4, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
+                            x:xy.xTick,
+                            y:xy.yTick,
+                            label:self.labels[i]
+                        });
                     });
                 } else if (util.isArray(series[0].data)) {
                     /*
@@ -145,9 +157,13 @@
                         elements[i] = paper.set();
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(i, j, sumY[j]);
+                            var p = getPositions(j, value,i, sumY[j]);
                             sumY[j] += p.height;
-                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], value));
+                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                x:p.xTick,
+                                y:p.yTick,
+                                label:self.labels[i]
+                            }));
                         });
                     });
                 } else if (util.isObject(series[0].data)) {
@@ -162,9 +178,13 @@
                         elements[i] = paper.set();
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(i, o, sumY[j]);
+                            var p = getPositions(o, d.data[o], i, sumY[j]);
                             sumY[j] += p.height;
-                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], d.data[o]));
+                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                x:p.xTick,
+                                y:p.yTick,
+                                label:self.labels[i]
+                            }));
                             j++;
                         }
                     });

@@ -1,6 +1,6 @@
 var fs = require("fs"),
     path = require('path');
-var compress = function (jsonFile) {
+var compress = function (jsonFile,version) {
     var filePath = path.resolve(__filename),
         buildPath = path.resolve(filePath, '../..'),
         jsonPath = path.resolve(buildPath, jsonFile)
@@ -19,7 +19,7 @@ var compress = function (jsonFile) {
         content.push(fs.readFileSync(path.resolve(jsonPath, "../" + file)).toString());
     });
     content = content.join('\n');
-    var outputPath = path.resolve(jsonPath, "../" + output);
+    var outputPath = path.resolve(jsonPath, "../" + output+ (version ?"."+version:""));
     fs.writeFile(outputPath + ".js", content, 'utf-8');
 
     console.log("merge successfully at:" + outputPath + ".js\n", "...");

@@ -111,4 +111,28 @@
         return !type?clas:target !== undefined && target !== null && clas === type;
     };
 
+
+    /*
+    * clone object
+    *
+    * returns a cloned object
+    * */
+
+   util.clone = function(obj){
+       if(typeof obj=="string" || typeof obj=="boolean" || typeof obj== "number" || obj==null || util.isFunction(obj)){
+           return obj;
+       }
+       if(util.isArray(obj)){
+           return obj.slice(0);
+       }
+       if(util.isObject(obj)){
+           var cloned = {};
+           for(var o in obj){
+               cloned[o] = util.clone(obj[o]);
+           }
+           return cloned;
+       }
+
+   }
+
 })();
