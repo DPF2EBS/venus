@@ -9,7 +9,7 @@
 <script type="text/javascript" src="../../src/common/lang.js"></script>
 <script type="text/javascript" src="../../src/common/common.js"></script>
 <script type="text/javascript" src="../../src/common/customevent.js"></script>
-<script type="text/javascript" src="../../src/svg/svgchart.js"></script>
+<script type="text/javascript" src="../../src/svg/svgchart_rebuild.js"></script>
 
 <script type="text/javascript" src="../../src/svg/types/line.js"></script>
 
@@ -22,18 +22,15 @@
             options = {
                 axis:{
                     x:{
-                        tickWidth:70,
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
-                        min:0,
-                        max:100,
-                        tickWidth:65,
                         tickSize:10
                     }
                 },
                 line:{
-                    smooth:true
+                    smooth:true,
+                    columnHover:false
                 },
                 grid:{
                     enableRow:true,
@@ -57,14 +54,9 @@
             options2 = {
                 axis:{
                     x:{
-                        tickWidth:90,
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
-                        min:0,
-                        max:100,
-                        tickWidth:60,
-                        tickSize:10
                     }
                 },
                 line:{

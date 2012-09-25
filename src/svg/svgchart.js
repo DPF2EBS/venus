@@ -57,6 +57,7 @@
              * */
             axis:{
             },
+
             /*
              * grid under the chart has the follow config options:
              * enableRow
@@ -70,6 +71,7 @@
 //                enableColumn:false
                 opacity:0.2
             }
+
         };
         this.options = mix(defaultOptions, options || {});
         this.stage = new Raphael(container, this.options.width, this.options.height);
