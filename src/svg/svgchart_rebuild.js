@@ -103,8 +103,9 @@
             tooltip:function (obj) {
                // return obj.label + " " + obj.x + " " + obj.y;
                 return obj.y;
-            }
-        };
+            },
+            icons:{}
+        }, self = this;
 
         //clone and mix options
         this.options = mix(defaultOptions,util.clone(options)|| {});
@@ -189,6 +190,35 @@
                 }
             }
         };
+
+        //new! icon factory
+        this.iconFactory = {
+            defaultIcon:'rect',
+            icons:this.options.icons,
+            create:function (i, x, y, width) {
+                var iconType = this.icons[i] || this.defaultIcon,
+                    item;
+                if (typeof iconType === "string") {
+                    switch (iconType) {
+                        case 'circle':
+                            item = self.stage.circle(0, 0, width / 2).attr({
+                                cx:x,
+                                cy:y
+                            });
+                            break;
+                        case 'rect':
+                            item = self.stage.rect(0, 0, width, width).attr({
+                                x:x,
+                                y:y
+                            });
+                            break;
+                    }
+                } else if (util.isFunction(iconType)) {
+                    item = iconType.call(this, x, y, width);
+                }
+                return item;
+            }
+        }
 
 
         //init data
@@ -368,16 +398,15 @@
                 //if there are ticks of x axis , parse to legend for some use
                // this.coordinate.axises.x && this.coordinate.axises.x.options.ticks && ( legendOption._ticks = this.coordinate.axises.x.options.ticks);
 
-                legend = this.legend = new Legend(this.series, legendOption, this.stage);
-                legend.on('click', function () {
-                    if ((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length ) && legend.activeArray.length) {
+                legend = this.legend = new Legend(this, legendOption, this.stage);
+                legend.onActiveChange(function (active,activeArray) {
+                    if ((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length ) && activeArray.length) {
                         var range = series.getRange(legend.activeArray);
                         coordinate.y.set({
                             min:range.min,
                             max:range.max
                         });
                     }
-                    legend.activeEvent.fire('change', legend.active);
                 });
 
             }
@@ -538,7 +567,7 @@
             });
             if (accumulation) {
                 //accumulate max
-                var ac;
+                var ac
                 arr.forEach(function (index, j) {
                     var d = series[index].data;
                     if (isArray(d)) {
@@ -823,7 +852,8 @@
             }
             dInterval = iMultiplier * dSolution[i];
 
-            start = (Math.ceil(min / dInterval) - 1) * dInterval;
+           // start = (Math.ceil(min / dInterval) - 1) * dInterval;
+            start = Math.abs(min)==dInterval ?( min - dInterval) :Math.floor(min / dInterval) * dInterval;
             for (i = 0; 1; i++) {
                 if (start + dInterval * i > max)
                     break;
@@ -927,7 +957,7 @@
 
     /*Class Legend Begin*/
 
-    var Legend = function (series, options, paper) {
+    var Legend = function (chart, options, paper) {
         /*
          * Class Legend
          * @param series{Series} instance of Series
@@ -935,14 +965,14 @@
          * @param paper{Raphael} instance of Raphael
          *
          * */
-        var defaultOption = {
-                position:['right', 'top'], //position of the legend contains two elements (horizontal and vertical) each could be string and number
-                format:'{name}', //format of the texts
-                fontSize:12, //text font size
-                colors:[], //colors ,parsed as the dpchart.colors
-                direction:'vertical', //how to layout the items
-                itemType:'rect'                 // or circle
+         var defaultOption = {
+                position:['right', 'top'],  //position of the legend contains two elements (horizontal and vertical) each could be string and number
+                format:'{name}',            //format of the texts
+                fontSize:12,                //text font size
+                colors:[],                  //colors ,parsed as the dpchart.colors
+                direction:'vertical'       //how to layout the items
             }, i, l
+            , series = chart.series
             , data = series.getSeries()
             , width = 15                        //item width
             , lineHeight = 20                   // item line height
@@ -973,19 +1003,6 @@
 
         colors = opt.colors;
 
-//        data.forEach(function (d, j) {
-//            if (d.name !== undefined) {
-//                //if got name , use name
-//                names.push(d.name);
-//            } else if (Venus.util.isNumber(d.data)) {
-//                //if data is number , use label or x ticks because labels may be empty
-//                names.push(labels[j] || (options._ticks ? options._ticks[j] || '' : ""));
-//            } else {
-//                //otherwise there's no way to get the names , let it be empty
-//                names.push('');
-//            }
-//        });
-
         names = options.names;
 
         //vertical or horizontal
@@ -1005,21 +1022,8 @@
                 _x = startX + padding;
                 _y = startY + padding;
             }
+            item = chart.iconFactory.create(i, _x, _y, width);
 
-            switch (opt.itemType) {
-                case 'circle':
-                    item = paper.circle(0, 0, width / 2).attr({
-                        cx:_x,
-                        cy:_y
-                    });
-                    break;
-                case 'rect':
-                    item = paper.rect(0, 0, width, width).attr({
-                        x:_x,
-                        y:_y
-                    });
-                    break;
-            }
             text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
                 'font-size':opt.fontSize
             });
@@ -1090,7 +1094,7 @@
             active.forEach(function(truth,index){
                 truth && activeArray.push(index);
             });
-
+            activeEvent.fire('change', active,activeArray);
         });
     };
     Legend.prototype = {

@@ -50,6 +50,7 @@
                     dotSelect:true,         //enable dots select or not
                     columnHover:true        //enable column hover or not
                 }, opt.line),
+                dotRadius = lineOpt.dotRadius,
                 series = this.series,
                 data = series.getSeries(),
                 self = this,
@@ -210,7 +211,7 @@
                 if (lineOpt.dots) {
                     //draw dots
                     points.forEach(function (d, i) {
-                        var dot = raphael.circle(d.x, d.y, lineOpt.dotRadius).attr({
+                        var dot = self.iconFactory.create(indexOfSeries, d.x-dotRadius, d.y-dotRadius,dotRadius*2).attr({
                             'fill':dotColor || colors[i],
                             'stroke':'none'
                         }).hover(
@@ -282,7 +283,9 @@
                      dots.forEach(function (dot, i) {
                          dot.animate({
                              cx:points[i].x,
-                             cy:points[i].y
+                             cy:points[i].y,
+                             x:points[i].x - dotRadius,
+                             y:points[i].y - dotRadius
                          }, duration);
                      });
                      area && area.animate({

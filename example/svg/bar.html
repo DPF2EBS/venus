@@ -51,6 +51,7 @@
         })
         data.push({name:i, data:arr})
     }
+    console.log(data)
     var bar = new Venus.SvgChart(container, data, options);
     options.bar.multiple = 'sidebyside';
     container3 = document.getElementById('chart_container3');

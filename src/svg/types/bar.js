@@ -15,16 +15,18 @@
                 sideBySide = "sidebyside",
                 nestification = "nestification",
                 sumY = [],
-            /*
-             * default of the bar config options
-             * which could be parsed from the SvgChart.options.bar
-             * */
+
+                /*
+                 * default of the bar config options
+                 * which could be parsed from the SvgChart.options.bar
+                 * */
                 barOptions = util.mix({
                     radius:0,               //radius of bars
                     beginAnimate:true,      //enable begin animate or not
                     opacity:1,              //opacity of the bars
                     multiple:sideBySide   //how to layout bars when there are multiple bars in one tick, sidebyside or nestification
                 }, this.options.bar),
+
                 elements = [],
                 self = this,
                 duration = 500;
@@ -70,6 +72,7 @@
                     active.forEach(function (truth, i) {
                         truth ? elements[i].show() : elements[i].hide();
                     });
+                    render(activeArray);
                 });
             }
 
@@ -81,6 +84,7 @@
                  * @param x{Number} x tick
                  * @param y{Number} y value
                  * @param i{Number} index of series
+                 * @param count{Number} numbers of bars
                  * @param sumY{Number} current height of the bar
                  *
                  * return {
@@ -171,13 +175,14 @@
                      * */
 
                     series.forEach(function (d, i) {
-                        if(seriesArray.indexOf(i) == -1){
+                        var indexOfI = seriesArray.indexOf(i)
+                        if( indexOfI== -1){
                             return;
                         }
                         elements[i] = elements[i] || paper.set();
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(j, value, i,seriesArray.length, sumY[j]);
+                            var p = getPositions(j, value, indexOfI,seriesArray.length, sumY[j]);
                             sumY[j] += p.height;
                             if(elements[i][j]){
                                 elements[i][j].animate({
@@ -203,14 +208,15 @@
                      * */
 
                     series.forEach(function (d, i) {
-                        if(seriesArray.indexOf(i) == -1){
+                        var indexOfI = seriesArray.indexOf(i)
+                        if( indexOfI== -1){
                             return;
                         }
                         var j = 0, o;
                         elements[i] = elements[i]|| paper.set();
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(o, d.data[o], i,seriesArray.length, sumY[j]);
+                            var p = getPositions(o, d.data[o], indexOfI,seriesArray.length, sumY[j]);
                             sumY[j] += p.height;
 
                             if(elements[i][j]){
