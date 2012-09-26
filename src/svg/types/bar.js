@@ -73,7 +73,7 @@
                 });
             }
 
-            function getPositions(x, y, i, sumY) {
+            function getPositions(x, y, i,count, sumY) {
                 /*
                  * when there are several bars on one tick
                  * this function returns each position of the bar
@@ -98,7 +98,7 @@
                 if (barOptions.multiple == sideBySide) {
                     var times = 5, // width/space=times
                         total = xTickWidth /xTickSize * .8,
-                        space = total / ((times + 1) * series.length + 1),
+                        space = total / ((times + 1) * count + 1),
                         bWidth = times * space,
                         x = oX - total / 2 + i * bWidth + (i + 1) * space,
                         y = oY;
@@ -177,7 +177,7 @@
                         elements[i] = elements[i] || paper.set();
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(j, value, i, sumY[j]);
+                            var p = getPositions(j, value, i,seriesArray.length, sumY[j]);
                             sumY[j] += p.height;
                             if(elements[i][j]){
                                 elements[i][j].animate({
@@ -210,8 +210,7 @@
                         elements[i] = elements[i]|| paper.set();
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(o, d.data[o], i, sumY[j]),
-                                bar;
+                            var p = getPositions(o, d.data[o], i,seriesArray.length, sumY[j]);
                             sumY[j] += p.height;
 
                             if(elements[i][j]){
