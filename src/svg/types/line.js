@@ -313,13 +313,7 @@
                             }
                         }
                     });
-                    if((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length )&& activeArray.length){
-                        var range = series.getRange(activeArray);
-                        coordinate.y.set({
-                            min:range.min,
-                            max:range.max
-                        });
-                    }
+
                 });
             }
 

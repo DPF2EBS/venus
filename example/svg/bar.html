@@ -28,10 +28,6 @@
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
-                        min:0,
-                        max:300,
-                        tickWidth:40,
-                        tickSize:20
                     }
                 },
                 bar:{
@@ -57,8 +53,6 @@
     }
     var bar = new Venus.SvgChart(container, data, options);
     options.bar.multiple = 'sidebyside';
-    options.axis.y.max = 100;
-    options.axis.y.tickWidth = 60;
     container3 = document.getElementById('chart_container3');
     var bar = new Venus.SvgChart(container3, data, options);
 </script>
@@ -68,14 +62,9 @@
             options2 = {
                 axis:{
                     x:{
-                        tickWidth:90,
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
-                        min:0,
-                        max:100,
-                        tickWidth:65,
-                        tickSize:10
                     }
                 },
                 bar:{

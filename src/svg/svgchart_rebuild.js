@@ -339,7 +339,11 @@
         _renderAxis:function () {
             var o , axises = this.coordinate.axises;
             for (o in axises) {
-                axises.hasOwnProperty(o) && (axises[o].axisRendered = true) && axises[o].render();
+                if (axises.hasOwnProperty(o)) {
+                    axises[o].axisRendered = true;
+                    axises[o].autoModel();
+                    axises[o].render();
+                }
             }
             this.axisRendered = true;
         },
@@ -349,7 +353,10 @@
              * */
 
             var opt = this.options,
-                legendOption = opt.legend;
+                legendOption = opt.legend,
+                coordinate = this.coordinate,
+                series = this.series,
+                legend;
 
             if (legendOption && this.series.getSeries().length) {
                 //set options for legend
@@ -361,7 +368,18 @@
                 //if there are ticks of x axis , parse to legend for some use
                // this.coordinate.axises.x && this.coordinate.axises.x.options.ticks && ( legendOption._ticks = this.coordinate.axises.x.options.ticks);
 
-                this.legend = new Legend(this.series, legendOption, this.stage);
+                legend = this.legend = new Legend(this.series, legendOption, this.stage);
+                legend.on('click', function () {
+                    if ((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length ) && legend.activeArray.length) {
+                        var range = series.getRange(legend.activeArray);
+                        coordinate.y.set({
+                            min:range.min,
+                            max:range.max
+                        });
+                    }
+                    legend.activeEvent.fire('change', legend.active);
+                });
+
             }
         },
         _initGrid:function () {
@@ -472,7 +490,10 @@
         } else {
             series.push({data:data});
         }
-        this.series = series
+        this.series = series;
+
+        //whether accumulate when range calculation
+        this.accumulation = false;
 
     };
     Series.prototype = {
@@ -486,7 +507,10 @@
              *     min:
              * }
              * */
-            var series = this.series;
+            var series = this.series,
+                accumulation = this.accumulation,
+                max , min;
+
              if(!arr){
                 //it means all data
                 arr = [];
@@ -494,8 +518,6 @@
                     arr.push(i);
                 });
             }
-
-            var max , min
             arr.forEach(function (index) {
                 //get the max and min value depends on the data format
                 var d = series[index].data
@@ -514,6 +536,35 @@
                     (min === undefined || d < min) && (min = d);
                 }
             });
+            if (accumulation) {
+                //accumulate max
+                var ac;
+                arr.forEach(function (index, j) {
+                    var d = series[index].data;
+                    if (isArray(d)) {
+                        ac = ac || [];
+                        d.forEach(function (value, i) {
+                            ac[i] === undefined ? ac[i] = value : ac[i] += value;
+                        });
+                    } else if (isObject(d)) {
+                        ac = ac || {};
+                        for (var o in d) {
+                            ac[o] === undefined ? ac[o] = d[o] : ac[o] += d[o];
+                        }
+                    } else {
+                        ac = ac || [];
+                        ac[j] = d;
+                    }
+                });
+                if (isArray(ac)) {
+                    max = Math.max.apply(Math, ac);
+                } else if (isObject(ac)) {
+                    max = undefined;
+                    for (var o in ac) {
+                        (max === undefined || ac[o] > max) && (max = ac[o]);
+                    }
+                }
+            }
 
             return {
                 max:max,
@@ -727,8 +778,12 @@
                     change = true;
                 }
             }
-            if (change && this.axisRendered) {
+
+            if(change){
                 this.autoModel();
+            }
+
+            if (change && this.axisRendered) {
                 this.render();
                 this.events.fire('model_change',this.model);
             }
@@ -739,6 +794,8 @@
              * generate axis ticks according to min and max
              *
              * */
+            min === undefined && (min = 0);
+            max === undefined && (max = 10);
             var iDelta = max - min,
                 iExp,
                 iMultiplier,
@@ -906,7 +963,8 @@
             , colors
             , isVertical,
             left , top,
-            active,activeEvent,
+            active, activeEvent, activeArray,
+            self = this,
             opt = this.options = mix(defaultOption, options);
 
         //Raphael Set to contain the elements
@@ -1020,6 +1078,7 @@
         itemSet.forEach(function(){
             active.push(true);
         });
+        activeArray = this.activeArray = active.slice(0);
         activeEvent =  this.activeEvent = new util.CustomEvent();
 
 
@@ -1027,12 +1086,11 @@
         this.on('click', function (e, i) {
             active[i] ? active[i] = false : active[i] = true;
             active[i] ? this.attr('fill', colors[i]) : this.attr('fill', 'gray');
-            var activeArray = [];
+            activeArray = self.activeArray = [];
             active.forEach(function(truth,index){
-                truth && activeArray.push(index)
+                truth && activeArray.push(index);
             });
 
-            activeEvent.fire('change',active,activeArray);
         });
     };
     Legend.prototype = {

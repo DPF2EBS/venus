@@ -23,10 +23,11 @@
                     radius:0,               //radius of bars
                     beginAnimate:true,      //enable begin animate or not
                     opacity:1,              //opacity of the bars
-                    multiple:'sidebyside'   //how to layout bars when there are multiple bars in one tick, sidebyside or nestification
+                    multiple:sideBySide   //how to layout bars when there are multiple bars in one tick, sidebyside or nestification
                 }, this.options.bar),
                 elements = [],
-                self = this;
+                self = this,
+                duration = 500;
 
 
             /*
@@ -55,23 +56,24 @@
                         this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
                     }, function () {
                         this.toolTipHide()
-                    })
+                    });
                 return bar;
             }
+
 
             function bindLegendEvents() {
                 /*
                  * bind legend active change event
                  * related bar toggles hide
                  * */
-                self.legend && self.legend.onActiveChange(function (active) {
+                self.legend && self.legend.onActiveChange(function (active,activeArray) {
                     active.forEach(function (truth, i) {
                         truth ? elements[i].show() : elements[i].hide();
                     });
                 });
             }
 
-            function getPositions(x, y,i,sumY) {
+            function getPositions(x, y, i, sumY) {
                 /*
                  * when there are several bars on one tick
                  * this function returns each position of the bar
@@ -120,9 +122,24 @@
                 }
             }
 
-            // console.log('data series elements count: ', series.length);
+            if (barOptions.multiple == nestification) {
+                this.series.accumulation = true;
+                var range = this.series.getRange();
+                coordinate.y.set({
+                    min:range.min,
+                    max:range.max
+                })
+            }
 
-            if (series.length) {
+
+            function render(seriesArray) {
+                if (!seriesArray) {
+                    seriesArray = [];
+                    series.forEach(function (d, i) {
+                        seriesArray.push(i);
+                    });
+                }
+                sumY = [];
                 if (util.isNumber(series[0].data)) {
                     /*
                      * if data is Number ,that means series  format as
@@ -130,12 +147,20 @@
                      * draw each data a bar
                      * */
                     series.forEach(function (d, i) {
-                        var xy =coordinate.get(i, d.data);
-                        elements[i] = drawBar(xy.x - xTickWidth / 4, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
-                            x:xy.xTick,
-                            y:xy.yTick,
-                            label:self.labels[i]
-                        });
+                        var xy = coordinate.get(i, d.data);
+                        if (elements[i]) {
+                            //change , animate
+                            elements[i].animate({
+                                y:xy.y,
+                                height:coordinate.y.model.beginY - xy.y
+                            }, duration);
+                        } else {
+                            elements[i] = drawBar(xy.x - xTickWidth / 4, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
+                                x:xy.xTick,
+                                y:xy.yTick,
+                                label:self.labels[i]
+                            });
+                        }
                     });
                 } else if (util.isArray(series[0].data)) {
                     /*
@@ -145,18 +170,29 @@
                      *
                      * */
 
-
                     series.forEach(function (d, i) {
-                        elements[i] = paper.set();
+                        if(seriesArray.indexOf(i) == -1){
+                            return;
+                        }
+                        elements[i] = elements[i] || paper.set();
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(j, value,i, sumY[j]);
+                            var p = getPositions(j, value, i, sumY[j]);
                             sumY[j] += p.height;
-                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
-                                x:p.xTick,
-                                y:p.yTick,
-                                label:self.labels[i]
-                            }));
+                            if(elements[i][j]){
+                                elements[i][j].animate({
+                                    x:p.x,
+                                    y:p.y,
+                                    width:p.width,
+                                    height:p.height
+                                },duration);
+                            }else{
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                    x:p.xTick,
+                                    y:p.yTick,
+                                    label:self.labels[i]
+                                }));
+                            }
                         });
                     });
                 } else if (util.isObject(series[0].data)) {
@@ -167,23 +203,46 @@
                      * */
 
                     series.forEach(function (d, i) {
+                        if(seriesArray.indexOf(i) == -1){
+                            return;
+                        }
                         var j = 0, o;
-                        elements[i] = paper.set();
+                        elements[i] = elements[i]|| paper.set();
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
-                            var p = getPositions(o, d.data[o], i, sumY[j]);
+                            var p = getPositions(o, d.data[o], i, sumY[j]),
+                                bar;
                             sumY[j] += p.height;
-                            elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
-                                x:p.xTick,
-                                y:p.yTick,
-                                label:self.labels[i]
-                            }));
+
+                            if(elements[i][j]){
+                                elements[i][j].animate({
+                                    x:p.x,
+                                    y:p.y,
+                                    width:p.width,
+                                    height:p.height
+                                },duration);
+                            }else{
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                    x:p.xTick,
+                                    y:p.yTick,
+                                    label:self.labels[i]
+                                }));
+                            }
                             j++;
                         }
                     });
                 }
-                bindLegendEvents();
             }
+
+            if (series.length) {
+                render();
+                bindLegendEvents();
+                coordinate.y.on(function () {
+                    render(self.legend.activeArray);
+                });
+            }
+
+
         }
     });
 })();
