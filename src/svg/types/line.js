@@ -179,7 +179,6 @@
                          //close the path of the area
                          areaPathString.push('V', coordinate.y.model.beginY, 'H', points[0].x, 'Z');
                      }
-
                  }
 
                  path();
@@ -211,7 +210,8 @@
                 if (lineOpt.dots) {
                     //draw dots
                     points.forEach(function (d, i) {
-                        var dot = self.iconFactory.create(indexOfSeries, d.x-dotRadius, d.y-dotRadius,dotRadius*2).attr({
+                        var icon = self.iconFactory.create(indexOfSeries, d.x, d.y,dotRadius*2),
+                        dot = icon.icon.attr({
                             'fill':dotColor || colors[i],
                             'stroke':'none'
                         }).hover(
@@ -220,10 +220,10 @@
                                 if (this._selected_) {
                                     return;
                                 }
-                                this.animate({
-                                    r:lineOpt.dotRadius * 2
+                                icon.animate({
+                                    width: dotRadius * 4
                                 }, 100);
-                                this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, self.options.tooltip.call(self,{
+                                this.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
                                     x:d.xTick,
                                     y:d.yTick,
                                     label:d.label
@@ -233,24 +233,26 @@
                                 if (this._selected_) {
                                     return;
                                 }
-                                this.animate({
-                                    r:lineOpt.dotRadius
+                                icon.animate({
+                                    width: dotRadius *2
                                 }, 100);
                                 this.toolTipHide()
                             }).data('point', d);
 
+                        dot._iconObj = icon;
+
 
 
                         if (lineOpt.beginAnimate) {
-                            dot.attr('cy', coordinate.y.model.beginY);
-                            dot.animate({'cy':d.y}, 1000)
+                            icon.position(icon.position().x, coordinate.y.model.beginY);
+                            icon.animate({'y':d.y}, 1000);
                         }
 
                         if (lineOpt.dotSelect) {
                             //bind click event which shows the toolTip and make the dot bigger and cancel the effect when click again
                             dot.click(function () {
                                 if (!this._selected_) {
-                                    this.toolTip(raphael, this.attr('cx'), this.attr('cy') - 10, self.options.tooltip.call(self,{
+                                    this.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
                                         x:d.xTick,
                                         y:d.yTick,
                                         label:d.label
@@ -281,11 +283,9 @@
                          path:pathString
                      }, duration);
                      dots.forEach(function (dot, i) {
-                         dot.animate({
-                             cx:points[i].x,
-                             cy:points[i].y,
-                             x:points[i].x - dotRadius,
-                             y:points[i].y - dotRadius
+                         dot._iconObj.animate({
+                             x:points[i].x,
+                             y:points[i].y
                          }, duration);
                      });
                      area && area.animate({
@@ -326,7 +326,7 @@
                     * data is Number
                     * and draw totally one line
                     * */
-                     drawLine(data, undefined, this.colors[0], undefined);
+                     drawLine(data, 0, this.colors[0], undefined);
                 } else if (util.isArray(data[0].data)) {
                     /*
                     * data is array and series format as :
@@ -373,8 +373,8 @@
                                         if (d._selected_) {
                                             return;
                                         }
-                                        d.animate({r:lineOpt.dotRadius * 2}, 100);
-                                        d.node.style.display !== 'none' && (d.toolTip(raphael, d.attr('cx'), d.attr('cy') - 10, self.options.tooltip.call(self,{
+                                        d._iconObj.animate({width:lineOpt.dotRadius * 4}, 100);
+                                        d.node.style.display !== 'none' && (d.toolTip(raphael, d._iconObj.position().x, d._iconObj.position().y - 10, self.options.tooltip.call(self,{
                                             x:d.data('point').xTick,
                                             y:d.data('point').yTick,
                                             label:d.data('point').label
@@ -385,7 +385,7 @@
                                         if (d._selected_) {
                                             return;
                                         }
-                                        d.animate({r:lineOpt.dotRadius}, 100);
+                                        d._iconObj.animate({width:lineOpt.dotRadius*2}, 100);
                                         d.toolTipHide();
                                     })
                                 });
