@@ -634,14 +634,20 @@ Venus.config={
                         });
                     },
                     animate:function (obj, duration) {
-                        if(obj.width){
-                            obj.height = obj.width;
-                        }
                         if(obj.x){
-                            obj.x = obj.x - this.icon.attr('width')/2
+                            obj.x = obj.x - this.icon.attr('width')/2;
                         }
                         if(obj.y){
-                            obj.y = obj.y - this.icon.attr('width')/2
+                            obj.y = obj.y - this.icon.attr('width')/2;
+                        }
+                        if(obj.width){
+                            obj.height = obj.width;
+                            if(!obj.x && !obj.y){
+                                var icon = this.icon,
+                                    delta = obj.width - icon.attr('width');
+                                obj.x = icon.attr('x') - delta/2
+                                obj.y = icon.attr('y') - delta/2
+                            }
                         }
                         this.icon.animate(obj, duration);
                     }
@@ -2232,6 +2238,7 @@ Venus.config={
                     smooth:false,           //straight line or curved line
                     dots:true,              //draw dot for each value or not
                     dotRadius:1,            //dot radius if dots enabled
+                    hoverRadius:0,          //dot hover radius
                     area:false,             //draw area under the line or not
                     areaOpacity:0.1,        //area opacity if area enabled
                     beginAnimate:false,     //enable begin animate or not
@@ -2261,6 +2268,33 @@ Venus.config={
                 coordinate.y.on(set);
                 set();
                 return point;
+            }
+
+            function activeDot(dot) {
+                var icon = dot._iconObj,
+                    point = dot.data('point');
+                if (dot._selected_ || dot.node.style.display==="none") {
+                    return;
+                }
+                icon.animate({
+                    width: dotRadius * 4
+                }, 100);
+                dot.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
+                    x:point.xTick,
+                    y:point.yTick,
+                    label:point.label
+                }));
+            }
+            function inActiveDot(dot){
+                var icon = dot._iconObj,
+                    point = dot.data('point');
+                if (dot._selected_) {
+                    return;
+                }
+                icon.animate({
+                    width: dotRadius *2
+                }, 100);
+                dot.toolTipHide();
             }
 
             /*
@@ -2405,26 +2439,10 @@ Venus.config={
                         }).hover(
                             //hover event which shows the toolTip and make the dot bigger
                             function () {
-                                if (this._selected_) {
-                                    return;
-                                }
-                                icon.animate({
-                                    width: dotRadius * 4
-                                }, 100);
-                                this.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
-                                    x:d.xTick,
-                                    y:d.yTick,
-                                    label:d.label
-                                }));
+                                activeDot(this);
                             },
                             function () {
-                                if (this._selected_) {
-                                    return;
-                                }
-                                icon.animate({
-                                    width: dotRadius *2
-                                }, 100);
-                                this.toolTipHide()
+                                inActiveDot(this);
                             }).data('point', d);
 
                         dot._iconObj = icon;
@@ -2458,6 +2476,10 @@ Venus.config={
                         dotsByXAxis[d.x] || (dotsByXAxis[d.x] = raphael.set());
                         dotsByXAxis[d.x].push(dot);
                     });
+
+                    if(lineOpt.hoverRadius && lineOpt.hoverRadius>lineOpt.dotRadius){
+
+                    }
                 }
 
                 //save the elements
@@ -2465,7 +2487,7 @@ Venus.config={
 
                 //bind model
                  coordinate.y && coordinate.y.on(function () {
-                     var duration = 500
+                     var duration = 500;
                      path();
                      line.animate({
                          path:pathString
@@ -2558,23 +2580,11 @@ Venus.config={
                             }).hover(
                                 function () {
                                     set.forEach(function (d) {
-                                        if (d._selected_) {
-                                            return;
-                                        }
-                                        d._iconObj.animate({width:lineOpt.dotRadius * 4}, 100);
-                                        d.node.style.display !== 'none' && (d.toolTip(raphael, d._iconObj.position().x, d._iconObj.position().y - 10, self.options.tooltip.call(self,{
-                                            x:d.data('point').xTick,
-                                            y:d.data('point').yTick,
-                                            label:d.data('point').label
-                                        })));
+                                        activeDot(d);
                                     })
                                 }, function () {
                                     set.forEach(function (d) {
-                                        if (d._selected_) {
-                                            return;
-                                        }
-                                        d._iconObj.animate({width:lineOpt.dotRadius*2}, 100);
-                                        d.toolTipHide();
+                                        inActiveDot(d)
                                     })
                                 });
                         })(x);
