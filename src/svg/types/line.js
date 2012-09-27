@@ -43,7 +43,7 @@
                     'line-width':2,         //width of the line
                     smooth:false,           //straight line or curved line
                     dots:true,              //draw dot for each value or not
-                    dotRadius:4,            //dot radius if dots enabled
+                    dotRadius:1,            //dot radius if dots enabled
                     area:false,             //draw area under the line or not
                     areaOpacity:0.1,        //area opacity if area enabled
                     beginAnimate:false,     //enable begin animate or not
