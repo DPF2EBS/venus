@@ -87,7 +87,7 @@
              * for detail , see Class Grid
              * */
             grid:{
-                opacity:0.2
+                opacity:0.4
             },
 
             /*
@@ -194,6 +194,8 @@
         //new! icon factory
         this.iconFactory = this._initIconFactory();
 
+        //init events
+        this._initEvents();
 
         //init data
         this._initData();
@@ -221,9 +223,6 @@
 
         // render axis ui
         this._renderAxis();
-
-        //init events
-        this._initEvents();
 
         this.events.fire('onFinish');
 
@@ -487,28 +486,46 @@
                 coordinate = this.coordinate,
                 rows = [],columns = [];
             //generate positions of  rows and columns
-            if (gridOption.enableRow && coordinate.y) {
-                //use coordinate.y to generate rows
-                coordinate.y.model.ticks.forEach(function (t) {
-                    rows.push(coordinate.get(null, t).y);
-                });
-                gridOption.rows = rows;
-                gridOption.height = coordinate.y.model.totalWidth;
-                gridOption._y = coordinate.y.model.beginY;
+            function generatePositions() {
+                rows = [];
+                columns = [];
+                if (gridOption.enableRow && coordinate.y) {
+                    //use coordinate.y to generate rows
+                    coordinate.y.model.ticks.forEach(function (t) {
+                        rows.push(coordinate.get(null, t).y);
+                    });
+                    gridOption.rows = rows;
+                    gridOption.height = coordinate.y.model.totalWidth;
+                    gridOption._y = coordinate.y.model.beginY;
+                }
+                if (gridOption.enableColumn && coordinate.x) {
+                    coordinate.x.model.ticks.forEach(function (t) {
+                        columns.push(coordinate.get(t, null).x);
+                    });
+                    gridOption.columns = columns;
+                    gridOption.width = coordinate.x.model.totalWidth;
+                    gridOption._x = coordinate.x.model.beginX;
+                }
             }
-            if (gridOption.enableColumn && coordinate.x) {
-                coordinate.x.model.ticks.forEach(function (t) {
-                    columns.push(coordinate.get(t, null).x);
-                });
-                gridOption.columns = columns;
-                gridOption.width = coordinate.x.model.totalWidth;
-                gridOption._x = coordinate.x.model.beginX;
-            }
+            generatePositions();
 
-            this.grid = new Grid(gridOption, this.stage);
+            var grid = this.grid = new Grid(gridOption, this.stage);
+            coordinate.y &&coordinate.y.on(function(){
+                generatePositions();
+                util.mix(grid.options,gridOption);
+                grid.options.rows = gridOption.rows;
+                grid.options.columns = gridOption.columns;
+                grid.render();
+            });
+
         },
         _initEvents:function () {
-
+            var opt = this.options;
+            if(opt.events){
+                for(var event in opt.events){
+                    this.events.on(event, opt.events[event]);
+                }
+            }
         },
         _draw:function () {
             var chart ,chartOption;
@@ -1212,29 +1229,45 @@
                 _x:0, //x coordinate of y axis
                 _y:0                    //y coordinate of x axis ,these are used as the start position
             };
-        options = this.options = mix(defaultOption, options);
+        this.options = mix(defaultOption, options);
+        this.paper = paper;
+        this.rows = paper.set();
+        this.columns = paper.set();
+        this.render();
+    }
+    Grid.prototype = {
+        constructor:Grid,
+        render:function(){
+            this.rows.forEach(function(r){
+                r.remove();
+            }).clear();
+            this.columns.forEach(function(c){
+                c.remove();
+            }).clear();
 
-        if (options.rows.length) {
-            //draw rows
-            options.rows.forEach(function (value) {
-                paper.path('M' + options._x + "," + value + "h" + options.width).attr({
-                    stroke:options.color,
-                    "stroke-width":options['stroke-width'],
-                    'opacity':options.opacity
-                });
-            })
-        }
-        if (options.columns.length) {
-            //draw columns
-            options.columns.forEach(function (value) {
-                paper.path('M' + value + "," + options._y + "v" + -options.height).attr({
-                    stroke:options.color,
-                    "stroke-width":options['stroke-width'],
-                    'opacity':options.opacity
-                });
-            })
-        }
+            var options = this.options,
+                paper = this.paper,
+                lineAttr = {
+                stroke:options.color,
+                "stroke-width":options['stroke-width'],
+                'opacity':options.opacity
+                },self = this;
 
+            if (options.rows && options.rows.length) {
+                //draw rows
+                options.rows.forEach(function (value) {
+                    self.rows.push(paper.path('M' + options._x + "," + value + "h" + options.width).attr(lineAttr));
+                });
+                self.rows.toBack();
+            }
+            if (options.columns &&options.columns.length) {
+                //draw columns
+                options.columns.forEach(function (value) {
+                    self.columns.push(paper.path('M' + value + "," + options._y + "v" + -options.height).attr(lineAttr));
+                });
+                self.columns.toBack();
+            }
+        }
     }
 
 

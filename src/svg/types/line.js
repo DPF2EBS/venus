@@ -276,7 +276,7 @@
                 elements.push({line:line, dots:dots, area:area});
 
                 //bind model
-                 coordinate.y.on(function () {
+                 coordinate.y && coordinate.y.on(function () {
                      var duration = 500
                      path();
                      line.animate({
