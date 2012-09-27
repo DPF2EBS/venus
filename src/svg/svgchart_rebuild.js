@@ -285,14 +285,20 @@
                         });
                     },
                     animate:function (obj, duration) {
-                        if(obj.width){
-                            obj.height = obj.width;
-                        }
                         if(obj.x){
-                            obj.x = obj.x - this.icon.attr('width')/2
+                            obj.x = obj.x - this.icon.attr('width')/2;
                         }
                         if(obj.y){
-                            obj.y = obj.y - this.icon.attr('width')/2
+                            obj.y = obj.y - this.icon.attr('width')/2;
+                        }
+                        if(obj.width){
+                            obj.height = obj.width;
+                            if(!obj.x && !obj.y){
+                                var icon = this.icon,
+                                    delta = obj.width - icon.attr('width');
+                                obj.x = icon.attr('x') - delta/2
+                                obj.y = icon.attr('y') - delta/2
+                            }
                         }
                         this.icon.animate(obj, duration);
                     }
