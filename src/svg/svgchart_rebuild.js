@@ -192,33 +192,7 @@
         };
 
         //new! icon factory
-        this.iconFactory = {
-            defaultIcon:'rect',
-            icons:this.options.icons,
-            create:function (i, x, y, width) {
-                var iconType = this.icons[i] || this.defaultIcon,
-                    item;
-                if (typeof iconType === "string") {
-                    switch (iconType) {
-                        case 'circle':
-                            item = self.stage.circle(0, 0, width / 2).attr({
-                                cx:x,
-                                cy:y
-                            });
-                            break;
-                        case 'rect':
-                            item = self.stage.rect(0, 0, width, width).attr({
-                                x:x,
-                                y:y
-                            });
-                            break;
-                    }
-                } else if (util.isFunction(iconType)) {
-                    item = iconType.call(this, x, y, width);
-                }
-                return item;
-            }
-        }
+        this.iconFactory = this._initIconFactory();
 
 
         //init data
@@ -283,6 +257,103 @@
                 }
             });
             this.labels = _labels;
+        },
+        _initIconFactory:function(){
+            var self = this;
+            var nativeIcons = {
+                'rect':{
+                    create:function (stage, x, y, width) {
+                        return {
+                            icon:stage.rect(x-width/2, y-width/2, width, width),
+                            position:this.position,
+                            animate:this.animate,
+                            size:this.size
+                        }
+                    },
+                    size:function (w) {
+                        this.icon.attr('width', w);
+                    },
+                    position:function (x, y) {
+                        if(arguments.length==0){
+                            return{
+                                x:this.icon.attr('x') + this.icon.attr('width')/2,
+                                y:this.icon.attr('y') + this.icon.attr('width')/2
+                            }
+                        }
+                        this.icon.attr({
+                            'x':x,
+                            'y':y
+                        });
+                    },
+                    animate:function (obj, duration) {
+                        if(obj.width){
+                            obj.height = obj.width;
+                        }
+                        if(obj.x){
+                            obj.x = obj.x - this.icon.attr('width')/2
+                        }
+                        if(obj.y){
+                            obj.y = obj.y - this.icon.attr('width')/2
+                        }
+                        this.icon.animate(obj, duration);
+                    }
+                },
+                'circle':{
+                    create:function (stage, x, y, width) {
+                        return {
+                            icon:stage.circle(x, y, width / 2),
+                            position:this.position,
+                            animate:this.animate,
+                            size:this.size
+                        }
+                    },
+                    size:function (w) {
+                        this.icon.attr('r', w/2);
+                    },
+                    position:function (x, y) {
+                        if(arguments.length==0){
+                            return{
+                                x:this.icon.attr('cx') ,
+                                y:this.icon.attr('cy')
+                            }
+                        }
+                        this.icon.attr({
+                            'cx':x,
+                            'cy':y
+                        });
+                    },
+                    animate:function (obj, duration) {
+                        for (var o in obj) {
+                            if (o == 'x') {
+                                obj.cx = obj[o];
+                            } else if (o == 'y') {
+                                obj.cy = obj[o];
+                            } else if (o == 'width') {
+                                obj.r = obj[o] / 2;
+                            }
+                        }
+                        delete obj.x;
+                        delete obj.y;
+                        delete obj.width;
+                        this.icon.animate(obj, duration);
+                    }
+                }
+                },
+                defaultIcon = 'rect';
+            return {
+                defaultIcon:defaultIcon,
+                icons:self.options.icons,
+                create:function (i, x, y, width) {
+                    var iconType = this.icons[i] || defaultIcon;
+                    if (typeof iconType === "string") {
+                        return nativeIcons[iconType].create(self.stage, x, y, width);
+                    } else if (util.isObject(iconType)) {
+                        return  iconType.create(self.stage, x, y, width);
+                    }
+                },
+                nativeIcons: nativeIcons
+            }
+
         },
         _initAxis:function () {
             var opt = this.options,
@@ -1022,7 +1093,7 @@
                 _x = startX + padding;
                 _y = startY + padding;
             }
-            item = chart.iconFactory.create(i, _x, _y, width);
+            item = chart.iconFactory.create(i, _x+width/2, _y+width/2, width).icon;
 
             text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
                 'font-size':opt.fontSize
