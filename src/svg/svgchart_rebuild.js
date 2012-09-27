@@ -1288,7 +1288,7 @@
                 path = function (width, height, padding) {
                     var p = ['M', x, y],
                         arrowWidth = 5,
-                        left, top
+                        left, top;
 
                     height += (2 * padding || 0);
                     width += (2 * padding || 0);
@@ -1337,7 +1337,7 @@
                             break;
 
                     }
-                    p.push('z')
+                    p.push('z');
                     return {
                         path:p,
                         box:{
@@ -1350,60 +1350,57 @@
                 }
 
             !isArray(texts) && (texts = [texts]);
-            if (this._venus_tooltip) {
-                tip = this._venus_tooltip;
-                labels = this._venus_tooltip_labels;
-                texts.forEach(function (t, i) {
-                    labels[i] ? labels[i].attr('text', t) : labels.push(paper.text(0, 0, t))
-                })
-            } else {
-                labels = paper.set();
-                var width = [], height = 0,
-                    bBox,
-                    text,
-                    paddingToBorder = 10,
-                    p
+            labels = paper.set();
+            var width = [], height = 0,
+                bBox,
+                text,
+                paddingToBorder = 10,
+                p;
 
 
-                texts.forEach(function (t, i) {
-                    text = paper.text(x, -100, t)
-                    labels.push(text);
-                    bBox = text.getBBox();
-                    text.attr({
-                        'opacity':0,
-                        'font-size':12
-                    });
-                    width.push(bBox.width);
+            texts.forEach(function (t, i) {
+                text = paper.text(x, -100, t);
+                labels.push(text);
+                bBox = text.getBBox();
+                text.attr({
+                    'opacity':0,
+                    'font-size':12
                 });
-                labels.animate({'opacity':1}, 100);
-                if (this._venus_tooltip_show)
-                    return;
-                p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder)
-                this._venus_tooltip = tip = paper.path().attr({
-                    path:p.path,
-                    fill:"#000000",
-                    "stroke-width":4,
-                    "fill-opacity":.1,
-                    'stroke-linejoin':'round',
-                    'stroke':'#666',
-                    'opacity':'0'
-                }).animate({'opacity':1}, 100);
-                labels.forEach(function (la, i) {
-                    la.attr({
-                        'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
-                        'x':p.box.left + p.box.width / 2
-                    })
+                width.push(bBox.width);
+            });
+            if (this._venus_tooltip_show)
+                return;
+            p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder);
+            tip = paper.path();
+            labels.toFront();
+            tip.attr({
+                path:p.path,
+                fill:"#FFF",
+                "stroke-width":2,
+                "fill-opacity":.1,
+                'stroke-linejoin':'round',
+                'stroke':'#4572A7',
+                'opacity':'0'
+            }).animate({'opacity':1, 'fill-opacity':.85}, 100);
+            labels.animate({'opacity':1}, 100);
+            labels.forEach(function (la, i) {
+                la.attr({
+                    'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
+                    'x':p.box.left + p.box.width / 2
                 })
-                this._venus_tooltip_labels = labels;
-            }
+            })
+            this._venus_tooltip_labels = labels;
+            this._venus_tooltip = tip;
+            this._venus_tooltip_show = true;
             return toolTip;
         },
         toolTipHide = function () {
-            var cb = function () {
-                this.hide();
-            }
-            var animate = Raphael.animation({'opacity':0}, 100, 'linear', cb)
-            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) && (this._venus_tooltip = false);
+            var self = this,
+                cb = function () {
+                this.remove();
+                self._venus_tooltip_show = false;
+            }, animate = Raphael.animation({'opacity':0}, 100, 'linear', cb);
+            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) ;
         };
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
