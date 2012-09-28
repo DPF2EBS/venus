@@ -58,7 +58,6 @@
                 raphael = this.stage,
                 colors = this.colors,       //this.colors,
                 elements = [],              //save the element by series
-                dotsByXAxis = {},            //save the dots by x axis convenient for column hover
                 coordinate = self.coordinate;
 
 
@@ -281,8 +280,6 @@
 
                         //save the dots
                         dots.push(dot);
-                        dotsByXAxis[d.x] || (dotsByXAxis[d.x] = raphael.set());
-                        dotsByXAxis[d.x].push(dot);
                     });
 
 
@@ -370,33 +367,6 @@
 
                 }
 
-                if (lineOpt.columnHover) {
-                    //enable column hover event
-                    for (var x in dotsByXAxis) {
-                        //create an invisible rect and bind event on this rect
-                        var width = coordinate.x.model.tickWidth,
-                            height = coordinate.y.model.totalWidth;
-
-                        //use closure to avoid bug : value is always the last x
-                        (function (xValue) {
-                            var set = dotsByXAxis[xValue];
-
-                            raphael.rect(xValue - width / 2, coordinate.y.model.beginY - height, width, height).attr({
-                                'stroke':'none', 'fill':'#fff', 'opacity':0
-                            }).hover(
-                                function () {
-                                    set.forEach(function (d) {
-                                        activeDot(d);
-                                    })
-                                }, function () {
-                                    set.forEach(function (d) {
-                                        inActiveDot(d)
-                                    })
-                                });
-                        })(x);
-                    }
-
-                }
                 if (lineOpt.area) {
                     //put all the dots to front to avoid covered by area
                     elements.forEach(function (el) {
@@ -405,7 +375,7 @@
                         });
                     })
                 }
-                if (lineOpt.dots && lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius && !lineOpt.columnHover) {
+                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius) || lineOpt.columnHover)) {
                     var handler = function(e){
                         var offsetX,offsetY,
                             boundBox,
@@ -414,23 +384,48 @@
                         boundBox = raphael.canvas.getBoundingClientRect();
                         offsetX = e.clientX - boundBox.left;
                         offsetY = e.clientY - boundBox.top;
-                        elements.forEach(function(element){
-                            element.dots && element.dots.forEach(function(dot){
-                                var point = dot.data('point'),
-                                    distance = Math.sqrt(Math.pow((point.x - offsetX),2)+Math.pow((point.y - offsetY),2));
-                                if(distance<= lineOpt.hoverRadius && (distance<=min || min===undefined)){
-                                    minDot = dot;
-                                    min = distance;
-                                }
+                        if (!lineOpt.columnHover) {
+                            // active the latest dot
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    var point = dot.data('point'),
+                                        distance = Math.sqrt(Math.pow((point.x - offsetX), 2) + Math.pow((point.y - offsetY), 2));
+                                    if (distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
+                                        minDot = dot;
+                                        min = distance;
+                                    }
+                                });
                             });
-                        });
-                        elements.forEach(function (element) {
-                            element.dots && element.dots.forEach(function (dot) {
-                                dot !== minDot && inActiveDot(dot);
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    dot !== minDot && inActiveDot(dot);
+                                });
                             });
-                        });
-
-                        minDot && activeDot(minDot);
+                            minDot && activeDot(minDot);
+                        }else{
+                            //active the latest column dots
+                            minDot = [];
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    var point = dot.data('point'),
+                                        distance = Math.abs(point.x-offsetX);
+                                    if (distance <= coordinate.x.model.tickWidth && (distance < min || min === undefined)) {
+                                        minDot = [dot];
+                                        min = distance;
+                                    } else if (distance == min) {
+                                        minDot.push(dot);
+                                    }
+                                });
+                            });
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    minDot.indexOf(dot)==-1 && inActiveDot(dot);
+                                });
+                            });
+                            minDot.forEach(function(dot){
+                                activeDot(dot);
+                            });
+                        }
                     }
                     if(document.addEventListener){
                         raphael.canvas.addEventListener('mousemove',handler,false);

@@ -1103,6 +1103,7 @@
             , startX = 0
             , startY = 0
             , item
+            , icon
             , text
             , textWidth
             , totalWidth
@@ -1144,7 +1145,9 @@
                 _x = startX + padding;
                 _y = startY + padding;
             }
-            item = chart.iconFactory.create(i, _x+width/2, _y+width/2, width).icon;
+            icon = chart.iconFactory.create(i, _x+width/2, _y+width/2, width)
+            item = icon.icon;
+            item._iconObj = icon;
 
             text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
                 'font-size':opt.fontSize
@@ -1167,10 +1170,25 @@
         totalHeight = isVertical ? lineHeight * l + padding * 2 : padding * 2 + lineHeight;
 
         //border
+        var _lastX,_lastY;
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
             'stroke-width':1,
-            'stroke':'gray'
-        });
+            'stroke':'gray',
+            'fill':"#FFF",
+            'cursor':'move'
+        }).drag(function(dx,dy){
+                var shiftX = dx - _lastX,
+                    shiftY = dy - _lastY;
+                self.setPosition(shiftX,shiftY);
+                _lastX = dx;
+                _lastY = dy;
+            },function(){
+                _lastX = 0;
+                _lastY = 0;
+            });
+
+        itemSet.toFront();
+        textSet.toFront();
 
         this.border = border;
         this.itemSet = itemSet;
@@ -1461,11 +1479,14 @@
 *   2012-09-25: version 1.1
 *   1. options change:
 *       1.1 add 'tooltip' function to config the tooltip
+*           {x:String,y:String,label:String} will be parsed to this function
 *       1.2 add 'axisUsage' to config which two axises to use
-*       1.3 axis config optimized :
+*       1.3 add 'icons' to config which icon to used for each series
+*           call this.iconFactory.create to create icons
+*       1.4 axis config optimized :
 *           tickWidth,tickSize,max,min
 *           are now optional
-*       1.4 options object now cloned and mix to default options , outer options object stays no change
+*       1.5 options object now cloned and mix to default options , outer options object stays no change
 *
 *   2. Class Axis rebuild:
 *       2.1 Axis now is separated as model and view
@@ -1480,10 +1501,33 @@
 *   3. Class Series change:
 *       3.1 Series.getRange() can receive an array which is indexes of series to get the appointed range of data
 *
-*   4. Chart.coordinate added:
+*   4. Class Legend change:
+*       4.1 legend now use iconFactory to create icons
+*       4.2 legend now is dragable
+*
+*   4. Class Grid change:
+*       4.1 Grid now are bind to the axis model and rerender when model changes
+*
+*   5. Chart.coordinate added:
 *       4.1 coordinate object manages the axises and provide some services to help draw charts
 *       4.2 use coordinate.get(x,y) to replace axis.getX, axis.getY
 *
-*   5. add _initLabels() in the main drawing flow to provide the labels use by legend , tooltip , axis
+*   6. add _initLabels() in the main drawing flow to provide the labels use by legend , tooltip , axis
+*
+*   7. add _initIconFactory() in the main drawing flow to init the iconFactory object
+*
+*   8. charts are bind to the axis model and do some changes when the model change
+*
+*   9. Line Chart
+*      9.1 Line Dot now stays the same as legend both calls iconFactory to create icons
+*      9.2 Tip will show when close to dot and add 'hoverRadius' to config the response radius,default to 50
+*      9.3 set 'columnHover' default to false since the 'hoverRadius' is on
+*      9.4 use mouse event clientX,and clientY to implement columnHover instead of invisible column bars
+*
+*   10.Bar Chart
+*      10.1 bind to axis model
+*
+*   11.tooltip
+*      11.1 tooltip ui rebuild and fix some bugs
 *
 * */

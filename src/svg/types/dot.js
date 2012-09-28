@@ -56,8 +56,6 @@
 					series[i].data.forEach(function(item,j){
 						data = item;
                         xy = coordinate.get(j,item)
-//						posX = xAxis.getX(i,j);
-//						posY = yAxis.getY(i,j);
                         posX = xy.x;
                         posY = xy.y;
 						radius=data/total*axisLength;
@@ -71,8 +69,6 @@
                         xy = coordinate.get(key,data);
                         posX = xy.x;
                         posY = xy.y;
-//						posX = xAxis.getX(i,j);
-//						posY = yAxis.getY(i,j);
 						radius=data/total*axisLength;
 
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
@@ -83,8 +79,6 @@
                     xy = coordinate.get(i,data);
                     posX = xy.x;
                     posY = xy.y;
-//					posX = xAxis.getX(i);
-//					posY = yAxis.getY(i);
 					radius=data/total*axisLength;
 
 					elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
