@@ -257,106 +257,134 @@
             });
             this.labels = _labels;
         },
-        _initIconFactory:function(){
-            var self = this;
-            var nativeIcons = {
-                'rect':{
-                    create:function (stage, x, y, width) {
-                        return {
-                            icon:stage.rect(x-width/2, y-width/2, width, width),
-                            position:this.position,
-                            animate:this.animate,
-                            size:this.size
-                        }
-                    },
-                    size:function (w) {
-                        this.icon.attr('width', w);
-                    },
-                    position:function (x, y) {
-                        if(arguments.length==0){
-                            return{
-                                x:this.icon.attr('x') + this.icon.attr('width')/2,
-                                y:this.icon.attr('y') + this.icon.attr('width')/2
+        _initIconFactory:function () {
+            var self = this,
+            /*
+                * build-in icons for legend , line and others
+                * currently contains 'rect','circle','triangle'
+                * each icon must extends interfaces below:
+                * create{Function} ,receives stage, x, y , width and returns an object contains raphael element, size ,position,animate function
+                *          stage is the raphael instance;
+                *          x,y is the center of the element;
+                *          width is the width of the element;
+                * size{Function} , receives the 'width' param and set the width of the element
+                * position{Function}, set or get the position of the element, that is the coordinate of the center of the element
+                * animate{Function}, delegate raphael element and custom the x,y,width animation
+                *
+                * */
+                nativeIcons = {
+                    'rect':{
+                        create:function (stage, x, y, width) {
+                            return {
+                                icon:stage.rect(x - width / 2, y - width / 2, width, width),
+                                position:this.position,
+                                animate:this.animate,
+                                size:this.size
                             }
-                        }
-                        this.icon.attr({
-                            'x':x,
-                            'y':y
-                        });
-                    },
-                    animate:function (obj, duration) {
-                        if(obj.x){
-                            obj.x = obj.x - this.icon.attr('width')/2;
-                        }
-                        if(obj.y){
-                            obj.y = obj.y - this.icon.attr('width')/2;
-                        }
-                        if(obj.width){
-                            obj.height = obj.width;
-                            if(!obj.x && !obj.y){
-                                var icon = this.icon,
-                                    delta = obj.width - icon.attr('width');
-                                obj.x = icon.attr('x') - delta/2
-                                obj.y = icon.attr('y') - delta/2
+                        },
+                        size:function (w) {
+                            this.icon.attr('width', w);
+                        },
+                        position:function (x, y) {
+                            if (arguments.length == 0) {
+                                return{
+                                    x:this.icon.attr('x') + this.icon.attr('width') / 2,
+                                    y:this.icon.attr('y') + this.icon.attr('width') / 2
+                                }
                             }
+                            this.icon.attr({
+                                'x':x,
+                                'y':y
+                            });
+                        },
+                        animate:function (obj, duration) {
+                            if (obj.x) {
+                                obj.x = obj.x - this.icon.attr('width') / 2;
+                            }
+                            if (obj.y) {
+                                obj.y = obj.y - this.icon.attr('width') / 2;
+                            }
+                            if (obj.width) {
+                                obj.height = obj.width;
+                                if (!obj.x && !obj.y) {
+                                    var icon = this.icon,
+                                        delta = obj.width - icon.attr('width');
+                                    obj.x = icon.attr('x') - delta / 2;
+                                    obj.y = icon.attr('y') - delta / 2;
+                                }
+                            }
+                            this.icon.animate(obj, duration);
                         }
-                        this.icon.animate(obj, duration);
+                    },
+                    'circle':{
+                        create:function (stage, x, y, width) {
+                            return {
+                                icon:stage.circle(x, y, width / 2),
+                                position:this.position,
+                                animate:this.animate,
+                                size:this.size
+                            }
+                        },
+                        size:function (w) {
+                            this.icon.attr('r', w / 2);
+                        },
+                        position:function (x, y) {
+                            if (arguments.length == 0) {
+                                return{
+                                    x:this.icon.attr('cx'),
+                                    y:this.icon.attr('cy')
+                                }
+                            }
+                            this.icon.attr({
+                                'cx':x,
+                                'cy':y
+                            });
+                        },
+                        animate:function (obj, duration) {
+                            for (var o in obj) {
+                                if (o == 'x') {
+                                    obj.cx = obj[o];
+                                } else if (o == 'y') {
+                                    obj.cy = obj[o];
+                                } else if (o == 'width') {
+                                    obj.r = obj[o] / 2;
+                                }
+                            }
+                            delete obj.x;
+                            delete obj.y;
+                            delete obj.width;
+                            this.icon.animate(obj, duration);
+                        }
                     }
                 },
-                'circle':{
-                    create:function (stage, x, y, width) {
-                        return {
-                            icon:stage.circle(x, y, width / 2),
-                            position:this.position,
-                            animate:this.animate,
-                            size:this.size
-                        }
-                    },
-                    size:function (w) {
-                        this.icon.attr('r', w/2);
-                    },
-                    position:function (x, y) {
-                        if(arguments.length==0){
-                            return{
-                                x:this.icon.attr('cx') ,
-                                y:this.icon.attr('cy')
-                            }
-                        }
-                        this.icon.attr({
-                            'cx':x,
-                            'cy':y
-                        });
-                    },
-                    animate:function (obj, duration) {
-                        for (var o in obj) {
-                            if (o == 'x') {
-                                obj.cx = obj[o];
-                            } else if (o == 'y') {
-                                obj.cy = obj[o];
-                            } else if (o == 'width') {
-                                obj.r = obj[o] / 2;
-                            }
-                        }
-                        delete obj.x;
-                        delete obj.y;
-                        delete obj.width;
-                        this.icon.animate(obj, duration);
-                    }
-                }
-                },
+
+                /*
+                * default icon is rect
+                * */
                 defaultIcon = 'rect';
             return {
                 defaultIcon:defaultIcon,
                 icons:self.options.icons,
                 create:function (i, x, y, width) {
+                    /*
+                    * factory function to create an icon element
+                    * i{Number}:index
+                    * x,y {Number}:position of the center of the element
+                    * width{Number}:width of the element
+                     * this function will call the build-in icon create function or function parsed in the icons options
+                    *
+                    * */
                     var iconType = this.icons[i] || defaultIcon;
                     if (typeof iconType === "string") {
+                        //if string , call the build-in icons
                         return nativeIcons[iconType].create(self.stage, x, y, width);
                     } else if (util.isObject(iconType)) {
+                        //call the icons parsed in the icons options
+                        //it must implement the icon interface as build-in icons
                         return  iconType.create(self.stage, x, y, width);
                     }
                 },
-                nativeIcons: nativeIcons
+                nativeIcons:nativeIcons
             }
 
         },
@@ -1360,7 +1388,7 @@
             var width = [], height = 0,
                 bBox,
                 text,
-                paddingToBorder = 10,
+                paddingToBorder = 8,
                 p;
 
 
@@ -1368,6 +1396,10 @@
                 text = paper.text(x, -100, t);
                 labels.push(text);
                 bBox = text.getBBox();
+                //seems Raphael's bug , when contains（ ）
+                t.toString().indexOf('（')!=-1 && (bBox.width += 10);
+                t.toString().indexOf('）')!=-1 && (bBox.width += 10);
+
                 text.attr({
                     'opacity':0,
                     'font-size':12
@@ -1376,7 +1408,7 @@
             });
             if (this._venus_tooltip_show)
                 return;
-            p = path(Math.max.apply(Math, width), texts.length * bBox.height, paddingToBorder);
+            p = path(Math.max.apply(Math, width)+10, texts.length * bBox.height, paddingToBorder);
             tip = paper.path();
             labels.toFront();
             tip.attr({

@@ -44,12 +44,12 @@
                     smooth:false,           //straight line or curved line
                     dots:true,              //draw dot for each value or not
                     dotRadius:1,            //dot radius if dots enabled
-                    hoverRadius:0,          //dot hover radius
+                    hoverRadius:50,          //dot hover radius
                     area:false,             //draw area under the line or not
                     areaOpacity:0.1,        //area opacity if area enabled
                     beginAnimate:false,     //enable begin animate or not
                     dotSelect:true,         //enable dots select or not
-                    columnHover:true        //enable column hover or not
+                    columnHover:false        //enable column hover or not
                 }, opt.line),
                 dotRadius = lineOpt.dotRadius,
                 series = this.series,
@@ -79,9 +79,10 @@
             function activeDot(dot) {
                 var icon = dot._iconObj,
                     point = dot.data('point');
-                if (dot._selected_ || dot.node.style.display==="none") {
+                if (dot._selected_ || dot.node.style.display==="none" || dot._active_) {
                     return;
                 }
+                dot._active_ = true;
                 icon.animate({
                     width: dotRadius * 4
                 }, 100);
@@ -94,9 +95,10 @@
             function inActiveDot(dot){
                 var icon = dot._iconObj,
                     point = dot.data('point');
-                if (dot._selected_) {
+                if (dot._selected_ || !dot._active_) {
                     return;
                 }
+                dot._active_ = false;
                 icon.animate({
                     width: dotRadius *2
                 }, 100);
@@ -283,9 +285,7 @@
                         dotsByXAxis[d.x].push(dot);
                     });
 
-                    if(lineOpt.hoverRadius && lineOpt.hoverRadius>lineOpt.dotRadius){
 
-                    }
                 }
 
                 //save the elements
@@ -404,6 +404,39 @@
                             dot.toFront();
                         });
                     })
+                }
+                if (lineOpt.dots && lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius && !lineOpt.columnHover) {
+                    var handler = function(e){
+                        var offsetX,offsetY,
+                            boundBox,
+                            minDot, min ;
+
+                        boundBox = raphael.canvas.getBoundingClientRect();
+                        offsetX = e.clientX - boundBox.left;
+                        offsetY = e.clientY - boundBox.top;
+                        elements.forEach(function(element){
+                            element.dots && element.dots.forEach(function(dot){
+                                var point = dot.data('point'),
+                                    distance = Math.sqrt(Math.pow((point.x - offsetX),2)+Math.pow((point.y - offsetY),2));
+                                if(distance<= lineOpt.hoverRadius && (distance<=min || min===undefined)){
+                                    minDot = dot;
+                                    min = distance;
+                                }
+                            });
+                        });
+                        elements.forEach(function (element) {
+                            element.dots && element.dots.forEach(function (dot) {
+                                dot !== minDot && inActiveDot(dot);
+                            });
+                        });
+
+                        minDot && activeDot(minDot);
+                    }
+                    if(document.addEventListener){
+                        raphael.canvas.addEventListener('mousemove',handler,false);
+                    }else {
+                        raphael.canvas.attachEvent('onmousemove',handler);
+                    }
                 }
 
             }
