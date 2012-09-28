@@ -1392,7 +1392,7 @@ Venus.config={
                 count++;
             }
 
-            pathString += (  "h" + model.tickWidth + "v" + tickHeight + "v" + -tickHeight );
+            pathString += ( "h" + model.tickWidth + "v" + tickHeight + "m" + -tickHeight );
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
                 view.labelElements.push(stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
                     'font-size':this.options.fontSize
@@ -1404,7 +1404,8 @@ Venus.config={
             }
 
             view.axisElement.attr({
-                path:pathString
+                path:pathString,
+                opacity:.9
             });
             if(model.rotate){
                // view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
