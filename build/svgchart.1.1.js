@@ -1452,6 +1452,7 @@ Venus.config={
             , startX = 0
             , startY = 0
             , item
+            , icon
             , text
             , textWidth
             , totalWidth
@@ -1493,7 +1494,9 @@ Venus.config={
                 _x = startX + padding;
                 _y = startY + padding;
             }
-            item = chart.iconFactory.create(i, _x+width/2, _y+width/2, width).icon;
+            icon = chart.iconFactory.create(i, _x+width/2, _y+width/2, width)
+            item = icon.icon;
+            item._iconObj = icon;
 
             text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
                 'font-size':opt.fontSize
@@ -1516,10 +1519,25 @@ Venus.config={
         totalHeight = isVertical ? lineHeight * l + padding * 2 : padding * 2 + lineHeight;
 
         //border
+        var _lastX,_lastY;
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
             'stroke-width':1,
-            'stroke':'gray'
-        });
+            'stroke':'gray',
+            'fill':"#FFF",
+            'cursor':'move'
+        }).drag(function(dx,dy){
+                var shiftX = dx - _lastX,
+                    shiftY = dy - _lastY;
+                self.setPosition(shiftX,shiftY);
+                _lastX = dx;
+                _lastY = dy;
+            },function(){
+                _lastX = 0;
+                _lastY = 0;
+            });
+
+        itemSet.toFront();
+        textSet.toFront();
 
         this.border = border;
         this.itemSet = itemSet;
@@ -1810,11 +1828,14 @@ Venus.config={
 *   2012-09-25: version 1.1
 *   1. options change:
 *       1.1 add 'tooltip' function to config the tooltip
+*           {x:String,y:String,label:String} will be parsed to this function
 *       1.2 add 'axisUsage' to config which two axises to use
-*       1.3 axis config optimized :
+*       1.3 add 'icons' to config which icon to used for each series
+*           call this.iconFactory.create to create icons
+*       1.4 axis config optimized :
 *           tickWidth,tickSize,max,min
 *           are now optional
-*       1.4 options object now cloned and mix to default options , outer options object stays no change
+*       1.5 options object now cloned and mix to default options , outer options object stays no change
 *
 *   2. Class Axis rebuild:
 *       2.1 Axis now is separated as model and view
@@ -1829,11 +1850,34 @@ Venus.config={
 *   3. Class Series change:
 *       3.1 Series.getRange() can receive an array which is indexes of series to get the appointed range of data
 *
-*   4. Chart.coordinate added:
+*   4. Class Legend change:
+*       4.1 legend now use iconFactory to create icons
+*       4.2 legend now is dragable
+*
+*   4. Class Grid change:
+*       4.1 Grid now are bind to the axis model and rerender when model changes
+*
+*   5. Chart.coordinate added:
 *       4.1 coordinate object manages the axises and provide some services to help draw charts
 *       4.2 use coordinate.get(x,y) to replace axis.getX, axis.getY
 *
-*   5. add _initLabels() in the main drawing flow to provide the labels use by legend , tooltip , axis
+*   6. add _initLabels() in the main drawing flow to provide the labels use by legend , tooltip , axis
+*
+*   7. add _initIconFactory() in the main drawing flow to init the iconFactory object
+*
+*   8. charts are bind to the axis model and do some changes when the model change
+*
+*   9. Line Chart
+*      9.1 Line Dot now stays the same as legend both calls iconFactory to create icons
+*      9.2 Tip will show when close to dot and add 'hoverRadius' to config the response radius,default to 50
+*      9.3 set 'columnHover' default to false since the 'hoverRadius' is on
+*      9.4 use mouse event clientX,and clientY to implement columnHover instead of invisible column bars
+*
+*   10.Bar Chart
+*      10.1 bind to axis model
+*
+*   11.tooltip
+*      11.1 tooltip ui rebuild and fix some bugs
 *
 * */
 ;
@@ -2148,8 +2192,6 @@ Venus.config={
 					series[i].data.forEach(function(item,j){
 						data = item;
                         xy = coordinate.get(j,item)
-//						posX = xAxis.getX(i,j);
-//						posY = yAxis.getY(i,j);
                         posX = xy.x;
                         posY = xy.y;
 						radius=data/total*axisLength;
@@ -2163,8 +2205,6 @@ Venus.config={
                         xy = coordinate.get(key,data);
                         posX = xy.x;
                         posY = xy.y;
-//						posX = xAxis.getX(i,j);
-//						posY = yAxis.getY(i,j);
 						radius=data/total*axisLength;
 
 						elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
@@ -2175,8 +2215,6 @@ Venus.config={
                     xy = coordinate.get(i,data);
                     posX = xy.x;
                     posY = xy.y;
-//					posX = xAxis.getX(i);
-//					posY = yAxis.getY(i);
 					radius=data/total*axisLength;
 
 					elements[i].push(DotChart(paper, posX, posY, radius, colors[i], data));
@@ -2284,7 +2322,6 @@ Venus.config={
                 raphael = this.stage,
                 colors = this.colors,       //this.colors,
                 elements = [],              //save the element by series
-                dotsByXAxis = {},            //save the dots by x axis convenient for column hover
                 coordinate = self.coordinate;
 
 
@@ -2507,8 +2544,6 @@ Venus.config={
 
                         //save the dots
                         dots.push(dot);
-                        dotsByXAxis[d.x] || (dotsByXAxis[d.x] = raphael.set());
-                        dotsByXAxis[d.x].push(dot);
                     });
 
 
@@ -2596,33 +2631,6 @@ Venus.config={
 
                 }
 
-                if (lineOpt.columnHover) {
-                    //enable column hover event
-                    for (var x in dotsByXAxis) {
-                        //create an invisible rect and bind event on this rect
-                        var width = coordinate.x.model.tickWidth,
-                            height = coordinate.y.model.totalWidth;
-
-                        //use closure to avoid bug : value is always the last x
-                        (function (xValue) {
-                            var set = dotsByXAxis[xValue];
-
-                            raphael.rect(xValue - width / 2, coordinate.y.model.beginY - height, width, height).attr({
-                                'stroke':'none', 'fill':'#fff', 'opacity':0
-                            }).hover(
-                                function () {
-                                    set.forEach(function (d) {
-                                        activeDot(d);
-                                    })
-                                }, function () {
-                                    set.forEach(function (d) {
-                                        inActiveDot(d)
-                                    })
-                                });
-                        })(x);
-                    }
-
-                }
                 if (lineOpt.area) {
                     //put all the dots to front to avoid covered by area
                     elements.forEach(function (el) {
@@ -2631,7 +2639,7 @@ Venus.config={
                         });
                     })
                 }
-                if (lineOpt.dots && lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius && !lineOpt.columnHover) {
+                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius) || lineOpt.columnHover)) {
                     var handler = function(e){
                         var offsetX,offsetY,
                             boundBox,
@@ -2640,23 +2648,48 @@ Venus.config={
                         boundBox = raphael.canvas.getBoundingClientRect();
                         offsetX = e.clientX - boundBox.left;
                         offsetY = e.clientY - boundBox.top;
-                        elements.forEach(function(element){
-                            element.dots && element.dots.forEach(function(dot){
-                                var point = dot.data('point'),
-                                    distance = Math.sqrt(Math.pow((point.x - offsetX),2)+Math.pow((point.y - offsetY),2));
-                                if(distance<= lineOpt.hoverRadius && (distance<=min || min===undefined)){
-                                    minDot = dot;
-                                    min = distance;
-                                }
+                        if (!lineOpt.columnHover) {
+                            // active the latest dot
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    var point = dot.data('point'),
+                                        distance = Math.sqrt(Math.pow((point.x - offsetX), 2) + Math.pow((point.y - offsetY), 2));
+                                    if (distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
+                                        minDot = dot;
+                                        min = distance;
+                                    }
+                                });
                             });
-                        });
-                        elements.forEach(function (element) {
-                            element.dots && element.dots.forEach(function (dot) {
-                                dot !== minDot && inActiveDot(dot);
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    dot !== minDot && inActiveDot(dot);
+                                });
                             });
-                        });
-
-                        minDot && activeDot(minDot);
+                            minDot && activeDot(minDot);
+                        }else{
+                            //active the latest column dots
+                            minDot = [];
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    var point = dot.data('point'),
+                                        distance = Math.abs(point.x-offsetX);
+                                    if (distance <= coordinate.x.model.tickWidth && (distance < min || min === undefined)) {
+                                        minDot = [dot];
+                                        min = distance;
+                                    } else if (distance == min) {
+                                        minDot.push(dot);
+                                    }
+                                });
+                            });
+                            elements.forEach(function (element) {
+                                element.dots && element.dots.forEach(function (dot) {
+                                    minDot.indexOf(dot)==-1 && inActiveDot(dot);
+                                });
+                            });
+                            minDot.forEach(function(dot){
+                                activeDot(dot);
+                            });
+                        }
                     }
                     if(document.addEventListener){
                         raphael.canvas.addEventListener('mousemove',handler,false);
