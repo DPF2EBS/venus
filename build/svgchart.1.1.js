@@ -785,6 +785,8 @@ Venus.config={
                         //set pop=1 for x Axis by default
                         (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
 
+                        (thisAxisOption.percent === undefined) && (thisAxisOption.percent =.9);
+
                         //if x axis has no ticks , then auto generate ticks use series.getLabels()
                         //but getLabels() sometimes returns array of empty string depends on the data
                         if (!thisAxisOption.ticks) {
@@ -1351,7 +1353,9 @@ Venus.config={
                 tickHeight = 2,
                 labelMarginTop = 10,
                 hasTicks = opt.ticks && opt.ticks.length,
-                bbox;
+                label,
+                bbox,
+                skip;//if label text is too wide , skip some
 
             if (!view.axisElement) {
                 view.axisElement = stage.path();
@@ -1380,26 +1384,32 @@ Venus.config={
                 if (count != 0) {
                     pathString += (  "h" + model.tickWidth + "v" + tickHeight + "v" + -tickHeight );
                 }
-                view.labelElements.push(stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
-                    'font-size':this.options.fontSize
-                }));
-                if (this.options.labelRotate) {
-                    bbox = view.labelElements[count].getBBox();
-                    view.labelElements[count].rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
+                if (!skip || skip <= 1 || count % skip == 0) {
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
+                        'font-size':this.options.fontSize
+                    });
+                    view.labelElements.push(label);
+                    bbox = label.getBBox();
+                    if (this.options.labelRotate) {
+                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
+                    }
+                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
                 }
-
                 i += model.tickSize;
                 count++;
             }
 
             pathString += ( "h" + model.tickWidth + "v" + tickHeight + "m" + -tickHeight );
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
-                view.labelElements.push(stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
-                    'font-size':this.options.fontSize
-                }));
-                if (this.options.labelRotate) {
-                    bbox = view.labelElements[count].getBBox();
-                    view.labelElements[count].rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
+                if (!skip || skip <= 1 || count % skip == 0) {
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
+                        'font-size':this.options.fontSize
+                    });
+                    view.labelElements.push(label);
+                    if (this.options.labelRotate) {
+                        bbox = label.getBBox();
+                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
+                    }
                 }
             }
 
