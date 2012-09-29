@@ -12,10 +12,13 @@
 <script type="text/javascript" src="../../src/svg/svgchart_rebuild.js"></script>
 
 <script type="text/javascript" src="../../src/svg/types/line.js"></script>
-
+<script type="text/javascript" src="../../lib/canvg/rgbcolor.js"></script>
+<script type="text/javascript" src="../../lib/canvg/canvg.js"></script>
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
-
+<div>
+    <canvas width="1000" height="800" id="test" style="display: none;"></canvas>
+</div>
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
             data = [],
@@ -87,6 +90,7 @@
 
 
     var bar2 = new Venus.SvgChart(container2, data2, options2);
+    canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
 </script>
 </body>
 </html>
