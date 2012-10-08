@@ -47,13 +47,24 @@
     for (var i = 0, l = 4; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
-            arr[month] = parseInt(Math.random() * 100)
+            arr[month] = parseInt(Math.random() * 100)+(i==0?200:0)
         })
         data.push({name:i, data:arr})
     }
-    console.log(data)
     var bar = new Venus.SvgChart(container, data, options);
     options.bar.multiple = 'sidebyside';
+
+//    options.axisUsage={
+//        0:['x','y1']
+//    }
+//    options.axis.y1 = {}
+//    options.events = {
+//        onAxisInit:function () {
+//            var coordinate = this.coordinate,
+//                    x = coordinate.x;
+//            coordinate.axises['y1'].model.beginX = x.model.beginX + x.model.totalWidth
+//        }
+//    }
     container3 = document.getElementById('chart_container3');
     var bar = new Venus.SvgChart(container3, data, options);
 </script>

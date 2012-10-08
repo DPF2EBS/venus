@@ -113,30 +113,31 @@
              *
              * */
              function drawLine(arr, indexOfSeries, color, dotColor,label) {
-                var points = []
+                coordinate.use(coordinate.getAxisUse(indexOfSeries));
+                var points = [];
 
                 //put all points in the point array, ignore some missing points
-                if (util.isArray(arr)) {
-                    arr.forEach(function (d, i) {
-                        var value, point;
-                        if (util.isObject(d)) {
-                            value = d.data;
-                            label = self.labels[i];
-                        } else {
-                            value = d;
-                        }
-                        point =  pointBindModel(i,value);
-                        point.label = label;
-                        points.push(point);
-                    });
-                } else {
-                    //arr is object
-                    for (var o in arr) {
-                        var point = pointBindModel(o,arr[o])
-                        point.label = label;
-                        points.push(point);
-                    }
-                }
+                 if (util.isArray(arr)) {
+                     arr.forEach(function (d, i) {
+                         var value, point;
+                         if (util.isObject(d)) {
+                             value = d.data;
+                             label = self.labels[i];
+                         } else {
+                             value = d;
+                         }
+                         point = pointBindModel(i, value);
+                         point.label = label;
+                         points.push(point);
+                     });
+                 } else {
+                     //arr is object
+                     for (var o in arr) {
+                         var point = pointBindModel(o, arr[o])
+                         point.label = label;
+                         points.push(point);
+                     }
+                 }
 
                 if (!points.length) {
                     //no point ,return
@@ -157,6 +158,7 @@
                 points.length <= 2 && (lineOpt.smooth = false);
 
                  function path() {
+                     coordinate.use(coordinate.getAxisUse(indexOfSeries));
                      if (lineOpt.smooth) {
                          //draw smooth line
                          var x, y,
@@ -210,7 +212,7 @@
                      }
                  }
 
-                 path();
+                path();
                 var line = raphael.path().attr({
                         'stroke-width':lineOpt['line-width'],
                         'stroke':color,
@@ -339,7 +341,8 @@
                     * data is Number
                     * and draw totally one line
                     * */
-                     drawLine(data, 0, this.colors[0], undefined);
+
+                    drawLine(data, 0, this.colors[0], undefined);
                 } else if (util.isArray(data[0].data)) {
                     /*
                     * data is array and series format as :
@@ -366,6 +369,7 @@
                     bindLegendEvents();
 
                 }
+                coordinate.useDefault();
 
                 if (lineOpt.area) {
                     //put all the dots to front to avoid covered by area
@@ -408,7 +412,7 @@
                             elements.forEach(function (element) {
                                 element.dots && element.dots.forEach(function (dot) {
                                     var point = dot.data('point'),
-                                        distance = Math.abs(point.x-offsetX);
+                                        distance = Math.abs(point.x - offsetX);
                                     if (distance <= coordinate.x.model.tickWidth && (distance < min || min === undefined)) {
                                         minDot = [dot];
                                         min = distance;

@@ -150,6 +150,8 @@
                      * [{data:Number},{data:Number},...]
                      * draw each data a bar
                      * */
+
+                    coordinate.use(coordinate.getAxisUse(0));
                     series.forEach(function (d, i) {
                         var xy = coordinate.get(i, d.data);
                         if (elements[i]) {
@@ -175,7 +177,8 @@
                      * */
 
                     series.forEach(function (d, i) {
-                        var indexOfI = seriesArray.indexOf(i)
+                        coordinate.use(coordinate.getAxisUse(i));
+                        var indexOfI = seriesArray.indexOf(i);
                         if( indexOfI== -1){
                             return;
                         }
@@ -208,6 +211,7 @@
                      * */
 
                     series.forEach(function (d, i) {
+                        coordinate.use(coordinate.getAxisUse(i));
                         var indexOfI = seriesArray.indexOf(i)
                         if( indexOfI== -1){
                             return;

@@ -42,14 +42,25 @@
                 },
                 legend:{},
                 icons:{
+                    0:'triangle',
                     1:'circle'
+                },
+                axisUsage:{
+             //       0:['x','y1']
+                },
+                events:{
+//                    onAxisInit:function(){
+//                        var coordinate = this.coordinate,
+//                                x = coordinate.x;
+//                        coordinate.axises['y1'].model.beginX = x.model.beginX+ x.model.totalWidth
+//                    }
                 }
 
             }
     for (var i = 0, l = 3; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
-            arr[month] = parseInt(Math.random() * 100)
+            arr[month] = parseInt(Math.random() * 100)+(i==0?200:0)
         })
         data.push({name:i, data:arr})
     }
@@ -57,7 +68,8 @@
         name:i,
         data:[1,2,1,2,1,2,1,2,1,2,1,2]
     })
-    //var bar = new Venus.SvgChart(container, data, options);
+    console.log(data)
+    var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
@@ -65,6 +77,7 @@
             options2 = {
                 axis:{
                     x:{
+                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
                     }
@@ -75,24 +88,21 @@
                     smooth:true
                 },
                 grid:{
-                    enableColumn:true,
-                    enableRow:true
+                    enableColumn:false,
+                    enableRow:false
                 },
                 legend:{
                     direction:'horizontal'
                 }
 
             };
-//    options2.axis.x.ticks.forEach(function (month) {
-//        data2.push({name:month, data:parseInt(Math.random() * 100)})
-//    })
+    options2.axis.x.ticks.forEach(function (month) {
+        data2.push({name:month, data:parseInt(Math.random() * 100)})
+    })
 
 
-    var bar2 = new Venus.SvgChart(container2, [
-        { data: { '2012-10-3': 1.596 }, name: "domready" },
-        { data: { '2012-10-3': 2.238 }, name: "onload" }
-    ], options2);
-    //canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
+    var bar2 = new Venus.SvgChart(container2, data2, options2);
+    canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
 </script>
 </body>
 </html>

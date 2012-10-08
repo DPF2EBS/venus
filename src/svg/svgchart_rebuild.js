@@ -205,11 +205,15 @@
                     this.axises[name] = axis
                 },
 
-
                 /*
                  * use two axis to generate the coordinate
                  * */
                 use:function (x, y) {
+                    if(isObject(x)){
+                        this.x = this.axises[x.x];
+                        this.y = this.axises[x.y];
+                        return;
+                    }
                     this.x = this.axises[x];
                     this.y = this.axises[y];
                 },
@@ -284,6 +288,37 @@
                         });
                     }
                     return this.axisUsageArray[i];
+                },
+                /*
+                * get related series array
+                *
+                * */
+                getRelatedSeries:function(axisName){
+                    var result = [],
+                        axisUsage = self.options.axisUsage;
+                    if (axisName == DEFAULT_X_AXIS) {
+                        self.series.getSeries().forEach(function (s, i) {
+                            if (!axisUsage || !axisUsage[i] || !axisUsage[i][0]) {
+                                result.push(i);
+                            }
+                        });
+                    } else if (axisName == DEFAULT_Y_AXIS) {
+                        self.series.getSeries().forEach(function (s, i) {
+                            if (!axisUsage || !axisUsage[i] || !axisUsage[i][1]) {
+                                result.push(i);
+                            }
+                        });
+                    }else {
+                        self.series.getSeries().forEach(function (s, i) {
+                            if (axisUsage && axisUsage[i] && (axisUsage[i][0] === axisName || axisUsage[i][1]===axisName)) {
+                                result.push(i);
+                            }
+                        });
+                    }
+                    return result;
+                },
+                useDefault:function(){
+                    this.use(DEFAULT_X_AXIS,DEFAULT_Y_AXIS);
                 }
             };
         },
@@ -385,6 +420,118 @@
                             delete obj.width;
                             this.icon.animate(obj, duration);
                         }
+                    },
+                    'triangle':{
+                        create:function (stage, x, y, width) {
+                            return {
+                                icon:stage.path().attr({
+                                    path:['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)],
+                                    'stroke-width':0
+                                }),
+                                position:this.position,
+                                animate:this.animate,
+                                size:this.size,
+                                x:x,
+                                y:y,
+                                width:width
+                            }
+                        },
+                        size:function(width){
+                            var icon = this.icon,
+                                x = this.x,
+                                y = this.y;
+
+                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                            this.width = width;
+                        },
+                        position:function(x,y){
+                            var icon = this.icon,
+                                width = this.width;
+
+                            if (arguments.length == 0) {
+                                return{
+                                    x:this.x,
+                                    y:this.y
+                                }
+                            }
+                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                        },
+                        animate:function(obj, duration){
+                            var icon = this.icon,
+                                width = this.width,
+                                x = this.x,
+                                y = this.y
+
+                            if ('x' in obj || 'y' in obj || 'width' in obj) {
+                                width = (obj.width || width);
+                                var path = ['M',(obj.x || x) - width / 2, (obj.y || y) + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]
+                                this.x = (obj.x || x);
+                                this.y = (obj.y || y);
+                                this.width = width;
+                                obj.path = path;
+                            }
+
+                            delete obj.x;
+                            delete obj.y;
+                            delete obj.width;
+                            icon.animate(obj, duration);
+                        }
+                    },
+                    'lozenge':{
+                        create:function (stage, x, y, width) {
+                            return {
+                                icon:stage.path().attr({
+                                    path:['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)],
+                                    'stroke-width':0
+                                }),
+                                position:this.position,
+                                animate:this.animate,
+                                size:this.size,
+                                x:x,
+                                y:y,
+                                width:width
+                            }
+                        },
+                        size:function(width){
+                            var icon = this.icon,
+                                x = this.x,
+                                y = this.y;
+
+                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                            this.width = width;
+                        },
+                        position:function(x,y){
+                            var icon = this.icon,
+                                width = this.width;
+
+                            if (arguments.length == 0) {
+                                return{
+                                    x:this.x,
+                                    y:this.y
+                                }
+                            }
+                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                        },
+                        animate:function(obj, duration){
+                            var icon = this.icon,
+                                width = this.width,
+                                x = this.x,
+                                y = this.y
+
+                            if ('x' in obj || 'y' in obj || 'width' in obj) {
+                                width = (obj.width || width);
+                                var path = ['M',(obj.x || x) - width / 2, (obj.y || y) + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]
+                                this.x = (obj.x || x);
+                                this.y = (obj.y || y);
+                                this.width = width;
+                                obj.path = path;
+                            }
+
+                            delete obj.x;
+                            delete obj.y;
+                            delete obj.width;
+                            icon.animate(obj, duration);
+                        }
                     }
                 },
 
@@ -439,22 +586,9 @@
                     //set rotate 90 for y axis by default
                     (axis.indexOf('y') == 0 && !('rotate' in thisAxisOption)) && (thisAxisOption.rotate = 90);
 
-                    if (axis.indexOf('y') ==0 && !axisOption.ticks) {
+                    if (axis.indexOf('y') == 0 && !axisOption.ticks) {
                         //if y axis has no ticks , then auto generate ticks use series.getRange()
-                        if (axis == DEFAULT_Y_AXIS) {
-                            //is the default y axis
-                            this.series.getSeries().forEach(function (s, _index) {
-                                if (!opt.axisUsage ||!opt.axisUsage[_index] || opt.axisUsage[_index][1] == axis) {
-                                    seriesArray.push(_index);
-                                }
-                            });
-                        }else{
-                            this.series.getSeries().forEach(function (s, _index) {
-                                if (opt.axisUsage[_index] && opt.axisUsage[_index][1] == axis) {
-                                    seriesArray.push(_index);
-                                }
-                            });
-                        }
+                        seriesArray = coordinate.getRelatedSeries(axis);
                         //get range
                         range = this.series.getRange(seriesArray);
 
@@ -522,7 +656,12 @@
                 legendOption = opt.legend,
                 coordinate = this.coordinate,
                 series = this.series,
-                legend;
+                legend,
+                axisName,
+                axis,
+                relatedSeries,
+                activeRelatedSeries,
+                range;
 
             if (legendOption && this.series.getSeries().length) {
                 //set options for legend
@@ -536,12 +675,22 @@
 
                 legend = this.legend = new Legend(this, legendOption, this.stage);
                 legend.onActiveChange(function (active,activeArray) {
-                    if ((!coordinate.y.options.ticks || !coordinate.y.options.ticks.length ) && activeArray.length) {
-                        var range = series.getRange(legend.activeArray);
-                        coordinate.y.set({
-                            min:range.min,
-                            max:range.max
+                    for (axisName in coordinate.axises) {
+                        axis = coordinate.axises[axisName];
+                        relatedSeries = coordinate.getRelatedSeries(axisName);
+                        activeRelatedSeries = [];
+                        relatedSeries.forEach(function (i) {
+                            if (active[i]) {
+                                activeRelatedSeries.push(i);
+                            }
                         });
+                        if ((!axis.options.ticks || !axis.options.ticks.length ) && activeRelatedSeries.length) {
+                            range = series.getRange(activeRelatedSeries);
+                            axis.set({
+                                min:range.min,
+                                max:range.max
+                            });
+                        }
                     }
                 });
 
@@ -586,10 +735,12 @@
 
         },
         _initEvents:function () {
-            var opt = this.options;
+            var opt = this.options,self = this;
             if(opt.events){
                 for(var event in opt.events){
-                    this.events.on(event, opt.events[event]);
+                    this.events.on(event, function(){
+                        opt.events[event].apply(self,arguments)
+                    });
                 }
             }
         },
@@ -1037,7 +1188,11 @@
                 model = this.model,
                 stage = this.stage,
                 opt = this.options,
-                pathString = "",
+                pathAttr = {
+                    opacity:.8,
+                    'stroke-width':1
+                },
+                pathString = [],
                 beginX = model.beginX,
                 beginY = model.beginY,
                 i, l,count=0,
@@ -1052,6 +1207,14 @@
             if (!view.axisElement) {
                 view.axisElement = stage.path();
             }
+            if (view.tickElements) {
+                view.tickElements.forEach(function (t) {
+                    t.remove();
+                });
+                view.tickElements.clear();
+            } else {
+                view.tickElements = stage.set();
+            }
             if (view.labelElements) {
                 view.labelElements.forEach(function (label) {
                     label.remove();
@@ -1061,24 +1224,30 @@
                 view.labelElements = stage.set();
             }
 
-            pathString += ("M" + beginX + " " + beginY);
+            pathString.push('M', beginX, beginY,'h',model.totalWidth);
             for (i = 0, l = model.pop; i < l; i++) {
-                pathString += ("h" + model.tickWidth + "v" + tickHeight + "v" + -tickHeight);
+                view.tickElements.push(stage.path().attr({
+                    path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
+                }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
+              //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
             }
             if(hasTicks){
                 i = 0;
-                l = opt.ticks.length-1;
+                l = opt.ticks.length - 1;
             }else{
                 i = model.min;
                 l = model.max;
             }
-            if(model.tickSize<1){
+            if (model.tickSize < 1) {
                 mul = model.tickSize.toString().split('.')[1].length;
                 mul = Math.pow(10, mul || 0);
             }
             while (i < l) {
                 if (count != 0) {
-                    pathString += (  "h" + model.tickWidth + "v" + tickHeight + "v" + -tickHeight );
+                  //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
+                    view.tickElements.push(stage.path().attr({
+                        path:['M', beginX + (count + model.pop) * model.tickWidth, beginY, 'v', tickHeight]
+                    }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
                     label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
@@ -1095,7 +1264,7 @@
                 count++;
             }
 
-            pathString += ( "h" + model.tickWidth + "v" + tickHeight + "m" + -tickHeight );
+         //   pathString.push("h", model.tickWidth, "v", tickHeight);
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
                 if (!skip || skip <= 1 || count % skip == 0) {
                     label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
@@ -1110,12 +1279,11 @@
             }
 
             view.axisElement.attr({
-                path:pathString,
-                opacity:.9
-            });
+                path:pathString
+            }).attr(pathAttr);
             if(model.rotate){
                // view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
-                view.axisElement.transform('R'+(360-model.rotate)+","+model.beginX+','+model.beginY)
+                view.axisElement.transform('R' + (360 - model.rotate) + "," + model.beginX + ',' + model.beginY);
             }
 
             if (!this.options.enable) {
@@ -1148,6 +1316,8 @@
                 format:'{name}',            //format of the texts
                 fontSize:12,                //text font size
                 colors:[],                  //colors ,parsed as the dpchart.colors
+                borderWidth:.8,
+                borderColor:'gray',
                 direction:'vertical'       //how to layout the items
             }, i, l
             , series = chart.series
@@ -1228,8 +1398,9 @@
         //border
         var _lastX,_lastY;
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
-            'stroke-width':1,
-            'stroke':'gray',
+            'stroke-width':opt.borderWidth,
+            'stroke':opt.borderColor,
+            'opacity':opt.borderWidth,
             'fill':"#FFF",
             'cursor':'move'
         }).drag(function(dx,dy){
