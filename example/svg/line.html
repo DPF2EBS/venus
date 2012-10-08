@@ -57,7 +57,7 @@
         name:i,
         data:[1,2,1,2,1,2,1,2,1,2,1,2]
     })
-    var bar = new Venus.SvgChart(container, data, options);
+    //var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
@@ -65,7 +65,6 @@
             options2 = {
                 axis:{
                     x:{
-                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
                     }
@@ -84,13 +83,16 @@
                 }
 
             };
-    options2.axis.x.ticks.forEach(function (month) {
-        data2.push({name:month, data:parseInt(Math.random() * 100)})
-    })
+//    options2.axis.x.ticks.forEach(function (month) {
+//        data2.push({name:month, data:parseInt(Math.random() * 100)})
+//    })
 
 
-    var bar2 = new Venus.SvgChart(container2, data2, options2);
-    canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
+    var bar2 = new Venus.SvgChart(container2, [
+        { data: { '2012-10-3': 1.596 }, name: "domready" },
+        { data: { '2012-10-3': 2.238 }, name: "onload" }
+    ], options2);
+    //canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
 </script>
 </body>
 </html>
