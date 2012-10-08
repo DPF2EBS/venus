@@ -135,4 +135,41 @@
 
    }
 
+    /*
+    * add and multiple function to fix float number bug
+    * */
+
+
+    util.number = {
+        add:function () {
+            var args = Array.prototype.slice.call(arguments,0),
+                mul = 1,
+                sum = 0;
+            args.forEach(function (number) {
+                if (number.toString().indexOf('.') != -1) {
+                    mul = Math.pow(10, number.toString().split('.')[1].length);
+                }
+            });
+            args.forEach(function (num) {
+                sum += num * mul;
+            });
+            return sum / mul;
+        },
+        multiple:function () {
+            var args = Array.prototype.slice.call(arguments,0),
+                mul = 1,
+                divider = 1,
+                sum = 1;
+            args.forEach(function (number) {
+                if (number.toString().indexOf('.') != -1) {
+                    mul = Math.pow(10, number.toString().split('.')[1].length);
+                    sum *= (number * mul);
+                    divider *= mul;
+                } else {
+                    sum *= number;
+                }
+            });
+            return sum / divider;
+        }
+    }
 })();

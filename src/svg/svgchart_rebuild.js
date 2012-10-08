@@ -104,7 +104,12 @@
                // return obj.label + " " + obj.x + " " + obj.y;
                 return obj.y;
             },
-            icons:{}
+            icons:{
+                0:'rect',
+                1:'triangle',
+                2:'circle',
+                3:'lozenge'
+            }
         }, self = this;
 
         //clone and mix options
@@ -481,7 +486,7 @@
                         create:function (stage, x, y, width) {
                             return {
                                 icon:stage.path().attr({
-                                    path:['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)],
+                                    path:['M', x - width / 2, y , 'l', width / 2, -width / 2 , 'l', width / 2, width / 2 ,'l',-width/2,width/2,'l',-width/2,-width/2],
                                     'stroke-width':0
                                 }),
                                 position:this.position,
@@ -497,7 +502,7 @@
                                 x = this.x,
                                 y = this.y;
 
-                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                            icon.attr('path',['M', x - width / 2, y , 'l', width / 2, -width / 2 , 'l', width / 2, width / 2 ,'l',-width/2,width/2,'l',-width/2,-width/2]);
                             this.width = width;
                         },
                         position:function(x,y){
@@ -510,7 +515,7 @@
                                     y:this.y
                                 }
                             }
-                            icon.attr('path',['M', x - width / 2, y + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]);
+                            icon.attr('path',['M', x - width / 2, y , 'l', width / 2, -width / 2 , 'l', width / 2, width / 2 ,'l',-width/2,width/2,'l',-width/2,-width/2]);
                         },
                         animate:function(obj, duration){
                             var icon = this.icon,
@@ -520,7 +525,7 @@
 
                             if ('x' in obj || 'y' in obj || 'width' in obj) {
                                 width = (obj.width || width);
-                                var path = ['M',(obj.x || x) - width / 2, (obj.y || y) + width / 2 * Math.tan(PI / 6), 'l', width / 2, -width / 2 * Math.tan(PI / 3), 'l', width / 2, width / 2 * Math.tan(PI / 3)]
+                                var path = ['M', (obj.x||x) - width / 2, (obj.y || y) , 'l', width / 2, -width / 2 , 'l', width / 2, width / 2 ,'l',-width/2,width/2,'l',-width/2,-width/2]
                                 this.x = (obj.x || x);
                                 this.y = (obj.y || y);
                                 this.width = width;
@@ -1141,7 +1146,7 @@
                 dSolution ,
                 dMultiCal,
                 dInterval,
-                start, end, mul = 1;
+                start, end;
 
             totalTick = totalTick || 5;
 
@@ -1161,18 +1166,13 @@
                 }
             }
             dInterval = iMultiplier * dSolution[i];
-            //fix float bug
-            if(dInterval<1){
-                mul = dInterval.toString().split('.')[1].length;
-                mul = Math.pow(10, mul || 0);
-            }
 
            // start = (Math.ceil(min / dInterval) - 1) * dInterval;
-            start = Math.abs(min) == dInterval ? ( min - dInterval) : Math.floor(min / dInterval) * (dInterval*mul)/mul;
+            start = Math.abs(min) == dInterval ? ( min - dInterval) : util.number.multiple(Math.floor(min / dInterval) ,dInterval);
             for (i = 0; 1; i++) {
                 if (start + dInterval * i > max)
                     break;
-                end = (start*mul + dInterval * (i + 1)*mul) / mul;
+                end = util.number.add(start, dInterval * (i + 1));
             }
 
 
@@ -1201,7 +1201,6 @@
                 hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
-                mul = 1,
                 skip;//if label text is too wide , skip some
 
             if (!view.axisElement) {
@@ -1238,10 +1237,6 @@
                 i = model.min;
                 l = model.max;
             }
-            if (model.tickSize < 1) {
-                mul = model.tickSize.toString().split('.')[1].length;
-                mul = Math.pow(10, mul || 0);
-            }
             while (i < l) {
                 if (count != 0) {
                   //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
@@ -1260,7 +1255,7 @@
                     }
                     skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
                 }
-                i  = (i *mul+ (model.tickSize*mul))/mul;
+                i = util.number.add(i, model.tickSize);
                 count++;
             }
 

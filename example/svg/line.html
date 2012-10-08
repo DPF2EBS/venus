@@ -41,10 +41,6 @@
                     enableColumn:true
                 },
                 legend:{},
-                icons:{
-                    0:'triangle',
-                    1:'circle'
-                },
                 axisUsage:{
              //       0:['x','y1']
                 },
@@ -60,14 +56,14 @@
     for (var i = 0, l = 3; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
-            arr[month] = parseInt(Math.random() * 100)+(i==0?200:0)
+            arr[month] = Math.random().toFixed(2)
         })
         data.push({name:i, data:arr})
     }
-    data.push({
-        name:i,
-        data:[1,2,1,2,1,2,1,2,1,2,1,2]
-    })
+//    data.push({
+//        name:i,
+//        data:[1,2,1,2,1,2,1,2,1,2,1,2]
+//    })
     console.log(data)
     var bar = new Venus.SvgChart(container, data, options);
 </script>
