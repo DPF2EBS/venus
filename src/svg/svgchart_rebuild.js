@@ -1029,7 +1029,7 @@
                 max:end,
                 min:start,
                 step:dInterval,
-                total: parseInt((end-start)/dInterval +1)
+                total:Math.round((end - start) /dInterval ) + 1
             }
         },
         render:function(){
