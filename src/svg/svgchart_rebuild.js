@@ -601,6 +601,11 @@
                     charts[chart].draw && charts[chart].draw.call(this, chartOption);
                 }
             }
+        },
+        destroy:function(){
+            this.stage && this.stage.clear();
+            this.stage = null;
+            this.container.innerHTML = "";
         }
     };
 
@@ -1024,8 +1029,7 @@
                 max:end,
                 min:start,
                 step:dInterval,
-                total: parseInt((end-start)/dInterval +1),
-                mul:mul
+                total: parseInt((end-start)/dInterval +1)
             }
         },
         render:function(){
