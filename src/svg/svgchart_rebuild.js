@@ -121,7 +121,11 @@
 
             /*
             * threshold lines
-            *
+            * {
+            *     y:{
+            *         value:10
+            *     }
+            * }
             * */
             threshold:{
 
@@ -166,6 +170,9 @@
 
         // draw
         this._draw();
+
+        // init threshold line
+        this._initThreshold();
 
         // render axis ui
         this._renderAxis();
@@ -233,10 +240,14 @@
                     if(isObject(x)){
                         this.x = this.axises[x.x];
                         this.y = this.axises[x.y];
+                        this.xName = x.x;
+                        this.yName = x.y;
                         return;
                     }
                     this.x = this.axises[x];
                     this.y = this.axises[y];
+                    this.xName = x;
+                    this.yName = y;
                 },
 
                 /*
@@ -340,6 +351,15 @@
                 },
                 useDefault:function(){
                     this.use(DEFAULT_X_AXIS,DEFAULT_Y_AXIS);
+                },
+                type:function(axis){
+                    return axis.indexOf('x') == 0 ? 'x' : 'y';
+                },
+                isX:function(axis){
+                    return this.type(axis)=='x';
+                },
+                isY:function(axis){
+                    return this.type(axis)=='y';
                 }
             };
         },
@@ -605,9 +625,9 @@
                 //init each axis in options.axis
                 if ((thisAxisOption = axisOption[axis])) {
                     //set rotate 90 for y axis by default
-                    (axis.indexOf('y') == 0 && !('rotate' in thisAxisOption)) && (thisAxisOption.rotate = 90);
+                    (coordinate.isY(axis) && !('rotate' in thisAxisOption)) && (thisAxisOption.rotate = 90);
 
-                    if (axis.indexOf('y') == 0 && !axisOption.ticks) {
+                    if (coordinate.isY(axis) && !axisOption.ticks) {
                         //if y axis has no ticks , then auto generate ticks use series.getRange()
                         seriesArray = coordinate.getRelatedSeries(axis);
                         //get range
@@ -617,7 +637,7 @@
                         thisAxisOption.max === undefined && (thisAxisOption.max = range.max);
                         thisAxisOption.min === undefined && (thisAxisOption.min = range.min);
                     }
-                    if (axis.indexOf('x') == 0) {
+                    if (coordinate.isX(axis)) {
                         //set pop=1 for x Axis by default
                         (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
 
@@ -636,9 +656,9 @@
                     thisAxis = new Axis(thisAxisOption, this.series, this.stage);
                     coordinate.push(axis, thisAxis);
 
-                    if (axis.indexOf('x') == 0) {
+                    if (coordinate.isX(axis)) {
                         beginX = Math.min(beginX || opt.width, (opt.width - thisAxis.model.totalWidth) / 2);
-                    } else if (axis.indexOf('y') == 0) {
+                    } else if (coordinate.isY(axis)) {
                         beginY = Math.min(beginY || opt.width, (opt.height - thisAxis.model.totalWidth) / 2);
                     }
                 }
@@ -650,7 +670,7 @@
                 coordinate.axises[axis].model.beginX = beginX;
                 coordinate.axises[axis].model.beginY = opt.height - beginY;
             }
-            this.coordinate.use('x', 'y');
+            this.coordinate.use(DEFAULT_X_AXIS, DEFAULT_Y_AXIS);
 
             //set this property false
             //and before it is true , set model will not immediately rerender the ui
@@ -754,6 +774,21 @@
                 grid.render();
             });
 
+        },
+        _initThreshold:function(){
+            var options = this.options,
+                coordinate = this.coordinate,
+                threshold = options.threshold,
+                axisName,
+                axis,value;
+
+            if (threshold && util.isObject(threshold)) {
+                for (var axisName in threshold) {
+                    if ((axis = coordinate.axises[axisName]) && util.isObject(threshold[axisName]) && (value = threshold[axisName].value)){
+                        new Threshold(axisName,value,coordinate,this.stage);
+                    }
+                }
+            }
         },
         _initEvents:function () {
             var opt = this.options,self = this;
@@ -1562,6 +1597,61 @@
                     self.columns.push(paper.path('M' + value + "," + options._y + "v" + -options.height).attr(lineAttr));
                 });
                 self.columns.toBack();
+            }
+        }
+    }
+
+    var Threshold = function(axisName,value,coordinate,stage){
+        this.axisName = axisName;
+        this.stage = stage;
+        this.axis = coordinate.axises[axisName];
+        this.type = coordinate.type(axisName);
+        this.value = value;
+        this.coordinate = coordinate;
+        this.render();
+    }
+    Threshold.prototype = {
+        constructor:Threshold,
+        render:function(){
+            var width,
+                coordinate = this.coordinate,
+                triangleWidth = 10,
+                pos = this.getPosition(this.value);
+
+            width = this.type=='x'? coordinate.y.model.totalWidth: coordinate.x.model.totalWidth;
+            this.line = this.stage.path().attr({
+               path:['M',pos.x,pos.y,'v',-triangleWidth/2,'l',triangleWidth,triangleWidth/2,'h',width-triangleWidth,'m',triangleWidth-width,0,'l',-triangleWidth,triangleWidth/2,'v',-triangleWidth/2],
+               'fill':'red',
+                'stroke':'red'
+            });
+
+        },
+        moveTo:function(value){
+
+        },
+        getPosition:function(value){
+            var coordinate = this.coordinate,
+                x = coordinate.xName,
+                y = coordinate.yName,
+                xy;
+
+            if(this.type==="x"){
+                coordinate.use(this.axisName,y);
+                xy = coordinate.get(value);
+                coordinate.use(x,y);
+                return {
+                    x:xy.x,
+                    y:this.axis.model.beginY
+                }
+
+            }else{
+                coordinate.use(x,this.axisName);
+                xy = coordinate.get(undefined,value);
+                coordinate.use(x,y);
+                return {
+                    x:this.axis.model.beginX,
+                    y:xy.y
+                }
             }
         }
     }

@@ -49,6 +49,11 @@
 //                                x = coordinate.x;
 //                        coordinate.axises['y1'].model.beginX = x.model.beginX+ x.model.totalWidth
 //                    }
+                },
+                threshold:{
+                    y:{
+                        value:0.5
+                    }
                 }
 
             }
@@ -63,7 +68,7 @@
 //        name:i,
 //        data:[1,2,1,2,1,2,1,2,1,2,1,2]
 //    })
-   // var bar = new Venus.SvgChart(container, data, options);
+    var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
