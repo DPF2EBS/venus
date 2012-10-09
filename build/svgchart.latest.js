@@ -407,7 +407,8 @@ Venus.config={
         , charts = {}
 
         , DEFAULT_Y_AXIS = "y"
-        , DEFAULT_X_AXIS = "x";
+        , DEFAULT_X_AXIS = "x"
+        , UNDER_TICK = 'under-tick';
 
 
     /*Chart Begin*/
@@ -491,10 +492,6 @@ Venus.config={
                 return obj.y;
             },
             icons:{
-                0:'rect',
-                1:'triangle',
-                2:'circle',
-                3:'lozenge'
             }
         }, self = this;
 
@@ -1378,6 +1375,7 @@ Venus.config={
             _svgWidth:0,
             _svgHeight:0,
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
+            labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
             fontSize:12             //label font size
         };
@@ -1631,7 +1629,7 @@ Venus.config={
                     }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth) - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
@@ -1648,7 +1646,7 @@ Venus.config={
          //   pathString.push("h", model.tickWidth, "v", tickHeight);
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth)- (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
@@ -1721,7 +1719,7 @@ Venus.config={
             , padding = 10
             , names
             , colors
-            , isVertical,
+            , isVertical, _x,_y ,
             left , top,
             active, activeEvent, activeArray,
             self = this,
@@ -1736,33 +1734,30 @@ Venus.config={
         names = options.names;
 
         //vertical or horizontal
-        isVertical = opt.direction == 'vertical';
+        isVertical = (opt.direction == 'vertical');
 
         //used to compute the total width
         isVertical ? totalWidth = [] : totalWidth = 0;
 
+        startX = padding;
+        startY = padding;
+
         for (i = 0, l = data.length; i < l; i++) {
             //create the raphael elements
-            var _x , _y;
-            if (isVertical) {
-                _x = startX + padding;
-                _y = startY + padding + i * lineHeight;
-
-            } else {
-                _x = startX + padding;
-                _y = startY + padding;
-            }
-            icon = chart.iconFactory.create(i, _x+width/2, _y+width/2, width)
+            _x = startX;
+            _y = startY;
+            icon = chart.iconFactory.create(i, _x+width/2, _y+lineHeight/2, width);
             item = icon.icon;
             item._iconObj = icon;
 
-            text = isVertical ? paper.text(startX + width + span + padding, startY + padding + i * lineHeight + width / 2, names[i]) : paper.text(startX + width + span + padding, startY + padding + lineHeight / 2, names[i]).attr({
+            text = paper.text(_x + width + span, _y + lineHeight/ 2, names[i]).attr({
                 'font-size':opt.fontSize
             });
 
             textWidth = text.getBBox().width;
             text.translate(textWidth / 2, 0);
-            isVertical || (startX += (width + padding + span + textWidth));
+
+            isVertical ? startY += lineHeight : startX += (width + span * 2 + textWidth);
 
             item.attr({
                 'fill':colors[i],
@@ -1773,7 +1768,7 @@ Venus.config={
             textSet.push(text);
             isVertical ? totalWidth.push(textWidth) : totalWidth += textWidth;
         }
-        totalWidth = isVertical ? Math.max.apply(Math, totalWidth) + width + span + padding * 2 : (width + span) * l + (l + 1) * padding + totalWidth;
+        totalWidth = isVertical ? Math.max.apply(Math, totalWidth) + width + span + padding * 2 : width * l + (2 * l - 1) * span + padding * 2 + totalWidth;
         totalHeight = isVertical ? lineHeight * l + padding * 2 : padding * 2 + lineHeight;
 
         //border
@@ -2111,10 +2106,10 @@ Venus.config={
 *
 *   4. Class Legend change:
 *       4.1 legend now use iconFactory to create icons
-*       4.2 legend now is dragable
+*       4.2 legend now is draggable
 *
 *   4. Class Grid change:
-*       4.1 Grid now are bind to the axis model and rerender when model changes
+*       4.1 Grid now are bind to the axis model and re-render when model changes
 *
 *   5. Chart.coordinate added:
 *       4.1 coordinate object manages the axises and provide some services to help draw charts
@@ -2134,6 +2129,7 @@ Venus.config={
 *
 *   10.Bar Chart
 *      10.1 bind to axis model
+*      10.2 set x axis label and bars between ticks
 *
 *   11.tooltip
 *      11.1 tooltip ui rebuild and fix some bugs
@@ -2302,7 +2298,7 @@ Venus.config={
                                 height:coordinate.y.model.beginY - xy.y
                             }, duration);
                         } else {
-                            elements[i] = drawBar(xy.x - xTickWidth / 4, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
+                            elements[i] = drawBar(xy.x - xTickWidth / 4 - xTickWidth / 2, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
                                 x:xy.xTick,
                                 y:xy.yTick,
                                 label:self.labels[i]
@@ -2330,13 +2326,13 @@ Venus.config={
                             sumY[j] += p.height;
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x,
+                                    x:p.x - xTickWidth/2,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -2366,13 +2362,13 @@ Venus.config={
 
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x,
+                                    x:p.x - xTickWidth/2,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -2387,6 +2383,7 @@ Venus.config={
             if (series.length) {
                 render();
                 bindLegendEvents();
+                coordinate.x.options.labelPosition = "between_ticks";
                 coordinate.y.on(function () {
                     render(self.legend.activeArray);
                 });
