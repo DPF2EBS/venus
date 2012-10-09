@@ -12,8 +12,6 @@
 <script type="text/javascript" src="../../src/svg/svgchart_rebuild.js"></script>
 
 <script type="text/javascript" src="../../src/svg/types/line.js"></script>
-<script type="text/javascript" src="../../lib/canvg/rgbcolor.js"></script>
-<script type="text/javascript" src="../../lib/canvg/canvg.js"></script>
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <div id="chart_container2" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
 <div>
@@ -65,12 +63,11 @@
 //        name:i,
 //        data:[1,2,1,2,1,2,1,2,1,2,1,2]
 //    })
-    console.log(data)
-    var bar = new Venus.SvgChart(container, data, options);
+   // var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
-            data2 = [],
+            data2 = [1,1,1,1,1,1,1,1,1],
             options2 = {
                 axis:{
                     x:{
@@ -93,13 +90,12 @@
                 }
 
             };
-    options2.axis.x.ticks.forEach(function (month) {
-        data2.push({name:month, data:parseInt(Math.random() * 100)})
-    })
+//    options2.axis.x.ticks.forEach(function (month) {
+//        data2.push({name:month, data:parseInt(Math.random() * 100)})
+//    })
 
 
     var bar2 = new Venus.SvgChart(container2, data2, options2);
-    canvg('test',container2.innerHTML, { ignoreMouse: true, ignoreAnimation: true })
 </script>
 </body>
 </html>

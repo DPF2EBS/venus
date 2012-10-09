@@ -105,7 +105,26 @@
                // return obj.label + " " + obj.x + " " + obj.y;
                 return obj.y;
             },
+
+            /*
+            * config series icons
+            * {
+            *     0:"rect",
+            *     1:"circle",
+            *     2:"triangle",
+            *     3:"lozenge"
+            * }
+            *
+            * */
             icons:{
+            },
+
+            /*
+            * threshold lines
+            *
+            * */
+            threshold:{
+
             }
         }, self = this;
 
@@ -1152,7 +1171,15 @@
 //                max += ( 1 - iDelta) / 2;
 //                min -= ( 1 - iDelta) / 2;
 //            }
-            iDelta = max - min;
+//            iDelta = max - min;
+            if(iDelta==0){
+                return {
+                    max:max,
+                    min:max - Math.abs(max),
+                    total:2,
+                    step: Math.abs(max)
+                }
+            }
 
             iExp = parseInt(Math.log(iDelta) / Math.log(10)) - 2;
             iMultiplier = Math.pow(10, iExp);
@@ -1187,7 +1214,7 @@
                 stage = this.stage,
                 opt = this.options,
                 pathAttr = {
-                    opacity:.8,
+                    'opacity':.8,
                     'stroke-width':1
                 },
                 pathString = [],
