@@ -161,7 +161,7 @@
                                 height:coordinate.y.model.beginY - xy.y
                             }, duration);
                         } else {
-                            elements[i] = drawBar(xy.x - xTickWidth / 4, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
+                            elements[i] = drawBar(xy.x - xTickWidth / 4 - xTickWidth / 2, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
                                 x:xy.xTick,
                                 y:xy.yTick,
                                 label:self.labels[i]
@@ -189,13 +189,13 @@
                             sumY[j] += p.height;
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x,
+                                    x:p.x - xTickWidth/2,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -225,13 +225,13 @@
 
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x,
+                                    x:p.x - xTickWidth/2,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -246,6 +246,7 @@
             if (series.length) {
                 render();
                 bindLegendEvents();
+                coordinate.x.options.labelPosition = "between_ticks";
                 coordinate.y.on(function () {
                     render(self.legend.activeArray);
                 });
