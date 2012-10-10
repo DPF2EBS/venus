@@ -42,7 +42,7 @@
                     distance = coordinate.distance(coordinate.x,{x:x,y:y});
                 if (barOptions.beginAnimate) {
                     if(isHorizontal()){
-                        if (distance > 0) {
+                        if (distance >= 0) {
                             bar = paper.rect(x, y, 0, height, barOptions.radius).animate({width:width}, 500);
                         } else {
                             bar = paper.rect(coordinate.x.model.beginX, y, 0, height, barOptions.radius).animate({
@@ -64,7 +64,7 @@
                     'opacity':barOptions.opacity || 1
                 }).hover(function (e) {
                         if(isHorizontal()){
-                            if(distance>0){
+                            if(distance>=0){
                                 this.toolTip(paper, this.attr('x') + this.attr('width'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'right');
                             }else{
                                 this.toolTip(paper, this.attr('x'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'left');

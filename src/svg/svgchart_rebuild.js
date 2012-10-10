@@ -1537,7 +1537,6 @@
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
             'stroke-width':opt.borderWidth,
             'stroke':opt.borderColor,
-            'opacity':opt.borderWidth,
             'fill':"#FFF",
             'cursor':'move'
         }).drag(function(dx,dy){
@@ -1549,14 +1548,15 @@
             },function(){
                 _lastX = 0;
                 _lastY = 0;
+                self.toFront();
             });
 
-        itemSet.toFront();
-        textSet.toFront();
 
         this.border = border;
         this.itemSet = itemSet;
         this.textSet = textSet;
+
+        this.toFront();
 
         //convert position string to value
         if (typeof (left = this.options.position[0]) == "string") {
@@ -1625,6 +1625,11 @@
         },
         onActiveChange:function (fn) {
             this.activeEvent.on('change', fn);
+        },
+        toFront:function(){
+            this.border.toFront();
+            this.itemSet.toFront();
+            this.textSet.toFront();
         }
     }
 
