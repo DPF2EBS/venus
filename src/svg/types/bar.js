@@ -38,10 +38,19 @@
              *
              * */
             function drawBar(x, y, width, height, color, tipObj) {
-                var bar
+                var bar,
+                    distance = coordinate.distance(coordinate.x,{x:x,y:y});
                 if (barOptions.beginAnimate) {
                     if(isHorizontal()){
-                        bar = paper.rect(x, y, 0, height, barOptions.radius).animate({width:width}, 500);
+                        if (distance > 0) {
+                            bar = paper.rect(x, y, 0, height, barOptions.radius).animate({width:width}, 500);
+                        } else {
+                            bar = paper.rect(coordinate.x.model.beginX, y, 0, height, barOptions.radius).animate({
+                                width:width,
+                                x:x
+                            }, 500);
+                        }
+
                     }else{
                         bar = paper.rect(x, coordinate.y.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
                     }
@@ -55,7 +64,11 @@
                     'opacity':barOptions.opacity || 1
                 }).hover(function (e) {
                         if(isHorizontal()){
-                            this.toolTip(paper, this.attr('x') + this.attr('width'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'right');
+                            if(distance>0){
+                                this.toolTip(paper, this.attr('x') + this.attr('width'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'right');
+                            }else{
+                                this.toolTip(paper, this.attr('x'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'left');
+                            }
                         }else{
                             this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
                         }
@@ -104,27 +117,30 @@
                     xTickWidth = coordinate.x.model.tickWidth,
                     xTickSize = coordinate.x.model.tickSize,
                     beginY = coordinate.x.model.beginY,
-                    times = 5; // width/space=times
+                    times = 5, // width/space=times
+                    distance ;
 
+                distance = coordinate.distance(coordinate.x, xy);
                 if (barOptions.multiple == sideBySide) {
                     var total = xTickWidth / xTickSize * .8,
                         space = total / ((times + 1) * count + 1),
                         bWidth = times * space;
 
                     if (isHorizontal()) {
+                        distance < 0 ? (x = coordinate.x.model.beginX - coordinate.size().width -distance) : (x = coordinate.x.model.beginX);
                         return {
-                            x:coordinate.x.model.beginX,
-                            y:oY - total/2+ i* bWidth+(i+1)*space+ xTickWidth/2,
-                            width:Math.abs(coordinate.distance(coordinate.x, xy)),
+                            x:x,
+                            y:oY - total / 2 + i * bWidth + (i + 1) * space + xTickWidth / 2,
+                            width:distance > 0 ? distance : coordinate.size().width + distance,
                             height:bWidth,
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
                     } else {
+                        distance < 0 ? (y = oY) : (y = oY - Math.abs(distance));
                         x = oX - total / 2 + i * bWidth + (i + 1) * space;
-                        y = oY;
                         return {
-                            x:x - xTickWidth/2,
+                            x:x - xTickWidth / 2,
                             y:y,
                             width:bWidth,
                             height:beginY - y,
@@ -132,19 +148,20 @@
                             yTick:xy.yTick
                         }
                     }
-                }else{
+                } else {
                     if (isHorizontal()) {
+                        distance < 0 ? (x = coordinate.x.model.beginX - coordinate.size().width - distance - sumY) : (x = coordinate.x.model.beginX + sumY);
                         return {
-                            x:sumY + coordinate.y.model.beginX,
+                            x:x,
                             y:oY + xTickWidth / 4,
-                            width:Math.abs(coordinate.distance(coordinate.x, xy)),
+                            width:distance > 0 ? distance : coordinate.size().width + distance,
                             height:xTickWidth / 2,
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
                     } else {
                         return {
-                            x:oX - xTickWidth / 4 - xTickWidth/2,
+                            x:oX - xTickWidth / 4 - xTickWidth / 2,
                             y:oY - sumY,
                             width:xTickWidth / 2,
                             height:beginY - oY,
@@ -187,39 +204,20 @@
 
                     coordinate.use(coordinate.getAxisUse(0));
                     series.forEach(function (d, i) {
-                        var xTickWidth = coordinate.x.model.tickWidth,
-                            xy = coordinate.get(i, d.data),
-                            isH = isHorizontal(),
-                            x, y, width, height;
-                        if (isH) {
-                            x = coordinate.x.model.beginX;
-                            y = xy.y + xTickWidth / 4;
-                            width = Math.abs(coordinate.distance( coordinate.x,xy));
-                            height = xTickWidth / 2;
-                        } else {
-                            x = xy.x - xTickWidth / 4 - xTickWidth / 2;
-                            y = xy.y;
-                            width = xTickWidth / 2;
-                            height = coordinate.y.model.beginY - xy.y;
-                        }
-
+                        var p = getPositions(i, d.data, 0, 1);
                         if (elements[i]) {
                             //change , animate
-                            if(isH){
-                                elements[i].animate({
-                                    width:width
-                                }, duration);
-                            }else{
-                                elements[i].animate({
-                                    y:xy.y,
-                                    height:height
-                                }, duration);
-                            }
+                            elements[i].animate({
+                                x:p.x,
+                                y:p.y,
+                                width:p.width,
+                                height:p.height
+                            }, duration);
                         } else {
                             //init and draw
-                            elements[i] = drawBar(x, y, width, height, colors[i], {
-                                x:xy.xTick,
-                                y:xy.yTick,
+                            elements[i] = drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                x:p.xTick,
+                                y:p.yTick,
                                 label:self.labels[i]
                             });
                         }
