@@ -272,8 +272,10 @@
                         } else {
                             xTick = xOpt.ticks[key];
                         }
-                        // x = key*(xModel.totalWidth - xModel.pop* xModel.tickWidth)/(xOpt.ticks.length-1) + xModel.beginX+ xModel.pop* xModel.tickWidth;
-                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth + xModel.beginX
+                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
+                    } else {
+                        x = 0;
+                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
                     }
                     if (value != undefined) {
                         if (yOpt.ticks && yOpt.ticks.length) {
@@ -282,18 +284,67 @@
                                     value = i;
                                 }
                             });
-                            y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
                         } else {
-                            y = yModel.beginY - ( value - yModel.min) * yModel.tickWidth / yModel.tickSize - yModel.pop * yModel.tickWidth;
+                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
                         }
                         yTick = value;
+                    } else {
+                        y = 0;
+                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
                     }
+                    if (xModel.rotate == 90 && yModel.rotate == 0) {
+                        //x axis is vertical and y axis is horizontal
+                        return {
+                            y:xModel.beginY - x,
+                            x:yModel.beginX + y,
+                            xTick:xTick,
+                            yTick:yTick
+                        }
+                    } else {
+                        return {
+                            x:xModel.beginX + x,
+                            y:yModel.beginY - y,
+                            xTick:xTick,
+                            yTick:yTick
+                        }
+                    }
+                },
 
+                /*
+                * get the size of the coordinate
+                * */
+
+                size:function () {
+                    var width, height;
+                    if (this.x.model.rotate == 90) {
+                        height = this.x.model.totalWidth;
+                    } else {
+                        width = this.x.model.totalWidth;
+                    }
+                    if (this.y.model.rotate == 90) {
+                        height = this.y.model.totalWidth;
+                    } else {
+                        width = this.y.model.totalWidth;
+                    }
                     return {
-                        x:x,
-                        y:y,
-                        xTick:xTick,
-                        yTick:yTick
+                        width:width,
+                        height:height
+                    }
+                },
+
+                /*
+                * get the distance from an point to an axis
+                * point - axis
+                * it could be negative
+                * */
+
+                distance:function(axis,point){
+                    if(axis.model.rotate==0){
+                        return point.y - axis.model.beginY;
+                    }else{
+                        return point.x - axis.model.beginX;
                     }
                 },
 
@@ -650,27 +701,48 @@
                         }
                     }
 
+                    if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
+                        thisAxisOption.opposite = true;
+                    }
+
                     thisAxisOption._svgWidth = this.options.width;
                     thisAxisOption._svgHeight = this.options.height;
+                    thisAxisOption._name = axis;
 
                     thisAxis = new Axis(thisAxisOption, this.series, this.stage);
                     coordinate.push(axis, thisAxis);
 
-                    if (coordinate.isX(axis)) {
+                    if (thisAxis.model.rotate == 0) {
                         beginX = Math.min(beginX || opt.width, (opt.width - thisAxis.model.totalWidth) / 2);
-                    } else if (coordinate.isY(axis)) {
+                    } else if (thisAxis.model.rotate == 90) {
                         beginY = Math.min(beginY || opt.width, (opt.height - thisAxis.model.totalWidth) / 2);
                     }
                 }
             }
+
+            this.coordinate.use(DEFAULT_X_AXIS, DEFAULT_Y_AXIS);
+
+
             for (axis in coordinate.axises) {
                 if (!coordinate.axises.hasOwnProperty(axis)) {
                     continue;
                 }
-                coordinate.axises[axis].model.beginX = beginX;
-                coordinate.axises[axis].model.beginY = opt.height - beginY;
+                thisAxis = coordinate.axises[axis];
+
+                if (thisAxis.options.opposite) {
+                    if (thisAxis.model.rotate == 90) {
+                        thisAxis.model.beginX = beginX + coordinate.size().width;
+                        thisAxis.model.beginY = opt.height - beginY;
+                    } else {
+                        thisAxis.model.beginX = beginX;
+                        thisAxis.model.beginY =  opt.height -beginY - coordinate.size().height;
+                    }
+                }else {
+                    thisAxis.model.beginX = beginX;
+                    thisAxis.model.beginY = opt.height - beginY;
+                }
             }
-            this.coordinate.use(DEFAULT_X_AXIS, DEFAULT_Y_AXIS);
+
 
             //set this property false
             //and before it is true , set model will not immediately rerender the ui
@@ -745,30 +817,47 @@
             function generatePositions() {
                 rows = [];
                 columns = [];
-                if (gridOption.enableRow && coordinate.y) {
+                if (gridOption.enableRow) {
                     //use coordinate.y to generate rows
-                    coordinate.y.model.ticks.forEach(function (t) {
-                        rows.push(coordinate.get(null, t).y);
-                    });
+                    if (coordinate.y && coordinate.y.model.rotate == 90) {
+                        coordinate.y.model.ticks.forEach(function (t) {
+                            rows.push(coordinate.get(undefined, t).y);
+                        });
+                        gridOption.width = coordinate.x ? coordinate.x.model.totalWidth : 0;
+                        gridOption._y = coordinate.y.model.beginY;
+                    } else if (coordinate.x && coordinate.x.model.rotate == 90) {
+                        coordinate.x.model.ticks.forEach(function (t) {
+                            rows.push(coordinate.get(t).y);
+                        });
+                        gridOption.width = coordinate.y ? coordinate.y.model.totalWidth : 0;
+                        gridOption._y = coordinate.x.model.beginY;
+                    }
                     gridOption.rows = rows;
-                    gridOption.height = coordinate.y.model.totalWidth;
-                    gridOption._y = coordinate.y.model.beginY;
                 }
-                if (gridOption.enableColumn && coordinate.x) {
-                    coordinate.x.model.ticks.forEach(function (t) {
-                        columns.push(coordinate.get(t, null).x);
-                    });
+                if (gridOption.enableColumn) {
+                    if (coordinate.y && coordinate.y.model.rotate == 0) {
+                        coordinate.y.model.ticks.forEach(function (t) {
+                            columns.push(coordinate.get(undefined, t).x);
+                        });
+                        gridOption.height = coordinate.x ? coordinate.x.model.totalWidth : 0;
+                        gridOption._x = coordinate.y.model.beginX;
+                    } else if (coordinate.x && coordinate.x.model.rotate == 0) {
+                        coordinate.x.model.ticks.forEach(function (t) {
+                            columns.push(coordinate.get(t).x);
+                        });
+                        gridOption.height = coordinate.y ? coordinate.y.model.totalWidth : 0;
+                        gridOption._x = coordinate.x.model.beginX;
+                    }
                     gridOption.columns = columns;
-                    gridOption.width = coordinate.x.model.totalWidth;
-                    gridOption._x = coordinate.x.model.beginX;
                 }
+
             }
             generatePositions();
 
             var grid = this.grid = new Grid(gridOption, this.stage);
-            coordinate.y &&coordinate.y.on(function(){
+            coordinate.y && coordinate.y.on(function () {
                 generatePositions();
-                util.mix(grid.options,gridOption);
+                util.mix(grid.options, gridOption);
                 grid.options.rows = gridOption.rows;
                 grid.options.columns = gridOption.columns;
                 grid.render();
@@ -1040,8 +1129,10 @@
             ticks:[],               //ticks
             rotate:0,               //rotate 0-360 in counter-clockwise
             pop:0,                  // empty ticks before
+            opposite:false,
             _svgWidth:0,
             _svgHeight:0,
+            _name:'',
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1049,6 +1140,8 @@
         };
 
         this.options = mix(defaultOptions, options || {});
+
+        this.name = this.options._name;
 
         this.stage = paper;
 
@@ -1132,14 +1225,8 @@
                 var range = this.autoRange(opt.min, opt.max, opt.total);
                 model.max = range.max;
                 model.min = range.min;
-//                if(opt.total){
-//                    model.tickSize = Math.ceil((model.max - model.min)/(opt.total-1));
-//                }else{
-//                    model.tickSize = opt.tickSize || range.step;
-//                }
                 model.tickSize = range.step;
 
-//                model.total = Math.ceil((model.max-model.min)/model.tickSize)+1;
                 model.total = range.total;
 
                 model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop-1);
@@ -1261,7 +1348,8 @@
                 hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
-                skip;//if label text is too wide , skip some
+                skip,//if label text is too wide , skip some
+                noOppositeLabel = (( model.rotate == 0  ) !== opt.opposite);
 
             if (!view.axisElement) {
                 view.axisElement = stage.path();
@@ -1288,7 +1376,6 @@
                 view.tickElements.push(stage.path().attr({
                     path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
                 }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
-              //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
             }
             if(hasTicks){
                 i = 0;
@@ -1299,13 +1386,12 @@
             }
             while (i < l) {
                 if (count != 0) {
-                  //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
                     view.tickElements.push(stage.path().attr({
                         path:['M', beginX + (count + model.pop) * model.tickWidth, beginY, 'v', tickHeight]
                     }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth) - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth) - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * ( noOppositeLabel? 1 : -1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
@@ -1319,10 +1405,9 @@
                 count++;
             }
 
-         //   pathString.push("h", model.tickWidth, "v", tickHeight);
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth)- (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text((beginX + (count + model.pop) * model.tickWidth)- (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * ( noOppositeLabel? 1 : -1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
@@ -1620,8 +1705,8 @@
 
             width = this.type=='x'? coordinate.y.model.totalWidth: coordinate.x.model.totalWidth;
             this.line = this.stage.path().attr({
-               path:['M',pos.x,pos.y,'v',-triangleWidth/2,'l',triangleWidth,triangleWidth/2,'h',width-triangleWidth,'m',triangleWidth-width,0,'l',-triangleWidth,triangleWidth/2,'v',-triangleWidth/2],
-               'fill':'red',
+                path:['M', pos.x, pos.y, 'v', -triangleWidth / 2, 'l', triangleWidth, triangleWidth / 2, 'h', width - triangleWidth, 'm', triangleWidth - width, 0, 'l', -triangleWidth, triangleWidth / 2, 'v', -triangleWidth / 2],
+                'fill':'red',
                 'stroke':'red'
             });
 
@@ -1641,7 +1726,7 @@
                 coordinate.use(x,y);
                 return {
                     x:xy.x,
-                    y:this.axis.model.beginY
+                    y:xy.y
                 }
 
             }else{
@@ -1649,7 +1734,7 @@
                 xy = coordinate.get(undefined,value);
                 coordinate.use(x,y);
                 return {
-                    x:this.axis.model.beginX,
+                    x:xy.x,
                     y:xy.y
                 }
             }

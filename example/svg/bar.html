@@ -24,10 +24,11 @@
             options = {
                 axis:{
                     x:{
-                        tickWidth:240,
+                        rotate:90,
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
+                        rotate:0
                     }
                 },
                 bar:{
@@ -47,7 +48,7 @@
     for (var i = 0, l = 4; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
-            arr[month] = parseInt(Math.random() * 100)+(i==0?200:0)
+            arr[month] = parseInt(Math.random() * 100)
         })
         data.push({name:i, data:arr})
     }
@@ -65,6 +66,7 @@
 //            coordinate.axises['y1'].model.beginX = x.model.beginX + x.model.totalWidth
 //        }
 //    }
+    console.log(data)
     container3 = document.getElementById('chart_container3');
     var bar = new Venus.SvgChart(container3, data, options);
 </script>
@@ -74,9 +76,11 @@
             options2 = {
                 axis:{
                     x:{
+                        rotate:90,
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
+                        rotate:0
                     }
                 },
                 bar:{

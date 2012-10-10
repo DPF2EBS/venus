@@ -114,7 +114,8 @@
              * */
              function drawLine(arr, indexOfSeries, color, dotColor,label) {
                 coordinate.use(coordinate.getAxisUse(indexOfSeries));
-                var points = [];
+                var points = [],
+                    isH = coordinate.x.model.rotate == 90 && coordinate.y.model.rotate == 0;
 
                 //put all points in the point array, ignore some missing points
                  if (util.isArray(arr)) {
@@ -147,6 +148,9 @@
 
                 //sort by xAxis to avoid wrong order
                 points.sort(function (a, b) {
+                    if(isH){
+                        return b.y - a.y;
+                    }
                     return a.x - b.x;
                 });
                 var pathString,             //path string of the line
@@ -180,6 +184,8 @@
                              y = points[i].y;
                              x1 = points[i + 1].x;
                              y1 = points[i + 1].y;
+
+
                              p = getAnchors(x0, y0, x, y, x1, y1);
                              pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
                              areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);

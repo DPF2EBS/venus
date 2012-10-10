@@ -6,11 +6,6 @@
             var series = this.series.getSeries(),
                 colors = this.colors,
                 coordinate = this.coordinate,
-                xAxis = coordinate.x,
-                xTickWidth = xAxis.model.tickWidth,
-                xTickSize = xAxis.model.tickSize,
-                yAxis = coordinate.y,
-                beginY = yAxis.model.beginY,
                 paper = this.stage,
                 sideBySide = "sidebyside",
                 nestification = "nestification",
@@ -45,9 +40,13 @@
             function drawBar(x, y, width, height, color, tipObj) {
                 var bar
                 if (barOptions.beginAnimate) {
-                    bar = paper.rect(x, beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500)
+                    if(isHorizontal()){
+                        bar = paper.rect(x, y, 0, height, barOptions.radius).animate({width:width}, 500);
+                    }else{
+                        bar = paper.rect(x, coordinate.y.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
+                    }
                 } else {
-                    bar = paper.rect(x, y, width, height, barOptions.radius)
+                    bar = paper.rect(x, y, width, height, barOptions.radius);
                 }
 
                 bar.attr({
@@ -55,9 +54,13 @@
                     'stroke-width':0,
                     'opacity':barOptions.opacity || 1
                 }).hover(function (e) {
-                        this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                        if(isHorizontal()){
+                            this.toolTip(paper, this.attr('x') + this.attr('width'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'right');
+                        }else{
+                            this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                        }
                     }, function () {
-                        this.toolTipHide()
+                        this.toolTipHide();
                     });
                 return bar;
             }
@@ -97,33 +100,64 @@
 
                 var xy = coordinate.get(x, y),
                     oX = xy.x,
-                    oY = xy.y;
+                    oY = xy.y,
+                    xTickWidth = coordinate.x.model.tickWidth,
+                    xTickSize = coordinate.x.model.tickSize,
+                    beginY = coordinate.x.model.beginY,
+                    times = 5; // width/space=times
 
                 if (barOptions.multiple == sideBySide) {
-                    var times = 5, // width/space=times
-                        total = xTickWidth /xTickSize * .8,
+                    var total = xTickWidth / xTickSize * .8,
                         space = total / ((times + 1) * count + 1),
-                        bWidth = times * space,
-                        x = oX - total / 2 + i * bWidth + (i + 1) * space,
+                        bWidth = times * space;
+
+                    if (isHorizontal()) {
+                        return {
+                            x:coordinate.x.model.beginX,
+                            y:oY - total/2+ i* bWidth+(i+1)*space+ xTickWidth/2,
+                            width:Math.abs(coordinate.distance(coordinate.x, xy)),
+                            height:bWidth,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
+                    } else {
+                        x = oX - total / 2 + i * bWidth + (i + 1) * space;
                         y = oY;
-                    return {
-                        x:x,
-                        y:y,
-                        width:bWidth,
-                        height:beginY - y,
-                        xTick:xy.xTick,
-                        yTick:xy.yTick
+                        return {
+                            x:x - xTickWidth/2,
+                            y:y,
+                            width:bWidth,
+                            height:beginY - y,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
                     }
                 }else{
-                    return {
-                        x:oX - xTickWidth / 4,
-                        y:oY - sumY,
-                        width:xTickWidth / 2,
-                        height:beginY - oY,
-                        xTick:xy.xTick,
-                        yTick:xy.yTick
+                    if (isHorizontal()) {
+                        return {
+                            x:sumY + coordinate.y.model.beginX,
+                            y:oY + xTickWidth / 4,
+                            width:Math.abs(coordinate.distance(coordinate.x, xy)),
+                            height:xTickWidth / 2,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
+                    } else {
+                        return {
+                            x:oX - xTickWidth / 4 - xTickWidth/2,
+                            y:oY - sumY,
+                            width:xTickWidth / 2,
+                            height:beginY - oY,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
                     }
                 }
+            }
+
+
+            function isHorizontal(){
+                return coordinate.x.model.rotate == 90 && coordinate.y.model.rotate == 0;
             }
 
             if (barOptions.multiple == nestification) {
@@ -153,15 +187,37 @@
 
                     coordinate.use(coordinate.getAxisUse(0));
                     series.forEach(function (d, i) {
-                        var xy = coordinate.get(i, d.data);
+                        var xTickWidth = coordinate.x.model.tickWidth,
+                            xy = coordinate.get(i, d.data),
+                            isH = isHorizontal(),
+                            x, y, width, height;
+                        if (isH) {
+                            x = coordinate.x.model.beginX;
+                            y = xy.y + xTickWidth / 4;
+                            width = Math.abs(coordinate.distance( coordinate.x,xy));
+                            height = xTickWidth / 2;
+                        } else {
+                            x = xy.x - xTickWidth / 4 - xTickWidth / 2;
+                            y = xy.y;
+                            width = xTickWidth / 2;
+                            height = coordinate.y.model.beginY - xy.y;
+                        }
+
                         if (elements[i]) {
                             //change , animate
-                            elements[i].animate({
-                                y:xy.y,
-                                height:coordinate.y.model.beginY - xy.y
-                            }, duration);
+                            if(isH){
+                                elements[i].animate({
+                                    width:width
+                                }, duration);
+                            }else{
+                                elements[i].animate({
+                                    y:xy.y,
+                                    height:height
+                                }, duration);
+                            }
                         } else {
-                            elements[i] = drawBar(xy.x - xTickWidth / 4 - xTickWidth / 2, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
+                            //init and draw
+                            elements[i] = drawBar(x, y, width, height, colors[i], {
                                 x:xy.xTick,
                                 y:xy.yTick,
                                 label:self.labels[i]
@@ -178,7 +234,9 @@
 
                     series.forEach(function (d, i) {
                         coordinate.use(coordinate.getAxisUse(i));
-                        var indexOfI = seriesArray.indexOf(i);
+                        var indexOfI = seriesArray.indexOf(i),
+                            xTickWidth = coordinate.x.model.tickWidth;
+
                         if( indexOfI== -1){
                             return;
                         }
@@ -186,16 +244,16 @@
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
                             var p = getPositions(j, value, indexOfI,seriesArray.length, sumY[j]);
-                            sumY[j] += p.height;
+                            sumY[j] += (isHorizontal()? p.width: p.height);
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x - xTickWidth/2,
+                                    x:p.x,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -221,17 +279,17 @@
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
                             var p = getPositions(o, d.data[o], indexOfI,seriesArray.length, sumY[j]);
-                            sumY[j] += p.height;
+                            sumY[j] += (isHorizontal()? p.width: p.height);
 
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x - xTickWidth/2,
+                                    x:p.x ,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]

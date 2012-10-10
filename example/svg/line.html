@@ -26,7 +26,11 @@
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
+                    },
+                    y1:{
+
                     }
+
                 },
                 line:{
                     smooth:true,
@@ -41,33 +45,21 @@
                 legend:{
                 },
                 axisUsage:{
-             //       0:['x','y1']
-                },
-                events:{
-//                    onAxisInit:function(){
-//                        var coordinate = this.coordinate,
-//                                x = coordinate.x;
-//                        coordinate.axises['y1'].model.beginX = x.model.beginX+ x.model.totalWidth
-//                    }
-                },
-                threshold:{
-                    y:{
-                        value:0.5
-                    }
+                    0:['x','y1']
                 }
 
             }
     for (var i = 0, l = 3; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
-            arr[month] = Math.random().toFixed(2)
+            arr[month] = (Math.random()+(i==0?100:0)).toFixed(2)
         })
         data.push({name:i, data:arr})
     }
-//    data.push({
-//        name:i,
-//        data:[1,2,1,2,1,2,1,2,1,2,1,2]
-//    })
+    data.push({
+        name:i,
+        data:[1,2,1,2,1,2,1,2,1,2,1,2]
+    })
     var bar = new Venus.SvgChart(container, data, options);
 </script>
 <script type="text/javascript">
