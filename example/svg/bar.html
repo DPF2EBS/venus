@@ -24,11 +24,15 @@
             options = {
                 axis:{
                     x:{
+                        labelRotate:90,
                         rotate:90,
+                        opposite:true,
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
-                        rotate:0
+                        labelRotate:90,
+                        rotate:0,
+                        opposite:true
                     }
                 },
                 bar:{
@@ -79,11 +83,13 @@
                         ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
+                        opposite:true
                     }
                 },
                 bar:{
                     radius:2
                 },
+                line:{},
 
                 grid:{
                     enableColumn:true,

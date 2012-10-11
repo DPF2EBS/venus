@@ -35,11 +35,11 @@
      *  will bind to Venus.SvgChart later
      */
     function Chart(container, data, options) {
+        this.container = typeof container==="string"? document.getElementById(container):container;
         if (!container || !container.nodeType) {
             //not dom
             return;
         }
-        this.container = container;
         this.data = data || [];
         this.events = new Venus.util.CustomEvent();
 
@@ -164,12 +164,12 @@
         this._initLegend();
         this.events.fire('onLegendInit', this.legend);
 
+        // draw
+        this._draw();
+
         //init grid
         this._initGrid();
         this.events.fire('onGridInit', this.grid);
-
-        // draw
-        this._draw();
 
         // init threshold line
         this._initThreshold();
@@ -294,6 +294,12 @@
                         y = 0;
                         yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
                     }
+                    if(yModel.reverse){
+                        y = yModel.totalWidth - y;
+                    }
+                    if(xModel.reverse){
+                        x = xModel.totalWidth - x;
+                    }
                     if (xModel.rotate == 90 && yModel.rotate == 0) {
                         //x axis is vertical and y axis is horizontal
                         return {
@@ -404,6 +410,7 @@
                     this.use(DEFAULT_X_AXIS,DEFAULT_Y_AXIS);
                 },
                 type:function(axis){
+                    typeof axis==="string" || (axis = axis.axisName);
                     return axis.indexOf('x') == 0 ? 'x' : 'y';
                 },
                 isX:function(axis){
@@ -690,7 +697,7 @@
                     }
                     if (coordinate.isX(axis)) {
                         //set pop=1 for x Axis by default
-                        (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
+                     //   (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
 
                         (thisAxisOption.percent === undefined) && (thisAxisOption.percent =.9);
 
@@ -727,17 +734,27 @@
                 if (!coordinate.axises.hasOwnProperty(axis)) {
                     continue;
                 }
+                //thisAxis is the Axis instance
                 thisAxis = coordinate.axises[axis];
 
                 if (thisAxis.options.opposite) {
+                    //if it is opposite, reset it's beginX ,beginY
                     if (thisAxis.model.rotate == 90) {
                         thisAxis.model.beginX = beginX + coordinate.size().width;
                         thisAxis.model.beginY = opt.height - beginY;
                     } else {
                         thisAxis.model.beginX = beginX;
-                        thisAxis.model.beginY =  opt.height -beginY - coordinate.size().height;
+                        thisAxis.model.beginY = opt.height - beginY - coordinate.size().height;
                     }
-                }else {
+                    if (coordinate.isX(axis)) {
+                        //if x axis is opposite , reverse all the y axises
+                        for (var o in coordinate.axises) {
+                            if (coordinate.isY(o)) {
+                                coordinate.axises[o].model.reverse = true;
+                            }
+                        }
+                    }
+                } else {
                     thisAxis.model.beginX = beginX;
                     thisAxis.model.beginY = opt.height - beginY;
                 }
@@ -823,15 +840,15 @@
                         coordinate.y.model.ticks.forEach(function (t) {
                             rows.push(coordinate.get(undefined, t).y);
                         });
-                        gridOption.width = coordinate.x ? coordinate.x.model.totalWidth : 0;
-                        gridOption._y = coordinate.y.model.beginY;
+                        gridOption._x = coordinate.x.model.beginX;
                     } else if (coordinate.x && coordinate.x.model.rotate == 90) {
                         coordinate.x.model.ticks.forEach(function (t) {
                             rows.push(coordinate.get(t).y);
                         });
-                        gridOption.width = coordinate.y ? coordinate.y.model.totalWidth : 0;
-                        gridOption._y = coordinate.x.model.beginY;
+
+                        gridOption._x = coordinate.y.model.beginX;
                     }
+                    gridOption.width = coordinate.size().width || 0;
                     gridOption.rows = rows;
                 }
                 if (gridOption.enableColumn) {
@@ -839,15 +856,14 @@
                         coordinate.y.model.ticks.forEach(function (t) {
                             columns.push(coordinate.get(undefined, t).x);
                         });
-                        gridOption.height = coordinate.x ? coordinate.x.model.totalWidth : 0;
-                        gridOption._x = coordinate.y.model.beginX;
+                        gridOption._y = coordinate.x.model.beginY;
                     } else if (coordinate.x && coordinate.x.model.rotate == 0) {
                         coordinate.x.model.ticks.forEach(function (t) {
                             columns.push(coordinate.get(t).x);
                         });
-                        gridOption.height = coordinate.y ? coordinate.y.model.totalWidth : 0;
-                        gridOption._x = coordinate.x.model.beginX;
+                        gridOption._y = coordinate.y.model.beginY;
                     }
+                    gridOption.height = coordinate.size().height || 0;
                     gridOption.columns = columns;
                 }
 
@@ -1344,12 +1360,14 @@
                 beginY = model.beginY,
                 i, l,count=0,
                 tickHeight = 2,
-                labelMarginTop = 10,
+                labelMarginTop = 5,
                 hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
                 skip,//if label text is too wide , skip some
-                noOppositeLabel = (( model.rotate == 0  ) !== opt.opposite);
+                noOppositeLabel = (( model.rotate == 0  ) !== opt.opposite),
+                reverse = !!model.reverse,
+                transformString = "";
 
             if (!view.axisElement) {
                 view.axisElement = stage.path();
@@ -1375,7 +1393,7 @@
             for (i = 0, l = model.pop; i < l; i++) {
                 view.tickElements.push(stage.path().attr({
                     path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
-                }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
+                }).attr(pathAttr));
             }
             if(hasTicks){
                 i = 0;
@@ -1388,17 +1406,15 @@
                 if (count != 0) {
                     view.tickElements.push(stage.path().attr({
                         path:['M', beginX + (count + model.pop) * model.tickWidth, beginY, 'v', tickHeight]
-                    }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
+                    }).attr(pathAttr));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth) - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * ( noOppositeLabel? 1 : -1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
+                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks? opt.ticks[i] :i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
                     bbox = label.getBBox();
-                    if (this.options.labelRotate) {
-                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
-                    }
                     skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
                 }
                 i = util.number.add(i, model.tickSize);
@@ -1406,31 +1422,60 @@
             }
 
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
+                var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth)- (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * ( noOppositeLabel? 1 : -1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
-                    if (this.options.labelRotate) {
-                        bbox = label.getBBox();
-                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
-                    }
                 }
             }
 
             view.axisElement.attr({
                 path:pathString
             }).attr(pathAttr);
-            if(model.rotate){
-               // view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
-                view.axisElement.transform('R' + (360 - model.rotate) + "," + model.beginX + ',' + model.beginY);
+
+            if (model.rotate) {
+                //rotate the axis
+                transformString += ('R' + (- model.rotate) + ',' + beginX + ',' + beginY);
             }
+
+            if (transformString) {
+                //do the transform
+                view.axisElement.transform(transformString);
+                view.tickElements.transform(transformString);
+            }
+            view.labelElements.forEach(function (l) {
+                var str = "",
+                    bBox = l.getBBox(),
+                    line = Math.sqrt(Math.pow(bBox.width, 2) + Math.pow(bBox.height, 2)),
+                    totalRotate = ((opt.labelRotate || 0) + (model.rotate || 0))*PI/180,
+                    t = (Math.max(bBox.height, line * Math.sin(totalRotate)) / 2 + labelMarginTop) * (noOppositeLabel ? 1 : -1);
+
+
+                if (model.rotate) {
+                    str += ("R90");
+                }
+                if (opt.labelRotate) {
+                    str += ( "...R" + opt.labelRotate );
+                }
+                str += ('T0,'+t);
+
+                if (model.rotate) {
+                    str += ("...R-90," + beginX + "," + beginY);
+                }
+
+                if (str) {
+                    l.transform(str);
+                }
+            });
 
             if (!this.options.enable) {
                 //if invisible ,hide the elements
                 //but the coordinate is actually exist
                 view.axisElement.hide();
                 view.labelElements.hide();
+                view.tickElements.hide();
             }
         },
         on:function(fn){
@@ -1691,6 +1736,8 @@
         }
     }
 
+    /*Class Grid End*/
+
     var Threshold = function(axisName,value,coordinate,stage){
         this.axisName = axisName;
         this.stage = stage;
@@ -1747,8 +1794,6 @@
     }
 
 
-    /*Class Grid End*/
-
 
 
     /*
@@ -1761,8 +1806,8 @@
             //@side{String} 'left','top','right' or 'bottom'
             var tip, labels,
                 side = side || 'top',
-                path = function (width, height, padding) {
-                    var p = ['M', x, y],
+                path = function (width, height, padding,side) {
+                    var p = [],
                         arrowWidth = 5,
                         left, top;
 
@@ -1772,44 +1817,48 @@
                         case 'right':
                             //arrow at the left side and content at right
                             height = Math.max(arrowWidth * 2, height);
+                            p.push('M', x + 10, y);
                             p.push('l', arrowWidth, -arrowWidth);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('h', width);
                             p.push('v', height, 'h', -width);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('l', -arrowWidth, -arrowWidth);
-                            left = x + arrowWidth;
+                            left = x + 10 + arrowWidth;
                             top = y - height / 2;
                             break;
                         case 'top':
                             width = Math.max(arrowWidth * 2, width);
+                            p.push('M', x, y - 10);
                             p.push('l', -arrowWidth, -arrowWidth);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('v', -height, 'h', width, 'v', height);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('l', -arrowWidth, arrowWidth);
                             left = x - width / 2;
-                            top = y - arrowWidth - height;
+                            top = y-10 - arrowWidth - height;
                             break;
                         case 'left':
                             height = Math.max(arrowWidth * 2, height);
+                            p.push('M', x - 10, y);
                             p.push('l', -arrowWidth, arrowWidth);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('h', -width, 'v', -height, 'h', width);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('l', arrowWidth, arrowWidth);
-                            left = x - arrowWidth - width;
+                            left = x-10 - arrowWidth - width;
                             top = y - height / 2;
                             break;
                         case 'bottom':
                             width = Math.max(arrowWidth * 2, width);
+                            p.push('M', x, y + 10);
                             p.push('l', arrowWidth, arrowWidth);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('v', height, 'h', -width, 'v', -height);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('l', arrowWidth, -arrowWidth);
                             left = x - width / 2;
-                            top = y + arrowWidth;
+                            top = y+10 + arrowWidth;
                             break;
 
                     }
@@ -1831,7 +1880,8 @@
                 bBox,
                 text,
                 paddingToBorder = 8,
-                p;
+                p,
+                totalWidth,totalHeight;
 
 
             texts.forEach(function (t, i) {
@@ -1850,7 +1900,21 @@
             });
             if (this._venus_tooltip_show)
                 return;
-            p = path(Math.max.apply(Math, width)+10, texts.length * bBox.height, paddingToBorder);
+
+            totalWidth = Math.max.apply(Math, width)+10;
+            totalHeight = texts.length * bBox.height;
+
+            p = path(totalWidth, totalHeight, paddingToBorder,side);
+            //if the tip is out of bound
+            if (p.box.left + p.box.width > paper.canvas.clientWidth) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'left');
+            } else if (p.box.left < 0) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'right');
+            } else if (p.box.top < 0) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'bottom');
+            } else if (p.box.top + p.box.height > paper.canvas.clientHeight) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'top');
+            }
             tip = paper.path();
             labels.toFront();
             tip.attr({
@@ -1861,14 +1925,15 @@
                 'stroke-linejoin':'round',
                 'stroke':'#4572A7',
                 'opacity':'0'
-            }).animate({'opacity':1, 'fill-opacity':.85}, 100);
+            });
+            tip.animate({'opacity':1, 'fill-opacity':.85}, 100);
             labels.animate({'opacity':1}, 100);
             labels.forEach(function (la, i) {
                 la.attr({
                     'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
                     'x':p.box.left + p.box.width / 2
                 })
-            })
+            });
             this._venus_tooltip_labels = labels;
             this._venus_tooltip = tip;
             this._venus_tooltip_show = true;

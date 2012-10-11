@@ -83,9 +83,9 @@
                 }
                 dot._active_ = true;
                 icon.animate({
-                    width: dotRadius * 4
+                    width: lineOpt.dotRadius * 4
                 }, 100);
-                dot.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
+                dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
                     x:point.xTick,
                     y:point.yTick,
                     label:point.label
@@ -246,6 +246,12 @@
 
                 if (lineOpt.dots) {
                     //draw dots
+
+                    //dot is too large
+                    if(coordinate.x.model.tickWidth/coordinate.x.model.tickSize<4*dotRadius){
+                        dotRadius = coordinate.x.model.tickWidth/coordinate.x.model.tickSize/4;
+                    }
+
                     points.forEach(function (d, i) {
                         var icon = self.iconFactory.create(indexOfSeries, d.x, d.y,dotRadius*2),
                         dot = icon.icon.attr({
@@ -273,7 +279,7 @@
                             //bind click event which shows the toolTip and make the dot bigger and cancel the effect when click again
                             dot.click(function () {
                                 if (!this._selected_) {
-                                    this.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
+                                    this.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
                                         x:d.xTick,
                                         y:d.yTick,
                                         label:d.label
@@ -385,7 +391,7 @@
                         });
                     })
                 }
-                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius) || lineOpt.columnHover)) {
+                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > dotRadius) || lineOpt.columnHover)) {
                     var handler = function(e){
                         var offsetX,offsetY,
                             boundBox,

@@ -26,6 +26,8 @@
                 self = this,
                 duration = 500;
 
+            coordinate.x.set('pop',1);
+
 
             /*
              * Main Function of draw bar
@@ -117,6 +119,7 @@
                     xTickWidth = coordinate.x.model.tickWidth,
                     xTickSize = coordinate.x.model.tickSize,
                     beginY = coordinate.x.model.beginY,
+                    beginX = coordinate.x.model.beginX,
                     times = 5, // width/space=times
                     distance ;
 
@@ -127,39 +130,40 @@
                         bWidth = times * space;
 
                     if (isHorizontal()) {
-                        distance < 0 ? (x = coordinate.x.model.beginX - coordinate.size().width -distance) : (x = coordinate.x.model.beginX);
+                        distance < 0 ? (x = oX) : (x = beginX);
                         return {
                             x:x,
                             y:oY - total / 2 + i * bWidth + (i + 1) * space + xTickWidth / 2,
-                            width:distance > 0 ? distance : coordinate.size().width + distance,
+                            width:Math.abs(distance),
                             height:bWidth,
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
                     } else {
-                        distance < 0 ? (y = oY) : (y = oY - Math.abs(distance));
+                        distance < 0 ? (y = oY) : (y = beginY);
                         x = oX - total / 2 + i * bWidth + (i + 1) * space;
                         return {
                             x:x - xTickWidth / 2,
                             y:y,
                             width:bWidth,
-                            height:beginY - y,
+                            height:Math.abs(distance),
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
                     }
                 } else {
                     if (isHorizontal()) {
-                        distance < 0 ? (x = coordinate.x.model.beginX - coordinate.size().width - distance - sumY) : (x = coordinate.x.model.beginX + sumY);
+                        distance < 0 ? (x = oX - sumY) : (x = beginX + sumY);
                         return {
                             x:x,
                             y:oY + xTickWidth / 4,
-                            width:distance > 0 ? distance : coordinate.size().width + distance,
+                            width:Math.abs(distance),
                             height:xTickWidth / 2,
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
                     } else {
+                        distance < 0 ? (y = oY-sumY) : (y = beginX+sumY);
                         return {
                             x:oX - xTickWidth / 4 - xTickWidth / 2,
                             y:oY - sumY,

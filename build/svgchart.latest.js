@@ -421,11 +421,11 @@ Venus.config={
      *  will bind to Venus.SvgChart later
      */
     function Chart(container, data, options) {
+        this.container = typeof container==="string"? document.getElementById(container):container;
         if (!container || !container.nodeType) {
             //not dom
             return;
         }
-        this.container = container;
         this.data = data || [];
         this.events = new Venus.util.CustomEvent();
 
@@ -507,7 +507,11 @@ Venus.config={
 
             /*
             * threshold lines
-            *
+            * {
+            *     y:{
+            *         value:10
+            *     }
+            * }
             * */
             threshold:{
 
@@ -546,12 +550,15 @@ Venus.config={
         this._initLegend();
         this.events.fire('onLegendInit', this.legend);
 
+        // draw
+        this._draw();
+
         //init grid
         this._initGrid();
         this.events.fire('onGridInit', this.grid);
 
-        // draw
-        this._draw();
+        // init threshold line
+        this._initThreshold();
 
         // render axis ui
         this._renderAxis();
@@ -619,10 +626,14 @@ Venus.config={
                     if(isObject(x)){
                         this.x = this.axises[x.x];
                         this.y = this.axises[x.y];
+                        this.xName = x.x;
+                        this.yName = x.y;
                         return;
                     }
                     this.x = this.axises[x];
                     this.y = this.axises[y];
+                    this.xName = x;
+                    this.yName = y;
                 },
 
                 /*
@@ -647,8 +658,10 @@ Venus.config={
                         } else {
                             xTick = xOpt.ticks[key];
                         }
-                        // x = key*(xModel.totalWidth - xModel.pop* xModel.tickWidth)/(xOpt.ticks.length-1) + xModel.beginX+ xModel.pop* xModel.tickWidth;
-                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth + xModel.beginX
+                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
+                    } else {
+                        x = 0;
+                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
                     }
                     if (value != undefined) {
                         if (yOpt.ticks && yOpt.ticks.length) {
@@ -657,18 +670,73 @@ Venus.config={
                                     value = i;
                                 }
                             });
-                            y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
                         } else {
-                            y = yModel.beginY - ( value - yModel.min) * yModel.tickWidth / yModel.tickSize - yModel.pop * yModel.tickWidth;
+                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
                         }
                         yTick = value;
+                    } else {
+                        y = 0;
+                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
                     }
+                    if(yModel.reverse){
+                        y = yModel.totalWidth - y;
+                    }
+                    if(xModel.reverse){
+                        x = xModel.totalWidth - x;
+                    }
+                    if (xModel.rotate == 90 && yModel.rotate == 0) {
+                        //x axis is vertical and y axis is horizontal
+                        return {
+                            y:xModel.beginY - x,
+                            x:yModel.beginX + y,
+                            xTick:xTick,
+                            yTick:yTick
+                        }
+                    } else {
+                        return {
+                            x:xModel.beginX + x,
+                            y:yModel.beginY - y,
+                            xTick:xTick,
+                            yTick:yTick
+                        }
+                    }
+                },
 
+                /*
+                * get the size of the coordinate
+                * */
+
+                size:function () {
+                    var width, height;
+                    if (this.x.model.rotate == 90) {
+                        height = this.x.model.totalWidth;
+                    } else {
+                        width = this.x.model.totalWidth;
+                    }
+                    if (this.y.model.rotate == 90) {
+                        height = this.y.model.totalWidth;
+                    } else {
+                        width = this.y.model.totalWidth;
+                    }
                     return {
-                        x:x,
-                        y:y,
-                        xTick:xTick,
-                        yTick:yTick
+                        width:width,
+                        height:height
+                    }
+                },
+
+                /*
+                * get the distance from an point to an axis
+                * point - axis
+                * it could be negative
+                * */
+
+                distance:function(axis,point){
+                    if(axis.model.rotate==0){
+                        return point.y - axis.model.beginY;
+                    }else{
+                        return point.x - axis.model.beginX;
                     }
                 },
 
@@ -726,6 +794,16 @@ Venus.config={
                 },
                 useDefault:function(){
                     this.use(DEFAULT_X_AXIS,DEFAULT_Y_AXIS);
+                },
+                type:function(axis){
+                    typeof axis==="string" || (axis = axis.axisName);
+                    return axis.indexOf('x') == 0 ? 'x' : 'y';
+                },
+                isX:function(axis){
+                    return this.type(axis)=='x';
+                },
+                isY:function(axis){
+                    return this.type(axis)=='y';
                 }
             };
         },
@@ -991,9 +1069,9 @@ Venus.config={
                 //init each axis in options.axis
                 if ((thisAxisOption = axisOption[axis])) {
                     //set rotate 90 for y axis by default
-                    (axis.indexOf('y') == 0 && !('rotate' in thisAxisOption)) && (thisAxisOption.rotate = 90);
+                    (coordinate.isY(axis) && !('rotate' in thisAxisOption)) && (thisAxisOption.rotate = 90);
 
-                    if (axis.indexOf('y') == 0 && !axisOption.ticks) {
+                    if (coordinate.isY(axis) && !axisOption.ticks) {
                         //if y axis has no ticks , then auto generate ticks use series.getRange()
                         seriesArray = coordinate.getRelatedSeries(axis);
                         //get range
@@ -1003,9 +1081,9 @@ Venus.config={
                         thisAxisOption.max === undefined && (thisAxisOption.max = range.max);
                         thisAxisOption.min === undefined && (thisAxisOption.min = range.min);
                     }
-                    if (axis.indexOf('x') == 0) {
+                    if (coordinate.isX(axis)) {
                         //set pop=1 for x Axis by default
-                        (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
+                     //   (thisAxisOption.pop === undefined) && (thisAxisOption.pop = 1);
 
                         (thisAxisOption.percent === undefined) && (thisAxisOption.percent =.9);
 
@@ -1016,27 +1094,58 @@ Venus.config={
                         }
                     }
 
+                    if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
+                        thisAxisOption.opposite = true;
+                    }
+
                     thisAxisOption._svgWidth = this.options.width;
                     thisAxisOption._svgHeight = this.options.height;
+                    thisAxisOption._name = axis;
 
                     thisAxis = new Axis(thisAxisOption, this.series, this.stage);
                     coordinate.push(axis, thisAxis);
 
-                    if (axis.indexOf('x') == 0) {
+                    if (thisAxis.model.rotate == 0) {
                         beginX = Math.min(beginX || opt.width, (opt.width - thisAxis.model.totalWidth) / 2);
-                    } else if (axis.indexOf('y') == 0) {
+                    } else if (thisAxis.model.rotate == 90) {
                         beginY = Math.min(beginY || opt.width, (opt.height - thisAxis.model.totalWidth) / 2);
                     }
                 }
             }
+
+            this.coordinate.use(DEFAULT_X_AXIS, DEFAULT_Y_AXIS);
+
+
             for (axis in coordinate.axises) {
                 if (!coordinate.axises.hasOwnProperty(axis)) {
                     continue;
                 }
-                coordinate.axises[axis].model.beginX = beginX;
-                coordinate.axises[axis].model.beginY = opt.height - beginY;
+                //thisAxis is the Axis instance
+                thisAxis = coordinate.axises[axis];
+
+                if (thisAxis.options.opposite) {
+                    //if it is opposite, reset it's beginX ,beginY
+                    if (thisAxis.model.rotate == 90) {
+                        thisAxis.model.beginX = beginX + coordinate.size().width;
+                        thisAxis.model.beginY = opt.height - beginY;
+                    } else {
+                        thisAxis.model.beginX = beginX;
+                        thisAxis.model.beginY = opt.height - beginY - coordinate.size().height;
+                    }
+                    if (coordinate.isX(axis)) {
+                        //if x axis is opposite , reverse all the y axises
+                        for (var o in coordinate.axises) {
+                            if (coordinate.isY(o)) {
+                                coordinate.axises[o].model.reverse = true;
+                            }
+                        }
+                    }
+                } else {
+                    thisAxis.model.beginX = beginX;
+                    thisAxis.model.beginY = opt.height - beginY;
+                }
             }
-            this.coordinate.use('x', 'y');
+
 
             //set this property false
             //and before it is true , set model will not immediately rerender the ui
@@ -1111,35 +1220,66 @@ Venus.config={
             function generatePositions() {
                 rows = [];
                 columns = [];
-                if (gridOption.enableRow && coordinate.y) {
+                if (gridOption.enableRow) {
                     //use coordinate.y to generate rows
-                    coordinate.y.model.ticks.forEach(function (t) {
-                        rows.push(coordinate.get(null, t).y);
-                    });
+                    if (coordinate.y && coordinate.y.model.rotate == 90) {
+                        coordinate.y.model.ticks.forEach(function (t) {
+                            rows.push(coordinate.get(undefined, t).y);
+                        });
+                        gridOption._x = coordinate.x.model.beginX;
+                    } else if (coordinate.x && coordinate.x.model.rotate == 90) {
+                        coordinate.x.model.ticks.forEach(function (t) {
+                            rows.push(coordinate.get(t).y);
+                        });
+
+                        gridOption._x = coordinate.y.model.beginX;
+                    }
+                    gridOption.width = coordinate.size().width || 0;
                     gridOption.rows = rows;
-                    gridOption.height = coordinate.y.model.totalWidth;
-                    gridOption._y = coordinate.y.model.beginY;
                 }
-                if (gridOption.enableColumn && coordinate.x) {
-                    coordinate.x.model.ticks.forEach(function (t) {
-                        columns.push(coordinate.get(t, null).x);
-                    });
+                if (gridOption.enableColumn) {
+                    if (coordinate.y && coordinate.y.model.rotate == 0) {
+                        coordinate.y.model.ticks.forEach(function (t) {
+                            columns.push(coordinate.get(undefined, t).x);
+                        });
+                        gridOption._y = coordinate.x.model.beginY;
+                    } else if (coordinate.x && coordinate.x.model.rotate == 0) {
+                        coordinate.x.model.ticks.forEach(function (t) {
+                            columns.push(coordinate.get(t).x);
+                        });
+                        gridOption._y = coordinate.y.model.beginY;
+                    }
+                    gridOption.height = coordinate.size().height || 0;
                     gridOption.columns = columns;
-                    gridOption.width = coordinate.x.model.totalWidth;
-                    gridOption._x = coordinate.x.model.beginX;
                 }
+
             }
             generatePositions();
 
             var grid = this.grid = new Grid(gridOption, this.stage);
-            coordinate.y &&coordinate.y.on(function(){
+            coordinate.y && coordinate.y.on(function () {
                 generatePositions();
-                util.mix(grid.options,gridOption);
+                util.mix(grid.options, gridOption);
                 grid.options.rows = gridOption.rows;
                 grid.options.columns = gridOption.columns;
                 grid.render();
             });
 
+        },
+        _initThreshold:function(){
+            var options = this.options,
+                coordinate = this.coordinate,
+                threshold = options.threshold,
+                axisName,
+                axis,value;
+
+            if (threshold && util.isObject(threshold)) {
+                for (var axisName in threshold) {
+                    if ((axis = coordinate.axises[axisName]) && util.isObject(threshold[axisName]) && (value = threshold[axisName].value)){
+                        new Threshold(axisName,value,coordinate,this.stage);
+                    }
+                }
+            }
         },
         _initEvents:function () {
             var opt = this.options,self = this;
@@ -1391,8 +1531,10 @@ Venus.config={
             ticks:[],               //ticks
             rotate:0,               //rotate 0-360 in counter-clockwise
             pop:0,                  // empty ticks before
+            opposite:false,
             _svgWidth:0,
             _svgHeight:0,
+            _name:'',
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1400,6 +1542,8 @@ Venus.config={
         };
 
         this.options = mix(defaultOptions, options || {});
+
+        this.name = this.options._name;
 
         this.stage = paper;
 
@@ -1483,14 +1627,8 @@ Venus.config={
                 var range = this.autoRange(opt.min, opt.max, opt.total);
                 model.max = range.max;
                 model.min = range.min;
-//                if(opt.total){
-//                    model.tickSize = Math.ceil((model.max - model.min)/(opt.total-1));
-//                }else{
-//                    model.tickSize = opt.tickSize || range.step;
-//                }
                 model.tickSize = range.step;
 
-//                model.total = Math.ceil((model.max-model.min)/model.tickSize)+1;
                 model.total = range.total;
 
                 model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop-1);
@@ -1608,11 +1746,14 @@ Venus.config={
                 beginY = model.beginY,
                 i, l,count=0,
                 tickHeight = 2,
-                labelMarginTop = 10,
+                labelMarginTop = 5,
                 hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
-                skip;//if label text is too wide , skip some
+                skip,//if label text is too wide , skip some
+                noOppositeLabel = (( model.rotate == 0  ) !== opt.opposite),
+                reverse = !!model.reverse,
+                transformString = "";
 
             if (!view.axisElement) {
                 view.axisElement = stage.path();
@@ -1638,8 +1779,7 @@ Venus.config={
             for (i = 0, l = model.pop; i < l; i++) {
                 view.tickElements.push(stage.path().attr({
                     path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
-                }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
-              //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
+                }).attr(pathAttr));
             }
             if(hasTicks){
                 i = 0;
@@ -1650,53 +1790,78 @@ Venus.config={
             }
             while (i < l) {
                 if (count != 0) {
-                  //  pathString.push("h", model.tickWidth, "v", tickHeight, "m", 0, -tickHeight);
                     view.tickElements.push(stage.path().attr({
                         path:['M', beginX + (count + model.pop) * model.tickWidth, beginY, 'v', tickHeight]
-                    }).attr(pathAttr).rotate(360 - model.rotate, beginX, beginY));
+                    }).attr(pathAttr));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth) - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks? opt.ticks[i] :i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
+                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks? opt.ticks[i] :i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
                     bbox = label.getBBox();
-                    if (this.options.labelRotate) {
-                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
-                    }
                     skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
                 }
                 i = util.number.add(i, model.tickSize);
                 count++;
             }
 
-         //   pathString.push("h", model.tickWidth, "v", tickHeight);
             if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
+                var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text((beginX + (count + model.pop) * model.tickWidth)- (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2), beginY + labelMarginTop * (model.rotate > 0 ? -1 : 1), hasTicks ? opt.ticks[i] : i).rotate(360 - model.rotate, beginX, beginY).attr({
+                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
-                    if (this.options.labelRotate) {
-                        bbox = label.getBBox();
-                        label.rotate(this.options.labelRotate).translate(bbox.width / 2, 0)
-                    }
                 }
             }
 
             view.axisElement.attr({
                 path:pathString
             }).attr(pathAttr);
-            if(model.rotate){
-               // view.axisElement.rotate((360-model.rotate),model.beginX,model.beginY)
-                view.axisElement.transform('R' + (360 - model.rotate) + "," + model.beginX + ',' + model.beginY);
+
+            if (model.rotate) {
+                //rotate the axis
+                transformString += ('R' + (- model.rotate) + ',' + beginX + ',' + beginY);
             }
+
+            if (transformString) {
+                //do the transform
+                view.axisElement.transform(transformString);
+                view.tickElements.transform(transformString);
+            }
+            view.labelElements.forEach(function (l) {
+                var str = "",
+                    bBox = l.getBBox(),
+                    line = Math.sqrt(Math.pow(bBox.width, 2) + Math.pow(bBox.height, 2)),
+                    totalRotate = ((opt.labelRotate || 0) + (model.rotate || 0))*PI/180,
+                    t = (Math.max(bBox.height, line * Math.sin(totalRotate)) / 2 + labelMarginTop) * (noOppositeLabel ? 1 : -1);
+
+
+                if (model.rotate) {
+                    str += ("R90");
+                }
+                if (opt.labelRotate) {
+                    str += ( "...R" + opt.labelRotate );
+                }
+                str += ('T0,'+t);
+
+                if (model.rotate) {
+                    str += ("...R-90," + beginX + "," + beginY);
+                }
+
+                if (str) {
+                    l.transform(str);
+                }
+            });
 
             if (!this.options.enable) {
                 //if invisible ,hide the elements
                 //but the coordinate is actually exist
                 view.axisElement.hide();
                 view.labelElements.hide();
+                view.tickElements.hide();
             }
         },
         on:function(fn){
@@ -1803,7 +1968,6 @@ Venus.config={
         border = paper.rect(0, 0, totalWidth, totalHeight, 5).attr({
             'stroke-width':opt.borderWidth,
             'stroke':opt.borderColor,
-            'opacity':opt.borderWidth,
             'fill':"#FFF",
             'cursor':'move'
         }).drag(function(dx,dy){
@@ -1815,14 +1979,15 @@ Venus.config={
             },function(){
                 _lastX = 0;
                 _lastY = 0;
+                self.toFront();
             });
 
-        itemSet.toFront();
-        textSet.toFront();
 
         this.border = border;
         this.itemSet = itemSet;
         this.textSet = textSet;
+
+        this.toFront();
 
         //convert position string to value
         if (typeof (left = this.options.position[0]) == "string") {
@@ -1891,6 +2056,11 @@ Venus.config={
         },
         onActiveChange:function (fn) {
             this.activeEvent.on('change', fn);
+        },
+        toFront:function(){
+            this.border.toFront();
+            this.itemSet.toFront();
+            this.textSet.toFront();
         }
     }
 
@@ -1952,8 +2122,63 @@ Venus.config={
         }
     }
 
-
     /*Class Grid End*/
+
+    var Threshold = function(axisName,value,coordinate,stage){
+        this.axisName = axisName;
+        this.stage = stage;
+        this.axis = coordinate.axises[axisName];
+        this.type = coordinate.type(axisName);
+        this.value = value;
+        this.coordinate = coordinate;
+        this.render();
+    }
+    Threshold.prototype = {
+        constructor:Threshold,
+        render:function(){
+            var width,
+                coordinate = this.coordinate,
+                triangleWidth = 10,
+                pos = this.getPosition(this.value);
+
+            width = this.type=='x'? coordinate.y.model.totalWidth: coordinate.x.model.totalWidth;
+            this.line = this.stage.path().attr({
+                path:['M', pos.x, pos.y, 'v', -triangleWidth / 2, 'l', triangleWidth, triangleWidth / 2, 'h', width - triangleWidth, 'm', triangleWidth - width, 0, 'l', -triangleWidth, triangleWidth / 2, 'v', -triangleWidth / 2],
+                'fill':'red',
+                'stroke':'red'
+            });
+
+        },
+        moveTo:function(value){
+
+        },
+        getPosition:function(value){
+            var coordinate = this.coordinate,
+                x = coordinate.xName,
+                y = coordinate.yName,
+                xy;
+
+            if(this.type==="x"){
+                coordinate.use(this.axisName,y);
+                xy = coordinate.get(value);
+                coordinate.use(x,y);
+                return {
+                    x:xy.x,
+                    y:xy.y
+                }
+
+            }else{
+                coordinate.use(x,this.axisName);
+                xy = coordinate.get(undefined,value);
+                coordinate.use(x,y);
+                return {
+                    x:xy.x,
+                    y:xy.y
+                }
+            }
+        }
+    }
+
 
 
 
@@ -1967,8 +2192,8 @@ Venus.config={
             //@side{String} 'left','top','right' or 'bottom'
             var tip, labels,
                 side = side || 'top',
-                path = function (width, height, padding) {
-                    var p = ['M', x, y],
+                path = function (width, height, padding,side) {
+                    var p = [],
                         arrowWidth = 5,
                         left, top;
 
@@ -1978,44 +2203,48 @@ Venus.config={
                         case 'right':
                             //arrow at the left side and content at right
                             height = Math.max(arrowWidth * 2, height);
+                            p.push('M', x + 10, y);
                             p.push('l', arrowWidth, -arrowWidth);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('h', width);
                             p.push('v', height, 'h', -width);
                             p.push('v', -(height / 2 - arrowWidth));
                             p.push('l', -arrowWidth, -arrowWidth);
-                            left = x + arrowWidth;
+                            left = x + 10 + arrowWidth;
                             top = y - height / 2;
                             break;
                         case 'top':
                             width = Math.max(arrowWidth * 2, width);
+                            p.push('M', x, y - 10);
                             p.push('l', -arrowWidth, -arrowWidth);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('v', -height, 'h', width, 'v', height);
                             p.push('h', -(width / 2 - arrowWidth));
                             p.push('l', -arrowWidth, arrowWidth);
                             left = x - width / 2;
-                            top = y - arrowWidth - height;
+                            top = y-10 - arrowWidth - height;
                             break;
                         case 'left':
                             height = Math.max(arrowWidth * 2, height);
+                            p.push('M', x - 10, y);
                             p.push('l', -arrowWidth, arrowWidth);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('h', -width, 'v', -height, 'h', width);
                             p.push('v', height / 2 - arrowWidth);
                             p.push('l', arrowWidth, arrowWidth);
-                            left = x - arrowWidth - width;
+                            left = x-10 - arrowWidth - width;
                             top = y - height / 2;
                             break;
                         case 'bottom':
                             width = Math.max(arrowWidth * 2, width);
+                            p.push('M', x, y + 10);
                             p.push('l', arrowWidth, arrowWidth);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('v', height, 'h', -width, 'v', -height);
                             p.push('h', width / 2 - arrowWidth);
                             p.push('l', arrowWidth, -arrowWidth);
                             left = x - width / 2;
-                            top = y + arrowWidth;
+                            top = y+10 + arrowWidth;
                             break;
 
                     }
@@ -2037,7 +2266,8 @@ Venus.config={
                 bBox,
                 text,
                 paddingToBorder = 8,
-                p;
+                p,
+                totalWidth,totalHeight;
 
 
             texts.forEach(function (t, i) {
@@ -2056,7 +2286,21 @@ Venus.config={
             });
             if (this._venus_tooltip_show)
                 return;
-            p = path(Math.max.apply(Math, width)+10, texts.length * bBox.height, paddingToBorder);
+
+            totalWidth = Math.max.apply(Math, width)+10;
+            totalHeight = texts.length * bBox.height;
+
+            p = path(totalWidth, totalHeight, paddingToBorder,side);
+            //if the tip is out of bound
+            if (p.box.left + p.box.width > paper.canvas.clientWidth) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'left');
+            } else if (p.box.left < 0) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'right');
+            } else if (p.box.top < 0) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'bottom');
+            } else if (p.box.top + p.box.height > paper.canvas.clientHeight) {
+                p = path(totalWidth, totalHeight, paddingToBorder, 'top');
+            }
             tip = paper.path();
             labels.toFront();
             tip.attr({
@@ -2067,14 +2311,15 @@ Venus.config={
                 'stroke-linejoin':'round',
                 'stroke':'#4572A7',
                 'opacity':'0'
-            }).animate({'opacity':1, 'fill-opacity':.85}, 100);
+            });
+            tip.animate({'opacity':1, 'fill-opacity':.85}, 100);
             labels.animate({'opacity':1}, 100);
             labels.forEach(function (la, i) {
                 la.attr({
                     'y':p.box.top + (i + .5) * bBox.height + paddingToBorder,
                     'x':p.box.left + p.box.width / 2
                 })
-            })
+            });
             this._venus_tooltip_labels = labels;
             this._venus_tooltip = tip;
             this._venus_tooltip_show = true;
@@ -2170,11 +2415,6 @@ Venus.config={
             var series = this.series.getSeries(),
                 colors = this.colors,
                 coordinate = this.coordinate,
-                xAxis = coordinate.x,
-                xTickWidth = xAxis.model.tickWidth,
-                xTickSize = xAxis.model.tickSize,
-                yAxis = coordinate.y,
-                beginY = yAxis.model.beginY,
                 paper = this.stage,
                 sideBySide = "sidebyside",
                 nestification = "nestification",
@@ -2195,6 +2435,8 @@ Venus.config={
                 self = this,
                 duration = 500;
 
+            coordinate.x.set('pop',1);
+
 
             /*
              * Main Function of draw bar
@@ -2207,11 +2449,24 @@ Venus.config={
              *
              * */
             function drawBar(x, y, width, height, color, tipObj) {
-                var bar
+                var bar,
+                    distance = coordinate.distance(coordinate.x,{x:x,y:y});
                 if (barOptions.beginAnimate) {
-                    bar = paper.rect(x, beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500)
+                    if(isHorizontal()){
+                        if (distance >= 0) {
+                            bar = paper.rect(x, y, 0, height, barOptions.radius).animate({width:width}, 500);
+                        } else {
+                            bar = paper.rect(coordinate.x.model.beginX, y, 0, height, barOptions.radius).animate({
+                                width:width,
+                                x:x
+                            }, 500);
+                        }
+
+                    }else{
+                        bar = paper.rect(x, coordinate.y.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
+                    }
                 } else {
-                    bar = paper.rect(x, y, width, height, barOptions.radius)
+                    bar = paper.rect(x, y, width, height, barOptions.radius);
                 }
 
                 bar.attr({
@@ -2219,9 +2474,17 @@ Venus.config={
                     'stroke-width':0,
                     'opacity':barOptions.opacity || 1
                 }).hover(function (e) {
-                        this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                        if(isHorizontal()){
+                            if(distance>=0){
+                                this.toolTip(paper, this.attr('x') + this.attr('width'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'right');
+                            }else{
+                                this.toolTip(paper, this.attr('x'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'left');
+                            }
+                        }else{
+                            this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                        }
                     }, function () {
-                        this.toolTipHide()
+                        this.toolTipHide();
                     });
                 return bar;
             }
@@ -2261,33 +2524,70 @@ Venus.config={
 
                 var xy = coordinate.get(x, y),
                     oX = xy.x,
-                    oY = xy.y;
+                    oY = xy.y,
+                    xTickWidth = coordinate.x.model.tickWidth,
+                    xTickSize = coordinate.x.model.tickSize,
+                    beginY = coordinate.x.model.beginY,
+                    beginX = coordinate.x.model.beginX,
+                    times = 5, // width/space=times
+                    distance ;
 
+                distance = coordinate.distance(coordinate.x, xy);
                 if (barOptions.multiple == sideBySide) {
-                    var times = 5, // width/space=times
-                        total = xTickWidth /xTickSize * .8,
+                    var total = xTickWidth / xTickSize * .8,
                         space = total / ((times + 1) * count + 1),
-                        bWidth = times * space,
-                        x = oX - total / 2 + i * bWidth + (i + 1) * space,
-                        y = oY;
-                    return {
-                        x:x,
-                        y:y,
-                        width:bWidth,
-                        height:beginY - y,
-                        xTick:xy.xTick,
-                        yTick:xy.yTick
+                        bWidth = times * space;
+
+                    if (isHorizontal()) {
+                        distance < 0 ? (x = oX) : (x = beginX);
+                        return {
+                            x:x,
+                            y:oY - total / 2 + i * bWidth + (i + 1) * space + xTickWidth / 2,
+                            width:Math.abs(distance),
+                            height:bWidth,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
+                    } else {
+                        distance < 0 ? (y = oY) : (y = beginY);
+                        x = oX - total / 2 + i * bWidth + (i + 1) * space;
+                        return {
+                            x:x - xTickWidth / 2,
+                            y:y,
+                            width:bWidth,
+                            height:Math.abs(distance),
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
                     }
-                }else{
-                    return {
-                        x:oX - xTickWidth / 4,
-                        y:oY - sumY,
-                        width:xTickWidth / 2,
-                        height:beginY - oY,
-                        xTick:xy.xTick,
-                        yTick:xy.yTick
+                } else {
+                    if (isHorizontal()) {
+                        distance < 0 ? (x = oX - sumY) : (x = beginX + sumY);
+                        return {
+                            x:x,
+                            y:oY + xTickWidth / 4,
+                            width:Math.abs(distance),
+                            height:xTickWidth / 2,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
+                    } else {
+                        distance < 0 ? (y = oY-sumY) : (y = beginX+sumY);
+                        return {
+                            x:oX - xTickWidth / 4 - xTickWidth / 2,
+                            y:oY - sumY,
+                            width:xTickWidth / 2,
+                            height:beginY - oY,
+                            xTick:xy.xTick,
+                            yTick:xy.yTick
+                        }
                     }
                 }
+            }
+
+
+            function isHorizontal(){
+                return coordinate.x.model.rotate == 90 && coordinate.y.model.rotate == 0;
             }
 
             if (barOptions.multiple == nestification) {
@@ -2317,17 +2617,20 @@ Venus.config={
 
                     coordinate.use(coordinate.getAxisUse(0));
                     series.forEach(function (d, i) {
-                        var xy = coordinate.get(i, d.data);
+                        var p = getPositions(i, d.data, 0, 1);
                         if (elements[i]) {
                             //change , animate
                             elements[i].animate({
-                                y:xy.y,
-                                height:coordinate.y.model.beginY - xy.y
+                                x:p.x,
+                                y:p.y,
+                                width:p.width,
+                                height:p.height
                             }, duration);
                         } else {
-                            elements[i] = drawBar(xy.x - xTickWidth / 4 - xTickWidth / 2, xy.y, xTickWidth / 2, beginY - xy.y, colors[i], {
-                                x:xy.xTick,
-                                y:xy.yTick,
+                            //init and draw
+                            elements[i] = drawBar(p.x, p.y, p.width, p.height, colors[i], {
+                                x:p.xTick,
+                                y:p.yTick,
                                 label:self.labels[i]
                             });
                         }
@@ -2342,7 +2645,9 @@ Venus.config={
 
                     series.forEach(function (d, i) {
                         coordinate.use(coordinate.getAxisUse(i));
-                        var indexOfI = seriesArray.indexOf(i);
+                        var indexOfI = seriesArray.indexOf(i),
+                            xTickWidth = coordinate.x.model.tickWidth;
+
                         if( indexOfI== -1){
                             return;
                         }
@@ -2350,16 +2655,16 @@ Venus.config={
                         d.data.forEach(function (value, j) {
                             sumY[j] = sumY[j] || 0;
                             var p = getPositions(j, value, indexOfI,seriesArray.length, sumY[j]);
-                            sumY[j] += p.height;
+                            sumY[j] += (isHorizontal()? p.width: p.height);
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x - xTickWidth/2,
+                                    x:p.x,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -2385,17 +2690,17 @@ Venus.config={
                         for (o in d.data) {
                             sumY[j] = sumY[j] || 0;
                             var p = getPositions(o, d.data[o], indexOfI,seriesArray.length, sumY[j]);
-                            sumY[j] += p.height;
+                            sumY[j] += (isHorizontal()? p.width: p.height);
 
                             if(elements[i][j]){
                                 elements[i][j].animate({
-                                    x:p.x - xTickWidth/2,
+                                    x:p.x ,
                                     y:p.y,
                                     width:p.width,
                                     height:p.height
                                 },duration);
                             }else{
-                                elements[i].push(drawBar(p.x - xTickWidth/2, p.y, p.width, p.height, colors[i], {
+                                elements[i].push(drawBar(p.x, p.y, p.width, p.height, colors[i], {
                                     x:p.xTick,
                                     y:p.yTick,
                                     label:self.labels[i]
@@ -2634,9 +2939,9 @@ Venus.config={
                 }
                 dot._active_ = true;
                 icon.animate({
-                    width: dotRadius * 4
+                    width: lineOpt.dotRadius * 4
                 }, 100);
-                dot.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
+                dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
                     x:point.xTick,
                     y:point.yTick,
                     label:point.label
@@ -2665,7 +2970,8 @@ Venus.config={
              * */
              function drawLine(arr, indexOfSeries, color, dotColor,label) {
                 coordinate.use(coordinate.getAxisUse(indexOfSeries));
-                var points = [];
+                var points = [],
+                    isH = coordinate.x.model.rotate == 90 && coordinate.y.model.rotate == 0;
 
                 //put all points in the point array, ignore some missing points
                  if (util.isArray(arr)) {
@@ -2698,6 +3004,9 @@ Venus.config={
 
                 //sort by xAxis to avoid wrong order
                 points.sort(function (a, b) {
+                    if(isH){
+                        return b.y - a.y;
+                    }
                     return a.x - b.x;
                 });
                 var pathString,             //path string of the line
@@ -2731,6 +3040,8 @@ Venus.config={
                              y = points[i].y;
                              x1 = points[i + 1].x;
                              y1 = points[i + 1].y;
+
+
                              p = getAnchors(x0, y0, x, y, x1, y1);
                              pathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
                              areaPathString.push(p.x1, p.y1, x, y, p.x2, p.y2);
@@ -2791,6 +3102,12 @@ Venus.config={
 
                 if (lineOpt.dots) {
                     //draw dots
+
+                    //dot is too large
+                    if(coordinate.x.model.tickWidth/coordinate.x.model.tickSize<4*dotRadius){
+                        dotRadius = coordinate.x.model.tickWidth/coordinate.x.model.tickSize/4;
+                    }
+
                     points.forEach(function (d, i) {
                         var icon = self.iconFactory.create(indexOfSeries, d.x, d.y,dotRadius*2),
                         dot = icon.icon.attr({
@@ -2818,7 +3135,7 @@ Venus.config={
                             //bind click event which shows the toolTip and make the dot bigger and cancel the effect when click again
                             dot.click(function () {
                                 if (!this._selected_) {
-                                    this.toolTip(raphael, icon.position().x, icon.position().y - 10, self.options.tooltip.call(self,{
+                                    this.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
                                         x:d.xTick,
                                         y:d.yTick,
                                         label:d.label
@@ -2930,7 +3247,7 @@ Venus.config={
                         });
                     })
                 }
-                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > lineOpt.dotRadius) || lineOpt.columnHover)) {
+                if (lineOpt.dots && ((lineOpt.hoverRadius && lineOpt.hoverRadius > dotRadius) || lineOpt.columnHover)) {
                     var handler = function(e){
                         var offsetX,offsetY,
                             boundBox,
