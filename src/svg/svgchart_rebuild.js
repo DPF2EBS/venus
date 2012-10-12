@@ -180,10 +180,6 @@
         this.events.fire('onFinish');
 
     }
-
-    /*
-    * Prototype of Class Chart
-    * */
     Chart.prototype = {
         constructor:Chart,
         _initData:function () {
