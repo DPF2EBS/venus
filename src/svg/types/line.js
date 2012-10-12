@@ -406,7 +406,7 @@
                                 element.dots && element.dots.forEach(function (dot) {
                                     var point = dot.data('point'),
                                         distance = Math.sqrt(Math.pow((point.x - offsetX), 2) + Math.pow((point.y - offsetY), 2));
-                                    if (distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
+                                    if (dot.node.style.display!=="none" && distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
                                         minDot = dot;
                                         min = distance;
                                     }

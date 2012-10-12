@@ -566,10 +566,6 @@ Venus.config={
         this.events.fire('onFinish');
 
     }
-
-    /*
-    * Prototype of Class Chart
-    * */
     Chart.prototype = {
         constructor:Chart,
         _initData:function () {
@@ -3262,7 +3258,7 @@ Venus.config={
                                 element.dots && element.dots.forEach(function (dot) {
                                     var point = dot.data('point'),
                                         distance = Math.sqrt(Math.pow((point.x - offsetX), 2) + Math.pow((point.y - offsetY), 2));
-                                    if (distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
+                                    if (dot.node.style.display!=="none" && distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
                                         minDot = dot;
                                         min = distance;
                                     }
@@ -3320,13 +3316,13 @@ Venus.config={
     /**
      *get sector path string and position parameters
      *@param {Object} options {
-     x:coordinate y of sector,
-     y:coordinate x of sector,
-     r:radius,
-     startAngle:,
-     endAngle:,
-     dir:circle direction,
-     rotate:sector rotation
+        x:coordinate y of sector,
+        y:coordinate x of sector,
+        r:radius,
+        startAngle:,
+        endAngle:,
+        dir:circle direction,
+        rotate:sector rotation
      }
      *@return path and positions
      *@type {Object} an object contain path and positions
@@ -3380,15 +3376,15 @@ Venus.config={
     /**
      *draw sector and text
      *@param {Object} options {
-     x:coordinate y of sector,
-     y:coordinate x of sector,
-     r:radius, startAngle:,
-     endAngle:,
-     color:sector fill color,
-     d:data of sector,
-     callback:animation callback function,
-     dir:circle direction,
-     rotate:sector rotation
+        x:coordinate y of sector,
+        y:coordinate x of sector,
+        r:radius, startAngle:,
+        endAngle:,
+        color:sector fill color,
+        d:data of sector,
+        callback:animation callback function,
+        dir:circle direction,
+        rotate:sector rotation
      }
      *@return sector raphael object
      *@type {Object} an object instance of raphael
@@ -3418,13 +3414,32 @@ Venus.config={
         return sector;
     }
 
+    /*
+    * function to compute the positions of text
+    * @param pos{Object} position of the bound of the sector
+    *
+    * */
+
+    function textPosition(pos){
+
+    }
+    textPosition.rows = {
+        left:{},
+        right:{}
+    }
+
     Venus.SvgChart.addChart('pie', {
-        draw:function (options) {
-            /**initialize chart options*/
-            options = util.mix({
-                x:this.options.width / 2,
-                y:this.options.height / 2,
-                radius:Math.min(this.options.width, this.options.height) / 2.5,
+        draw:function (opt) {
+            /*
+                initialize chart options
+            */
+            var chartWidth = this.options.width,
+                chartHeight = this.options.height,
+
+                options = util.mix({
+                x:chartWidth/ 2,                                //position of the pie center
+                y:chartHeight/ 2,
+                radius:Math.min(chartWidth, chartHeight) / 2.5, //radius of the p
                 duration:900,
                 animation:true,
                 showText:true,
@@ -3432,7 +3447,7 @@ Venus.config={
                 dir:1,
                 hollow:0,
                 stroke:{}
-            }, options);
+            }, opt);
 
             if (options.hollow >= options.radius) {
                 options.hollow = 0;
@@ -3441,7 +3456,7 @@ Venus.config={
             delete options.radius;
 
             /**define variables needed*/
-            var series = this.series.getSeries().sort(function (a, b) {
+            var series = this.series.getSeries().slice(0).sort(function (a, b) {
                     return b.data - a.data
                 }),
                 colors = this.colors,
@@ -3449,29 +3464,38 @@ Venus.config={
                 data,
                 total = 0,
                 elements = [],
-                value,
-            // startAngle=-90,
+                percents = [],
                 startAngle = options.rotate * options.dir,
-                opts = [], t = 0,
-                endAngle;
+                endAngle,
+                opts = [], t = 0;
 
             /**add coustomer attribute*/
             paper.customAttributes.arc = function (x, y, r, hollow, startAngle, endAngle, dir) {
-                return {path:getSectorPath({x:x, y:y, r:r, hollow:hollow, startAngle:startAngle, endAngle:endAngle, dir:dir}).path};
+                return {
+                    path:getSectorPath({x:x, y:y, r:r, hollow:hollow, startAngle:startAngle, endAngle:endAngle, dir:dir}).path
+                };
             };
 
             /**calculate summation of all data*/
-            for (var i = 0, L = series.length; i < L; i++) {
-                total += series[i].data;
-            }
+            series.forEach(function(s){
+                total+= s.data;
+            });
+
 
             /**draw each sector chart*/
-            for (var i = 0, L = series.length; i < L; i++) {
-                data = series[i].data;
-                endAngle = series[i].data / total * 360 + startAngle;
-                opts.push({startAngle:startAngle, endAngle:endAngle, color:colors[i], d:options.showText && data, time:Math.round(data / total * options.duration)});
+            series.forEach(function(s,i){
+                data = s.data;
+                percents.push((data/total*100).toFixed(2));
+                endAngle = s.data / total * 360 + startAngle;
+                opts.push({
+                    startAngle:startAngle,
+                    endAngle:endAngle,
+                    color:colors[i],
+                    d:options.showText && data,
+                    time:Math.round(data / total * options.duration)
+                });
                 startAngle = endAngle;
-            }
+            });
 
             opts.forEach(function (item, i) {
                 if (options.animation) {
@@ -3487,11 +3511,11 @@ Venus.config={
                 }
 
                 setTimeout(function () {
-                    elements.push(SectorChart(util.mix({paper:paper,
+                    elements.push(SectorChart(util.mix({
+                        paper:paper,
                         callback:function () {
-                            this.text && this.text.show();
-                        }
-                    }, util.mix(options, item))));
+                        this.text && this.text.show();
+                    }}, util.mix(options, item))));
                 }, t);
             });
 
@@ -3521,7 +3545,7 @@ Venus.config={
                     return false;
                 }
 
-                Array.prototype.forEach.call(this.legend.itemSet, function (item, i) {
+                this.legend.itemSet.forEach(function (item, i) {
                     var el = elements[i];
                     item.hover(
                         function () {
