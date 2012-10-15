@@ -65,15 +65,15 @@ if (!Array.prototype.forEach) {
 
 (function (root, NULL, undef) {
     var defaultConfig = {},
-    mix = function (o1, o2) {
-        for (var attr in o2) {
-            if (typeof o2[attr] !== "object" || o1[attr] === undefined || typeof o1[attr] !== 'object') {
-                o1[attr] = o2[attr];
+    mix = function (target, source) {
+        for (var attr in source) {
+            if (typeof source[attr] !== "object" || target[attr] === undefined || typeof target[attr] !== 'object') {
+                target[attr] = source[attr];
             } else {
-                mix(o1[attr], o2[attr]);
+
             }
         }
-        return o1;
+        return target;
     };
 
     function heatmap(canvas, config) {
@@ -97,7 +97,7 @@ if (!Array.prototype.forEach) {
             if (this.max < this.area[x][y].count) {
                 this.max = this.area[x][y].count;
                 this.heat();
-            }else{
+            } else {
                 this.heatPoint(this.area[x][y]);
             }
         },
@@ -115,14 +115,49 @@ if (!Array.prototype.forEach) {
         },
         heatPoint: function (point) {
             var percent = point.count / this.max;
-            this.heatRadialGradient(point, percent);
+            this.heatAlphaRadialGradient(point, percent);
         },
-        heatRadialGradient: function (point, percent) {
-            var context = this.context;
-            context.beginPath();
-            context.arc(point.x, point.y, 10, 0, 2 * Math.PI, false);
-            context.fillStyle = "rgba(60,60,60,"+percent+")";
+        heatAlphaRadialGradient: function (point, percent) {
+            var radius = 40,
+                context = this.context,
+                radgrad = context.createRadialGradient(point.x,point.y,0,point.x,point.y,radius);
+            radgrad.addColorStop(0, 'rgba(255,0,0,'+1*percent+')');
+            radgrad.addColorStop(0.618, 'rgba(255,0,0,'+0.5*percent+')');
+            radgrad.addColorStop(1, 'rgba(255,0,0,0)');
+            context.fillStyle = radgrad;
+            context.arc(point.x,point.y,radius,0,Math.PI*2,true);
             context.fill();
+            this.colorize();
+        },
+        colorize:function(){
+            var context = this.context,
+                canvas = this.canvas,
+                width = canvas.width,
+                height = canvas.height,
+                image = context.getImageData(0, 0, width, height),
+                alpha,
+                imageData = image.data,
+                length = imageData.length;
+                for(var i=3; i < length; i+=4){
+                    alpha = imageData[i];
+                    if(alpha > 170){
+                        imageData[i-3] = 255;
+                        imageData[i-2] = 255 - 255 * (alpha - 170)/85 ;
+                        imageData[i-1] = 0;
+                    }else if(alpha > 85){
+                        imageData[i-3] = 255 * (alpha - 85)/85;
+                        imageData[i-2] = 255;
+                        imageData[i-1] = 0; 
+                    }else if(alpha >0){
+                        imageData[i-3] = 0;
+                        imageData[i-2] = 255;
+                        imageData[i-1] = 255 - 255 * (alpha - 85) / 85 ;
+                    }
+                }
+                image.data =  imageData;
+                console.log(imageData);
+                this.clear();
+                context.putImageData(image, 0, 0);
         },
         clear: function () {
             var canvas = this.canvas;
