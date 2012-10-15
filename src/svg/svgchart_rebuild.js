@@ -22,8 +22,9 @@
 
         , DEFAULT_Y_AXIS = "y"
         , DEFAULT_X_AXIS = "x"
-        , UNDER_TICK = 'under-tick';
-
+        , UNDER_TICK = 'under-tick'
+        , CONTINUOUS  = "continuous"
+        , DISCRETE =  'discrete' ;
 
     /*Chart Begin*/
     /*
@@ -255,41 +256,53 @@
                         yOpt = this.y.options,
                         xModel = this.x.model,
                         yModel = this.y.model,
+                        xObj , yObj,
                         x, y, xTick, yTick;
 
-                    if (key != undefined) {
-                        if (typeof key == "string") {
-                            xTick = key;
-                            xOpt.ticks.forEach(function (tick, i) {
-                                if (tick == key) {
-                                    key = i;
-                                }
-                            });
-                        } else {
-                            xTick = xOpt.ticks[key];
-                        }
-                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
-                    } else {
-                        x = 0;
-                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
-                    }
-                    if (value != undefined) {
-                        if (yOpt.ticks && yOpt.ticks.length) {
-                            yOpt.ticks.forEach(function (tick, i) {
-                                if (tick == value) {
-                                    value = i;
-                                }
-                            });
-                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
-                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
-                        } else {
-                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
-                        }
-                        yTick = value;
-                    } else {
-                        y = 0;
-                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
-                    }
+//                    if (key != undefined) {
+//                        if (typeof key == "string") {
+//                            xTick = key;
+//                            xOpt.ticks.forEach(function (tick, i) {
+//                                if (tick == key) {
+//                                    key = i;
+//                                }
+//                            });
+//                        } else {
+//                            xTick = xOpt.ticks[key];
+//                        }
+//                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
+//                        xObj = this.x.getPoint(key);
+//                        x = xObj.length;
+//                        xTick = xObj.tick;
+//                    } else {
+//                        x = 0;
+//                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
+//                    }
+                    xObj = this.x.getPoint(key);
+                    x = xObj.length;
+                    xTick = xObj.tick;
+
+//                    if (value != undefined) {
+//                        if (yOpt.ticks && yOpt.ticks.length) {
+//                            yOpt.ticks.forEach(function (tick, i) {
+//                                if (tick == value) {
+//                                    value = i;
+//                                }
+//                            });
+//                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+//                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
+//                        } else {
+//                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
+//                        }
+//                        yTick = value;
+//                    } else {
+//                        y = 0;
+//                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
+//                    }
+                    yObj = this.y.getPoint(value);
+                    y = yObj.length;
+                    yTick = yObj.tick;
+
                     if(yModel.reverse){
                         y = yModel.totalWidth - y;
                     }
@@ -700,6 +713,7 @@
                         //if x axis has no ticks , then auto generate ticks use series.getLabels()
                         //but getLabels() sometimes returns array of empty string depends on the data
                         if (!thisAxisOption.ticks) {
+                            thisAxisOption.type = DISCRETE;
                             thisAxisOption.ticks = this.series.getLabels();
                         }
                     }
@@ -1145,7 +1159,7 @@
             _svgWidth:0,
             _svgHeight:0,
             _name:'',
-            type:"continuous",      //default type is continuous (discrete,datetime)
+            type:CONTINUOUS,      //default type is continuous (discrete,datetime)
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1517,55 +1531,91 @@
                     model.ticks.push(i);
                 }
                 model.ticks.push(i);
+            },
+            getPoint:function (value) {
+                var model = this.model,
+                    length;
+                length = value === undefined ? 0 : (value - model.min) * model.tickWidth / model.tickSize + model.pop * model.tickWidth;
+                return {
+                    length:length,
+                    tick:value
+                }
             }
         },
-        'discrete': function(){
-            var opt = this.options,
-                model = this.model,
-                alpha = Math.atan(opt._svgHeight / opt._svgWidth),
-                beta = (opt.rotate || 0) * PI / 180,
-                percent = opt.percent,
-                maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
-                total, i,l;
+        'discrete': {
+            autoModel:function () {
+                var opt = this.options,
+                    model = this.model,
+                    alpha = Math.atan(opt._svgHeight / opt._svgWidth),
+                    beta = (opt.rotate || 0) * PI / 180,
+                    percent = opt.percent,
+                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
+                    total, i, l;
 
-            model.pop = opt.pop || 0;
-            model.rotate = opt.rotate;
-            model.ticks = [];
+                model.pop = opt.pop || 0;
+                model.rotate = opt.rotate;
+                model.ticks = [];
 
-            //got ticks and generate the visible ticks
-            if (opt.tickSize) {
-                model.tickSize = opt.tickSize;
-            } else {
-                //compute the tickSize
-                if (opt.total) {
-                    total = Math.min(opt.total, opt.ticks.length);
+                //got ticks and generate the visible ticks
+                if (opt.tickSize) {
+                    model.tickSize = opt.tickSize;
                 } else {
-                    total = opt.ticks.length;
-                    while (total) {
-                        if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
-                            total = Math.floor(total / 2);
-                        } else {
-                            break;
+                    //compute the tickSize
+                    if (opt.total) {
+                        total = Math.min(opt.total, opt.ticks.length);
+                    } else {
+                        total = opt.ticks.length;
+                        while (total) {
+                            if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
+                                total = Math.floor(total / 2);
+                            } else {
+                                break;
+                            }
                         }
                     }
+                    if (total == 1) {
+                        total = 2;
+                        model.pop = 1;
+                    }
+                    model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
                 }
-                if (total == 1) {
-                    total = 2;
-                    model.pop = 1;
+                total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
+                for (i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
+                    model.ticks.push(i);
                 }
-                model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
+                if (i == l) {
+                    model.ticks.push(i);
+                }
+                model.tickWidth = parseInt(opt.tickWidth || maxWidth * percent / (total + model.pop - 1));
+                model.totalWidth = model.tickWidth * (total + model.pop - 1);
+                model.total = total;
+            },
+            getPoint:function (key) {
+                var tick, length,
+                    model = this.model,
+                    options = this.options
 
+                if (key === undefined) {
+                    length = 0;
+                } else {
+                    if (typeof key == "string") {
+                        tick = key;
+                        options.ticks.forEach(function (tick, i) {
+                            if (tick == key) {
+                                key = i;
+                            }
+                        });
+                    } else {
+                        tick = options.ticks[key];
+                    }
+                    length = key * model.tickWidth / model.tickSize + model.pop * model.tickWidth;
+                }
+
+                return {
+                    length:length,
+                    tick:tick
+                }
             }
-            total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
-            for (i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
-                model.ticks.push(i);
-            }
-            if (i == l) {
-                model.ticks.push(i);
-            }
-            model.tickWidth = parseInt(opt.tickWidth || maxWidth * percent / (total + model.pop - 1));
-            model.totalWidth = model.tickWidth * (total + model.pop - 1);
-            model.total = total;
         }
     };
 
