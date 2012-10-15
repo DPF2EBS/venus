@@ -1145,6 +1145,7 @@
             _svgWidth:0,
             _svgHeight:0,
             _name:'',
+            type:"continuous",      //default type is continuous (discrete,datetime)
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1152,6 +1153,8 @@
         };
 
         this.options = mix(defaultOptions, options || {});
+
+        this.implement(this.options.type);
 
         this.name = this.options._name;
 
@@ -1476,8 +1479,100 @@
         },
         on:function(fn){
             this.events.on('model_change',fn);
+        },
+        implement:function(type){
+            if (Axis.types[type]) {
+                for (var m in Axis.types[type]) {
+                    this[m] = Axis.types[type][m];
+                }
+            }
         }
     };
+    Axis.types = {
+        'continuous':{
+            'autoModel':function(){
+                var opt = this.options,
+                    model = this.model,
+                    alpha = Math.atan(opt._svgHeight / opt._svgWidth),
+                    beta = (opt.rotate || 0) * PI / 180,
+                    percent = opt.percent,
+                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
+                    total, i,l;
+
+                model.pop = opt.pop || 0;
+                model.rotate = opt.rotate;
+                model.ticks = [];
+
+                //got min and max
+                var range = this.autoRange(opt.min, opt.max, opt.total);
+                model.max = range.max;
+                model.min = range.min;
+                model.tickSize = range.step;
+
+                model.total = range.total;
+
+                model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop - 1);
+                model.totalWidth = model.tickWidth * (model.total + model.pop - 1);
+                for (i = model.min, l = model.max; i < l; i += model.tickSize) {
+                    model.ticks.push(i);
+                }
+                model.ticks.push(i);
+            }
+        },
+        'discrete': function(){
+            var opt = this.options,
+                model = this.model,
+                alpha = Math.atan(opt._svgHeight / opt._svgWidth),
+                beta = (opt.rotate || 0) * PI / 180,
+                percent = opt.percent,
+                maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
+                total, i,l;
+
+            model.pop = opt.pop || 0;
+            model.rotate = opt.rotate;
+            model.ticks = [];
+
+            //got ticks and generate the visible ticks
+            if (opt.tickSize) {
+                model.tickSize = opt.tickSize;
+            } else {
+                //compute the tickSize
+                if (opt.total) {
+                    total = Math.min(opt.total, opt.ticks.length);
+                } else {
+                    total = opt.ticks.length;
+                    while (total) {
+                        if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
+                            total = Math.floor(total / 2);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (total == 1) {
+                    total = 2;
+                    model.pop = 1;
+                }
+                model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
+
+            }
+            total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
+            for (i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
+                model.ticks.push(i);
+            }
+            if (i == l) {
+                model.ticks.push(i);
+            }
+            model.tickWidth = parseInt(opt.tickWidth || maxWidth * percent / (total + model.pop - 1));
+            model.totalWidth = model.tickWidth * (total + model.pop - 1);
+            model.total = total;
+        }
+    };
+
+    Axis.extendType = function(type,methods){
+        Axis.types = methods;
+    };
+
 
     /*Class Axis End*/
 
