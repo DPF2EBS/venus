@@ -14,11 +14,13 @@
     - **readius**（可选）：Number，单个热点的半径
     - **opacity**（可选）：Number，Heatmap的透明度
 ## 使用示例
+
 ```javascript
 var config = {
     readius:50,
     opacity:0.9 
-}
+};
+
 //实例化热力图对象
 var heatmap =  new Heapmap(document.getElmentById("canvas"), config);
 
