@@ -14,7 +14,7 @@
     - **readius**（可选）：Number，单个热点的半径
     - **opacity**（可选）：Number，Heatmap的透明度
 ## 使用示例
-...javascript
+```javascript
 var config = {
     readius:50,
     opacity:0.9 
@@ -30,4 +30,4 @@ heatmap.addPoint([35,75]);
 
 //动态添加数据集
 heatmap.addPointSet([[43,645], [5436,1], [1,76], [6546,65] /*...*/]);
-... 
+``` 
