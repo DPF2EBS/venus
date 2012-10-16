@@ -63,14 +63,45 @@ if (!Array.prototype.forEach) {
     };
 }
 
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+ 
+    var aArgs = Array.prototype.slice.call(arguments, 1), 
+        fToBind = this, 
+        fNOP = function () {},
+        fBound = function () {
+          return fToBind.apply(this instanceof fNOP && oThis
+                                 ? this
+                                 : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+ 
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+ 
+    return fBound;
+  };
+}
+
+
 
 (function (root, NULL, undef) {
-    var defaultConfig = {},
+    var defaultConfig = {
+            radius:40,
+            alpha:1
+        },
         util = {},
         toString = Object.prototype.toString;
     mix(util, {
         isArray:function(obj){
-            return toString.call(obj) == "[object Array]";
+            return toString.call(obj) === "[object Array]";
+        },
+        isObject: function(obj){
+            return obj === Object(obj);
         }
     });
     function heatmap(canvas, config) {
@@ -82,8 +113,20 @@ if (!Array.prototype.forEach) {
         this.area.count = 0;
     }
     mix(heatmap.prototype, {
-        addPoint: function(x, y){
-            this._addPoint(x, y, 1);
+        addPoint: function(x, y, count){
+            var point;
+            if(util.isArray(x)){ // [1,1]
+                point = x;
+                x = point[0];
+                y = point[1];
+            }else if(util.isObject(x)){ //{x:1,y:1,count:4}
+                point = x;
+                x = point.x;
+                y = point.y;
+                count = point.count;
+            } // addPoint(1,1) or addPint(1, 1, 4)
+            count = count || 1;
+            this._addPoint(x, y, count);
             this.heat();
         },
         //add point to area
@@ -96,25 +139,29 @@ if (!Array.prototype.forEach) {
                 count: 0
             };
             this.area.count += count;
-            _count = this.area[x][y].count += count;
+            this.area[x][y].count += count;
+            _count = this.area[x][y].count;
             if (this.max < _count) {
                 this.max = _count;
             }
         },
         setPointSet: function (pointSet) {
+            //clear area
             this.area = [];
-            //迭代pointSet中的每一个点
+            //add point set
             this._addPointSet(pointSet);
+            //heat
             this.heat();
         },
         addPointSet: function(pointSet){
+            //add point set
             this._addPointSet(pointSet);
+            //heat
             this.heat();
         },
         _addPointSet: function(pointSet){
             var me = this;
             pointSet.forEach(function(point){
-                //如果这个点是数组
                 if(util.isArray(point)){
                     point[2] = 1;
                     me._addPoint.apply(me, point);
@@ -125,31 +172,40 @@ if (!Array.prototype.forEach) {
         },
         heat: function () {
             this.clear();
-            this._heat();
-        },
-        _heat: function () {
-            var that = this;
-            this.area.forEach(function (row) {
-                row.forEach(function (point) {
-                    that.heatPoint(point);
-                });
-            });
-        },
-        heatPoint: function (point) {
-            var percent = point.count / this.max;
-            this.heatAlphaRadialGradient(point, percent);
-        },
-        heatAlphaRadialGradient: function (point, percent) {
-            var radius = 40,
-                context = this.context,
-                radgrad = context.createRadialGradient(point.x,point.y,0,point.x,point.y,radius);
-            radgrad.addColorStop(0, 'rgba(255,0,0,'+1*percent+')');
-            radgrad.addColorStop(0.618, 'rgba(255,0,0,'+0.5*percent+')');
-            radgrad.addColorStop(1, 'rgba(255,0,0,0)');
-            context.fillStyle = radgrad;
-            context.arc(point.x,point.y,radius,0,Math.PI*2,true);
-            context.fill();
+            this.drawAlpha();
             this.colorize();
+        },
+        drawAlpha: function(){
+            this.area.forEach(function(row){
+                row.forEach(function (point){
+                    this.drawAlphaPoint(point);
+                }.bind(this));
+            }.bind(this));
+        },
+        drawAlphaPoint: function(point){
+            var radius = this.config.radius,
+                context = this.context,
+                x = point.x,
+                y = point.y,
+                percent = point.count / this.max;
+            //from heatmap.js
+            /*context.shadowColor = ('rgba(0,0,0,'+percent+')');
+            context.shadowOffsetX = 1000;
+            context.shadowOffsetY = 1000;
+            context.shadowBlur = 15;
+            context.beginPath();
+            context.arc(x - 1000, y - 1000, radius, 0, Math.PI * 2, true);
+            context.closePath();
+            context.fill();*/
+                
+            radgrad = context.createRadialGradient(x, y, 0, x, y, radius);
+            radgrad.addColorStop(0, 'rgba(0,0,0,'+1*percent+')');
+            radgrad.addColorStop(1, 'rgba(0,0,0,0)');
+            context.fillStyle = radgrad;
+            context.beginPath();
+            context.arc(point.x,point.y,radius,0,Math.PI*2,true);
+            context.closePath();
+            context.fill();
         },
         colorize:function(){
             var context = this.context,
@@ -177,7 +233,6 @@ if (!Array.prototype.forEach) {
                     }
                 }
                 image.data =  imageData;
-                console.log(imageData);
                 this.clear();
                 context.putImageData(image, 0, 0);
         },
@@ -202,3 +257,8 @@ if (!Array.prototype.forEach) {
     };
 })(window, null);
 
+
+/*
+ * TODO
+ * 1. 区域重绘
+ */
