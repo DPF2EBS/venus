@@ -26,10 +26,13 @@ var heatmap =  new Heapmap(document.getElmentById("canvas"), config);
 
 //初始化（动态设置）数据集
 heatmap.setPointSet([[43,645], [5436,1], [1,76], [6546,65] /*...*/]);
+//or
+heatmap.setPointSet([{x:54,y:65,count:5},{x:54,y:65,count:6} /*...*/]);
 
 //也可以动态的添加点，heatmap可以动态更新
 heatmap.addPoint([35,75]);
 
 //动态添加数据集
 heatmap.addPointSet([[43,645], [5436,1], [1,76], [6546,65] /*...*/]);
+heatmap.addPointSet([{x:54,y:65,count:5},{x:54,y:65,count:6} /*...*/]);
 ``` 
