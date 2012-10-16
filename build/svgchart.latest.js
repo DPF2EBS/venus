@@ -2410,9 +2410,7 @@ Venus.config={
                 labels.push(text);
                 bBox =util.clone(text.getBBox());
                 //seems Raphael's bug , when contains（ ）
-                t.toString().indexOf(' ')!=-1 && (bBox.width += 10);
-                //t.toString().indexOf('）')!=-1 && (bBox.width += 10);
-                bBox.width+= (t.toString().split(' ').length*10)
+                bBox.width += (t.toString().split(' ').length * 10)
 
                 text.attr({
                     'opacity':0,
@@ -2423,7 +2421,7 @@ Venus.config={
             if (this._venus_tooltip_show)
                 return;
 
-            totalWidth = Math.max.apply(Math, width)+10;
+            totalWidth = Math.max.apply(Math, width);
             totalHeight = texts.length * bBox.height;
 
             p = path(totalWidth, totalHeight, paddingToBorder,side);

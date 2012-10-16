@@ -2035,7 +2035,7 @@
             if (this._venus_tooltip_show)
                 return;
 
-            totalWidth = Math.max.apply(Math, width)+10;
+            totalWidth = Math.max.apply(Math, width);
             totalHeight = texts.length * bBox.height;
 
             p = path(totalWidth, totalHeight, paddingToBorder,side);
