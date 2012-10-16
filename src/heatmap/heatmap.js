@@ -63,19 +63,16 @@ if (!Array.prototype.forEach) {
     };
 }
 
+
 (function (root, NULL, undef) {
     var defaultConfig = {},
-    mix = function (target, source) {
-        for (var attr in source) {
-            if (typeof source[attr] !== "object" || target[attr] === undefined || typeof target[attr] !== 'object') {
-                target[attr] = source[attr];
-            } else {
-
-            }
+        util = {},
+        toString = Object.prototype.toString;
+    mix(util, {
+        isArray:function(obj){
+            return toString.call(obj) == "[object Array]";
         }
-        return target;
-    };
-
+    });
     function heatmap(canvas, config) {
         this.canvas = canvas;
         this.context = canvas.getContext("2d");
@@ -85,21 +82,46 @@ if (!Array.prototype.forEach) {
         this.area.count = 0;
     }
     mix(heatmap.prototype, {
-        point: function (x, y) {
+        addPoint: function(x, y){
+            this._addPoint(x, y, 1);
+            this.heat();
+        },
+        //add point to area
+        _addPoint:function(x, y, count){
+            var _count;
             this.area[x] = this.area[x] || [];
             this.area[x][y] = this.area[x][y] || {
                 x: x,
                 y: y,
                 count: 0
             };
-            this.area.count++;
-            this.area[x][y].count++;
-            if (this.max < this.area[x][y].count) {
-                this.max = this.area[x][y].count;
-                this.heat();
-            } else {
-                this.heatPoint(this.area[x][y]);
+            this.area.count += count;
+            _count = this.area[x][y].count += count;
+            if (this.max < _count) {
+                this.max = _count;
             }
+        },
+        setPointSet: function (pointSet) {
+            this.area = [];
+            //迭代pointSet中的每一个点
+            this._addPointSet(pointSet);
+            this.heat();
+        },
+        addPointSet: function(pointSet){
+            this._addPointSet(pointSet);
+            this.heat();
+        },
+        _addPointSet: function(pointSet){
+            var me = this;
+            pointSet.forEach(function(point){
+                //如果这个点是数组
+                if(util.isArray(point)){
+                    point[2] = 1;
+                    me._addPoint.apply(me, point);
+                }else{
+                    me._addPoint(point.x, point.y, point.count);
+                }
+            });
         },
         heat: function () {
             this.clear();
@@ -167,5 +189,16 @@ if (!Array.prototype.forEach) {
     root.heatmap = function (canvas, config) {
         return new heatmap(canvas, config);
     }
+
+    function mix(target, source) {
+        for (var attr in source) {
+            if (typeof source[attr] !== "object" || target[attr] === undefined || typeof target[attr] !== 'object') {
+                target[attr] = source[attr];
+            } else {
+
+            }
+        }
+        return target;
+    };
 })(window, null);
 

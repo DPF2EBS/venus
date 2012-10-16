@@ -2,10 +2,15 @@
 <script src="./heatmap.js"></script>
 <script>
     var example = heatmap(document.getElementById("canvas")),
-        x,y;    
-    for(var i =0; i < 300; i++){
+        x, y,
+        pointSet = [];
+        anotherPointSet = [];
+    for(var i =0; i < 100; i++){
         x = parseInt(Math.random()*500);
         y = parseInt(Math.random()*500);
-        example.point(x, y);
+        pointSet.push({x:x, y:y, count:1});
+        anotherPointSet.push([x, y]);
     }
+    example.setPointSet(pointSet);
+    example.addPointSet(anotherPointSet);
 </script>
