@@ -358,10 +358,10 @@
                 * it could be negative
                 * */
 
-                distance:function(axis,point){
-                    if(axis.model.rotate==0){
+                distance:function (axis, point) {
+                    if (axis.model.rotate == 0) {
                         return point.y - axis.model.beginY;
-                    }else{
+                    } else {
                         return point.x - axis.model.beginX;
                     }
                 },
@@ -1205,72 +1205,8 @@
              *     rotate,
              * }
              * */
-            var opt = this.options,
-                model = this.model,
-                alpha = Math.atan(opt._svgHeight / opt._svgWidth),
-                beta = (opt.rotate || 0) * PI / 180,
-                percent = opt.percent,
-                maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
-                total, i,l;
 
-            model.pop = opt.pop || 0;
-            model.rotate = opt.rotate;
-            model.ticks = [];
-
-            if (opt.ticks && opt.ticks.length) {
-                //got ticks and generate the visible ticks
-                if (opt.tickSize) {
-                    model.tickSize = opt.tickSize;
-                } else {
-                    //compute the tickSize
-                    if (opt.total) {
-                        total = Math.min( opt.total, opt.ticks.length);
-                    } else {
-                        total = opt.ticks.length;
-                        while (total) {
-                            if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
-                                total = Math.floor(total / 2);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                    if(total==1){
-                        total = 2;
-                        model.pop = 1;
-                    }
-                    model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
-
-                }
-                total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
-                for ( i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
-                    model.ticks.push(i);
-                }
-                if (i == l) {
-                    model.ticks.push(i);
-                }
-                model.tickWidth = parseInt( opt.tickWidth || maxWidth * percent / (total + model.pop -1));
-                model.totalWidth = model.tickWidth * (total + model.pop-1);
-                model.total = total;
-            } else {
-                //got min and max
-                var range = this.autoRange(opt.min, opt.max, opt.total);
-                model.max = range.max;
-                model.min = range.min;
-                model.tickSize = range.step;
-
-                model.total = range.total;
-
-                model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop-1);
-                model.totalWidth = model.tickWidth * (model.total + model.pop-1);
-                for ( i = model.min, l = model.max; i < l; i+=model.tickSize) {
-                    model.ticks.push(i);
-                }
-                model.ticks.push(i);
-            }
-
-
-
+            // override by each type axis
          },
         set:function(key,value){
             /*
@@ -1374,10 +1310,8 @@
                 pathString = [],
                 beginX = model.beginX,
                 beginY = model.beginY,
-                i, l,count=0,
                 tickHeight = 2,
                 labelMarginTop = 5,
-                hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
                 skip,//if label text is too wide , skip some
@@ -1405,7 +1339,30 @@
                 view.labelElements = stage.set();
             }
 
-            pathString.push('M', beginX, beginY,'h',model.totalWidth);
+            pathString.push('M', beginX, beginY, 'h', model.totalWidth);
+
+            this.forEach(function (i, length, text) {
+                if (i !== 0) {
+                    view.tickElements.push(stage.path().attr({
+                        path:['M', beginX + length, beginY, 'v', tickHeight]
+                    }).attr(pathAttr));
+                }
+                if (text!==undefined && (!skip || skip <= 1 || (i - model.pop) % skip == 0 )) {
+                    var distance = (opt.labelPosition == UNDER_TICK ? 0 : model.tickWidth / 2);
+                    label = stage.text(reverse ? (beginX + model.totalWidth - length + distance) : (beginX + length - distance), beginY, text).attr({
+                        'font-size':this.options.fontSize
+                    });
+                    view.labelElements.push(label);
+                    bbox = label.getBBox();
+                    var line = Math.sqrt(Math.pow(bbox.width, 2) + Math.pow(bbox.height, 2)),
+                        totalRotate = ((opt.labelRotate || 0) + (model.rotate || 0)) * PI / 180,
+                        t = Math.max(bbox.height, line * Math.cos(totalRotate));
+                    skip = Math.ceil((t + 20) / model.tickWidth);
+                }
+
+            });
+
+            /*
             for (i = 0, l = model.pop; i < l; i++) {
                 view.tickElements.push(stage.path().attr({
                     path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
@@ -1425,13 +1382,13 @@
                     }).attr(pathAttr));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
-                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks? opt.ticks[i] :i).attr({
+                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition == UNDER_TICK ? '0' : model.tickWidth / 2);
+                    label = stage.text(reverse ? (beginX + model.totalWidth - distance) : (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
                     bbox = label.getBBox();
-                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
+                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180) + 20) / model.tickWidth);
                 }
                 i = util.number.add(i, model.tickSize);
                 count++;
@@ -1446,6 +1403,7 @@
                     view.labelElements.push(label);
                 }
             }
+            */
 
             view.axisElement.attr({
                 path:pathString
@@ -1543,6 +1501,22 @@
                     length:length,
                     tick:value
                 }
+            },
+            forEach:function(fn){
+                var model = this.model,
+                    distance,
+                    i , l,
+                    count = 0;
+
+                for (i = 0, l = model.pop; i < l; i++) {
+                    fn.call(this, i, (i + 1) * model.tickWidth)
+                }
+                for (i = model.min, l = model.max; i <= l;) {
+                    distance = (count + model.pop) * model.tickWidth
+                    fn.call(this, model.pop + count, distance, i);
+                    i = util.number.add(i, model.tickSize);
+                    count++;
+                }
             }
         },
         'discrete': {
@@ -1617,6 +1591,23 @@
                 return {
                     length:length,
                     tick:tick
+                }
+            },
+            forEach:function(fn){
+                var model = this.model,
+                    opt = this.options,
+                    distance,
+                    i , l,
+                    count = 0;
+
+                for (i = 0, l = model.pop; i < l; i++) {
+                    fn.call(this, i, (i + 1) * model.tickWidth)
+                }
+                for (i = 0, l = opt.ticks.length - 1; i <= l;) {
+                    distance = (count + model.pop) * model.tickWidth
+                    fn.call(this, model.pop + count, distance, opt.ticks[i]);
+                    i = util.number.add(i, model.tickSize);
+                    count++;
                 }
             }
         }
@@ -2031,10 +2022,9 @@
             texts.forEach(function (t, i) {
                 text = paper.text(x, -100, t);
                 labels.push(text);
-                bBox = text.getBBox();
+                bBox =util.clone(text.getBBox());
                 //seems Raphael's bug , when contains（ ）
-                t.toString().indexOf('（')!=-1 && (bBox.width += 10);
-                t.toString().indexOf('）')!=-1 && (bBox.width += 10);
+                bBox.width += (t.toString().split(' ').length * 10)
 
                 text.attr({
                     'opacity':0,
@@ -2086,10 +2076,10 @@
         toolTipHide = function () {
             var self = this,
                 cb = function () {
-                this.remove();
-                self._venus_tooltip_show = false;
-            }, animate = Raphael.animation({'opacity':0}, 100, 'linear', cb);
-            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) ;
+                    this.remove();
+                    self._venus_tooltip_show = false;
+                }, animate = Raphael.animation({'opacity':0}, 100, 'linear', cb);
+            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) );
         };
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
