@@ -139,6 +139,9 @@
         //init raphael
         this.stage = new Raphael(container, this.options.width, this.options.height);
 
+        //to fix FireFox bound box bug
+        this.stardBox = this.stage.rect(0,0,this.options.width,this.options.height).attr('stroke-width',0)
+
         //new! coordinate object
         this.coordinate = this._initCoordinate();
 
@@ -713,9 +716,9 @@
                         //if x axis has no ticks , then auto generate ticks use series.getLabels()
                         //but getLabels() sometimes returns array of empty string depends on the data
                         if (!thisAxisOption.ticks) {
-                            thisAxisOption.type = DISCRETE;
                             thisAxisOption.ticks = this.series.getLabels();
                         }
+                        thisAxisOption.type = DISCRETE;
                     }
 
                     if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
