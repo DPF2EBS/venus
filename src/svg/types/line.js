@@ -397,7 +397,7 @@
                             boundBox,
                             minDot, min ;
 
-                        boundBox = raphael.canvas.getBoundingClientRect();
+                        boundBox = self.stardBox.node.getBoundingClientRect();
                         offsetX = e.clientX - boundBox.left;
                         offsetY = e.clientY - boundBox.top;
                         if (!lineOpt.columnHover) {
