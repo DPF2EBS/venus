@@ -127,6 +127,9 @@
                          } else {
                              value = d;
                          }
+                         if(value===undefined || value===null || isNaN(value)){
+                             return;
+                         }
                          point = pointBindModel(i, value);
                          point.label = label;
                          points.push(point);
@@ -134,7 +137,11 @@
                  } else {
                      //arr is object
                      for (var o in arr) {
-                         var point = pointBindModel(o, arr[o])
+                         var value = arr[o];
+                         if (value === undefined || value === null || isNaN(value)) {
+                             continue;
+                         }
+                         var point = pointBindModel(o, value)
                          point.label = label;
                          points.push(point);
                      }

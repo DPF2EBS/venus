@@ -408,8 +408,9 @@ Venus.config={
 
         , DEFAULT_Y_AXIS = "y"
         , DEFAULT_X_AXIS = "x"
-        , UNDER_TICK = 'under-tick';
-
+        , UNDER_TICK = 'under-tick'
+        , CONTINUOUS  = "continuous"
+        , DISCRETE =  'discrete' ;
 
     /*Chart Begin*/
     /*
@@ -524,6 +525,9 @@ Venus.config={
         //init raphael
         this.stage = new Raphael(container, this.options.width, this.options.height);
 
+        //to fix FireFox bound box bug
+        this.stardBox = this.stage.rect(0,0,this.options.width,this.options.height).attr('stroke-width',0)
+
         //new! coordinate object
         this.coordinate = this._initCoordinate();
 
@@ -566,10 +570,6 @@ Venus.config={
         this.events.fire('onFinish');
 
     }
-
-    /*
-    * Prototype of Class Chart
-    * */
     Chart.prototype = {
         constructor:Chart,
         _initData:function () {
@@ -645,41 +645,53 @@ Venus.config={
                         yOpt = this.y.options,
                         xModel = this.x.model,
                         yModel = this.y.model,
+                        xObj , yObj,
                         x, y, xTick, yTick;
 
-                    if (key != undefined) {
-                        if (typeof key == "string") {
-                            xTick = key;
-                            xOpt.ticks.forEach(function (tick, i) {
-                                if (tick == key) {
-                                    key = i;
-                                }
-                            });
-                        } else {
-                            xTick = xOpt.ticks[key];
-                        }
-                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
-                    } else {
-                        x = 0;
-                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
-                    }
-                    if (value != undefined) {
-                        if (yOpt.ticks && yOpt.ticks.length) {
-                            yOpt.ticks.forEach(function (tick, i) {
-                                if (tick == value) {
-                                    value = i;
-                                }
-                            });
-                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
-                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
-                        } else {
-                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
-                        }
-                        yTick = value;
-                    } else {
-                        y = 0;
-                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
-                    }
+//                    if (key != undefined) {
+//                        if (typeof key == "string") {
+//                            xTick = key;
+//                            xOpt.ticks.forEach(function (tick, i) {
+//                                if (tick == key) {
+//                                    key = i;
+//                                }
+//                            });
+//                        } else {
+//                            xTick = xOpt.ticks[key];
+//                        }
+//                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
+//                        xObj = this.x.getPoint(key);
+//                        x = xObj.length;
+//                        xTick = xObj.tick;
+//                    } else {
+//                        x = 0;
+//                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
+//                    }
+                    xObj = this.x.getPoint(key);
+                    x = xObj.length;
+                    xTick = xObj.tick;
+
+//                    if (value != undefined) {
+//                        if (yOpt.ticks && yOpt.ticks.length) {
+//                            yOpt.ticks.forEach(function (tick, i) {
+//                                if (tick == value) {
+//                                    value = i;
+//                                }
+//                            });
+//                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
+//                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
+//                        } else {
+//                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
+//                        }
+//                        yTick = value;
+//                    } else {
+//                        y = 0;
+//                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
+//                    }
+                    yObj = this.y.getPoint(value);
+                    y = yObj.length;
+                    yTick = yObj.tick;
+
                     if(yModel.reverse){
                         y = yModel.totalWidth - y;
                     }
@@ -732,10 +744,10 @@ Venus.config={
                 * it could be negative
                 * */
 
-                distance:function(axis,point){
-                    if(axis.model.rotate==0){
+                distance:function (axis, point) {
+                    if (axis.model.rotate == 0) {
                         return point.y - axis.model.beginY;
-                    }else{
+                    } else {
                         return point.x - axis.model.beginX;
                     }
                 },
@@ -1092,6 +1104,7 @@ Venus.config={
                         if (!thisAxisOption.ticks) {
                             thisAxisOption.ticks = this.series.getLabels();
                         }
+                        thisAxisOption.type = DISCRETE;
                     }
 
                     if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
@@ -1535,6 +1548,7 @@ Venus.config={
             _svgWidth:0,
             _svgHeight:0,
             _name:'',
+            type:CONTINUOUS,      //default type is continuous (discrete,datetime)
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1542,6 +1556,8 @@ Venus.config={
         };
 
         this.options = mix(defaultOptions, options || {});
+
+        this.implement(this.options.type);
 
         this.name = this.options._name;
 
@@ -1575,72 +1591,8 @@ Venus.config={
              *     rotate,
              * }
              * */
-            var opt = this.options,
-                model = this.model,
-                alpha = Math.atan(opt._svgHeight / opt._svgWidth),
-                beta = (opt.rotate || 0) * PI / 180,
-                percent = opt.percent,
-                maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
-                total, i,l;
 
-            model.pop = opt.pop || 0;
-            model.rotate = opt.rotate;
-            model.ticks = [];
-
-            if (opt.ticks && opt.ticks.length) {
-                //got ticks and generate the visible ticks
-                if (opt.tickSize) {
-                    model.tickSize = opt.tickSize;
-                } else {
-                    //compute the tickSize
-                    if (opt.total) {
-                        total = Math.min( opt.total, opt.ticks.length);
-                    } else {
-                        total = opt.ticks.length;
-                        while (total) {
-                            if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
-                                total = Math.floor(total / 2);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                    if(total==1){
-                        total = 2;
-                        model.pop = 1;
-                    }
-                    model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
-
-                }
-                total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
-                for ( i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
-                    model.ticks.push(i);
-                }
-                if (i == l) {
-                    model.ticks.push(i);
-                }
-                model.tickWidth = parseInt( opt.tickWidth || maxWidth * percent / (total + model.pop -1));
-                model.totalWidth = model.tickWidth * (total + model.pop-1);
-                model.total = total;
-            } else {
-                //got min and max
-                var range = this.autoRange(opt.min, opt.max, opt.total);
-                model.max = range.max;
-                model.min = range.min;
-                model.tickSize = range.step;
-
-                model.total = range.total;
-
-                model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop-1);
-                model.totalWidth = model.tickWidth * (model.total + model.pop-1);
-                for ( i = model.min, l = model.max; i < l; i+=model.tickSize) {
-                    model.ticks.push(i);
-                }
-                model.ticks.push(i);
-            }
-
-
-
+            // override by each type axis
          },
         set:function(key,value){
             /*
@@ -1679,8 +1631,8 @@ Venus.config={
              * generate axis ticks according to min and max
              *
              * */
-            min === undefined && (min = 0);
-            max === undefined && (max = 10);
+            (min === undefined || min===null || isNaN(min)) && (min = 0);
+            (max === undefined || max===null || isNaN(max)) && (max = 10);
             var iDelta = max - min,
                 iExp,
                 iMultiplier,
@@ -1697,6 +1649,14 @@ Venus.config={
 //            }
 //            iDelta = max - min;
             if(iDelta==0){
+                if(min==0 && max==0){
+                    return {
+                        min:0,
+                        max:10,
+                        total:2,
+                        step:10
+                    }
+                }
                 return {
                     max:max,
                     min:max - Math.abs(max),
@@ -1744,10 +1704,8 @@ Venus.config={
                 pathString = [],
                 beginX = model.beginX,
                 beginY = model.beginY,
-                i, l,count=0,
                 tickHeight = 2,
                 labelMarginTop = 5,
-                hasTicks = opt.ticks && opt.ticks.length,
                 label,
                 bbox,
                 skip,//if label text is too wide , skip some
@@ -1775,7 +1733,30 @@ Venus.config={
                 view.labelElements = stage.set();
             }
 
-            pathString.push('M', beginX, beginY,'h',model.totalWidth);
+            pathString.push('M', beginX, beginY, 'h', model.totalWidth);
+
+            this.forEach(function (i, length, text) {
+                if (i !== 0) {
+                    view.tickElements.push(stage.path().attr({
+                        path:['M', beginX + length, beginY, 'v', tickHeight]
+                    }).attr(pathAttr));
+                }
+                if (text!==undefined && (!skip || skip <= 1 || (i - model.pop) % skip == 0 )) {
+                    var distance = (opt.labelPosition == UNDER_TICK ? 0 : model.tickWidth / 2);
+                    label = stage.text(reverse ? (beginX + model.totalWidth - length + distance) : (beginX + length - distance), beginY, text).attr({
+                        'font-size':this.options.fontSize
+                    });
+                    view.labelElements.push(label);
+                    bbox = label.getBBox();
+                    var line = Math.sqrt(Math.pow(bbox.width, 2) + Math.pow(bbox.height, 2)),
+                        totalRotate = ((opt.labelRotate || 0) + (model.rotate || 0)) * PI / 180,
+                        t = Math.max(bbox.height, line * Math.cos(totalRotate));
+                    skip = Math.ceil((t + 20) / model.tickWidth);
+                }
+
+            });
+
+            /*
             for (i = 0, l = model.pop; i < l; i++) {
                 view.tickElements.push(stage.path().attr({
                     path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
@@ -1795,13 +1776,13 @@ Venus.config={
                     }).attr(pathAttr));
                 }
                 if (!skip || skip <= 1 || count % skip == 0) {
-                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
-                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks? opt.ticks[i] :i).attr({
+                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition == UNDER_TICK ? '0' : model.tickWidth / 2);
+                    label = stage.text(reverse ? (beginX + model.totalWidth - distance) : (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
                         'font-size':this.options.fontSize
                     });
                     view.labelElements.push(label);
                     bbox = label.getBBox();
-                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180)+20) / model.tickWidth);
+                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180) + 20) / model.tickWidth);
                 }
                 i = util.number.add(i, model.tickSize);
                 count++;
@@ -1816,6 +1797,7 @@ Venus.config={
                     view.labelElements.push(label);
                 }
             }
+            */
 
             view.axisElement.attr({
                 path:pathString
@@ -1866,8 +1848,169 @@ Venus.config={
         },
         on:function(fn){
             this.events.on('model_change',fn);
+        },
+        implement:function(type){
+            if (Axis.types[type]) {
+                for (var m in Axis.types[type]) {
+                    this[m] = Axis.types[type][m];
+                }
+            }
         }
     };
+    Axis.types = {
+        'continuous':{
+            'autoModel':function(){
+                var opt = this.options,
+                    model = this.model,
+                    alpha = Math.atan(opt._svgHeight / opt._svgWidth),
+                    beta = (opt.rotate || 0) * PI / 180,
+                    percent = opt.percent,
+                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
+                    total, i,l;
+
+                model.pop = opt.pop || 0;
+                model.rotate = opt.rotate;
+                model.ticks = [];
+
+                //got min and max
+                var range = this.autoRange(opt.min, opt.max, opt.total);
+                model.max = range.max;
+                model.min = range.min;
+                model.tickSize = range.step;
+
+                model.total = range.total;
+
+                model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop - 1);
+                model.totalWidth = model.tickWidth * (model.total + model.pop - 1);
+                for (i = model.min, l = model.max; i < l; i += model.tickSize) {
+                    model.ticks.push(i);
+                }
+                model.ticks.push(i);
+            },
+            getPoint:function (value) {
+                var model = this.model,
+                    length;
+                length = value === undefined ? 0 : (value - model.min) * model.tickWidth / model.tickSize + model.pop * model.tickWidth;
+                return {
+                    length:length,
+                    tick:value
+                }
+            },
+            forEach:function(fn){
+                var model = this.model,
+                    distance,
+                    i , l,
+                    count = 0;
+
+                for (i = 0, l = model.pop; i < l; i++) {
+                    fn.call(this, i, (i + 1) * model.tickWidth)
+                }
+                for (i = model.min, l = model.max; i <= l;) {
+                    distance = (count + model.pop) * model.tickWidth
+                    fn.call(this, model.pop + count, distance, i);
+                    i = util.number.add(i, model.tickSize);
+                    count++;
+                }
+            }
+        },
+        'discrete': {
+            autoModel:function () {
+                var opt = this.options,
+                    model = this.model,
+                    alpha = Math.atan(opt._svgHeight / opt._svgWidth),
+                    beta = (opt.rotate || 0) * PI / 180,
+                    percent = opt.percent,
+                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
+                    total, i, l;
+
+                model.pop = opt.pop || 0;
+                model.rotate = opt.rotate;
+                model.ticks = [];
+
+                //got ticks and generate the visible ticks
+                if (opt.tickSize) {
+                    model.tickSize = opt.tickSize;
+                } else {
+                    //compute the tickSize
+                    if (opt.total) {
+                        total = Math.min(opt.total, opt.ticks.length);
+                    } else {
+                        total = opt.ticks.length;
+                        while (total) {
+                            if (opt.fontSize * (total + model.pop) > maxWidth * percent) {
+                                total = Math.floor(total / 2);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if (total == 1) {
+                        total = 2;
+                        model.pop = 1;
+                    }
+                    model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
+                }
+                total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
+                for (i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
+                    model.ticks.push(i);
+                }
+                if (i == l) {
+                    model.ticks.push(i);
+                }
+                model.tickWidth = parseInt(opt.tickWidth || maxWidth * percent / (total + model.pop - 1));
+                model.totalWidth = model.tickWidth * (total + model.pop - 1);
+                model.total = total;
+            },
+            getPoint:function (key) {
+                var tick, length,
+                    model = this.model,
+                    options = this.options
+
+                if (key === undefined) {
+                    length = 0;
+                } else {
+                    if (typeof key == "string") {
+                        tick = key;
+                        options.ticks.forEach(function (tick, i) {
+                            if (tick == key) {
+                                key = i;
+                            }
+                        });
+                    } else {
+                        tick = options.ticks[key];
+                    }
+                    length = key * model.tickWidth / model.tickSize + model.pop * model.tickWidth;
+                }
+
+                return {
+                    length:length,
+                    tick:tick
+                }
+            },
+            forEach:function(fn){
+                var model = this.model,
+                    opt = this.options,
+                    distance,
+                    i , l,
+                    count = 0;
+
+                for (i = 0, l = model.pop; i < l; i++) {
+                    fn.call(this, i, (i + 1) * model.tickWidth)
+                }
+                for (i = 0, l = opt.ticks.length - 1; i <= l;) {
+                    distance = (count + model.pop) * model.tickWidth
+                    fn.call(this, model.pop + count, distance, opt.ticks[i]);
+                    i = util.number.add(i, model.tickSize);
+                    count++;
+                }
+            }
+        }
+    };
+
+    Axis.extendType = function(type,methods){
+        Axis.types = methods;
+    };
+
 
     /*Class Axis End*/
 
@@ -2273,10 +2416,9 @@ Venus.config={
             texts.forEach(function (t, i) {
                 text = paper.text(x, -100, t);
                 labels.push(text);
-                bBox = text.getBBox();
+                bBox =util.clone(text.getBBox());
                 //seems Raphael's bug , when contains（ ）
-                t.toString().indexOf('（')!=-1 && (bBox.width += 10);
-                t.toString().indexOf('）')!=-1 && (bBox.width += 10);
+                bBox.width += (t.toString().split(' ').length * 10)
 
                 text.attr({
                     'opacity':0,
@@ -2287,7 +2429,7 @@ Venus.config={
             if (this._venus_tooltip_show)
                 return;
 
-            totalWidth = Math.max.apply(Math, width)+10;
+            totalWidth = Math.max.apply(Math, width);
             totalHeight = texts.length * bBox.height;
 
             p = path(totalWidth, totalHeight, paddingToBorder,side);
@@ -2328,10 +2470,10 @@ Venus.config={
         toolTipHide = function () {
             var self = this,
                 cb = function () {
-                this.remove();
-                self._venus_tooltip_show = false;
-            }, animate = Raphael.animation({'opacity':0}, 100, 'linear', cb);
-            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) ) ;
+                    this.remove();
+                    self._venus_tooltip_show = false;
+                }, animate = Raphael.animation({'opacity':0}, 100, 'linear', cb);
+            this._venus_tooltip && (this._venus_tooltip.animate(animate) ) && (this._venus_tooltip_labels.animate(animate) );
         };
     Raphael.el.toolTip = toolTip;
     Raphael.el.toolTipHide = toolTipHide;
@@ -2463,7 +2605,7 @@ Venus.config={
                         }
 
                     }else{
-                        bar = paper.rect(x, coordinate.y.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
+                        bar = paper.rect(x, coordinate.x.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
                     }
                 } else {
                     bar = paper.rect(x, y, width, height, barOptions.radius);
@@ -2481,7 +2623,11 @@ Venus.config={
                                 this.toolTip(paper, this.attr('x'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'left');
                             }
                         }else{
-                            this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                            if(distance>=0){
+                                this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y')+this.attr('height'), self.options.tooltip.call(self,tipObj),"bottom");
+                            }else{
+                                this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj),"top");
+                            }
                         }
                     }, function () {
                         this.toolTipHide();
@@ -2572,12 +2718,12 @@ Venus.config={
                             yTick:xy.yTick
                         }
                     } else {
-                        distance < 0 ? (y = oY-sumY) : (y = beginX+sumY);
+                        distance < 0 ? (y = oY-sumY) : (y = beginY+sumY);
                         return {
                             x:oX - xTickWidth / 4 - xTickWidth / 2,
-                            y:oY - sumY,
+                            y:y,
                             width:xTickWidth / 2,
-                            height:beginY - oY,
+                            height:Math.abs(distance),
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
@@ -2983,6 +3129,9 @@ Venus.config={
                          } else {
                              value = d;
                          }
+                         if(value===undefined || value===null || isNaN(value)){
+                             return;
+                         }
                          point = pointBindModel(i, value);
                          point.label = label;
                          points.push(point);
@@ -2990,7 +3139,11 @@ Venus.config={
                  } else {
                      //arr is object
                      for (var o in arr) {
-                         var point = pointBindModel(o, arr[o])
+                         var value = arr[o];
+                         if (value === undefined || value === null || isNaN(value)) {
+                             continue;
+                         }
+                         var point = pointBindModel(o, value)
                          point.label = label;
                          points.push(point);
                      }
@@ -3253,7 +3406,7 @@ Venus.config={
                             boundBox,
                             minDot, min ;
 
-                        boundBox = raphael.canvas.getBoundingClientRect();
+                        boundBox = self.stardBox.node.getBoundingClientRect();
                         offsetX = e.clientX - boundBox.left;
                         offsetY = e.clientY - boundBox.top;
                         if (!lineOpt.columnHover) {
@@ -3262,7 +3415,7 @@ Venus.config={
                                 element.dots && element.dots.forEach(function (dot) {
                                     var point = dot.data('point'),
                                         distance = Math.sqrt(Math.pow((point.x - offsetX), 2) + Math.pow((point.y - offsetY), 2));
-                                    if (distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
+                                    if (dot.node.style.display!=="none" && distance <= lineOpt.hoverRadius && (distance <= min || min === undefined)) {
                                         minDot = dot;
                                         min = distance;
                                     }
@@ -3320,13 +3473,13 @@ Venus.config={
     /**
      *get sector path string and position parameters
      *@param {Object} options {
-     x:coordinate y of sector,
-     y:coordinate x of sector,
-     r:radius,
-     startAngle:,
-     endAngle:,
-     dir:circle direction,
-     rotate:sector rotation
+        x:coordinate y of sector,
+        y:coordinate x of sector,
+        r:radius,
+        startAngle:,
+        endAngle:,
+        dir:circle direction,
+        rotate:sector rotation
      }
      *@return path and positions
      *@type {Object} an object contain path and positions
@@ -3380,15 +3533,15 @@ Venus.config={
     /**
      *draw sector and text
      *@param {Object} options {
-     x:coordinate y of sector,
-     y:coordinate x of sector,
-     r:radius, startAngle:,
-     endAngle:,
-     color:sector fill color,
-     d:data of sector,
-     callback:animation callback function,
-     dir:circle direction,
-     rotate:sector rotation
+        x:coordinate y of sector,
+        y:coordinate x of sector,
+        r:radius, startAngle:,
+        endAngle:,
+        color:sector fill color,
+        d:data of sector,
+        callback:animation callback function,
+        dir:circle direction,
+        rotate:sector rotation
      }
      *@return sector raphael object
      *@type {Object} an object instance of raphael
@@ -3418,13 +3571,32 @@ Venus.config={
         return sector;
     }
 
+    /*
+    * function to compute the positions of text
+    * @param pos{Object} position of the bound of the sector
+    *
+    * */
+
+    function textPosition(pos){
+
+    }
+    textPosition.rows = {
+        left:{},
+        right:{}
+    }
+
     Venus.SvgChart.addChart('pie', {
-        draw:function (options) {
-            /**initialize chart options*/
-            options = util.mix({
-                x:this.options.width / 2,
-                y:this.options.height / 2,
-                radius:Math.min(this.options.width, this.options.height) / 2.5,
+        draw:function (opt) {
+            /*
+                initialize chart options
+            */
+            var chartWidth = this.options.width,
+                chartHeight = this.options.height,
+
+                options = util.mix({
+                x:chartWidth/ 2,                                //position of the pie center
+                y:chartHeight/ 2,
+                radius:Math.min(chartWidth, chartHeight) / 2.5, //radius of the p
                 duration:900,
                 animation:true,
                 showText:true,
@@ -3432,7 +3604,7 @@ Venus.config={
                 dir:1,
                 hollow:0,
                 stroke:{}
-            }, options);
+            }, opt);
 
             if (options.hollow >= options.radius) {
                 options.hollow = 0;
@@ -3441,7 +3613,7 @@ Venus.config={
             delete options.radius;
 
             /**define variables needed*/
-            var series = this.series.getSeries().sort(function (a, b) {
+            var series = this.series.getSeries().slice(0).sort(function (a, b) {
                     return b.data - a.data
                 }),
                 colors = this.colors,
@@ -3449,29 +3621,38 @@ Venus.config={
                 data,
                 total = 0,
                 elements = [],
-                value,
-            // startAngle=-90,
+                percents = [],
                 startAngle = options.rotate * options.dir,
-                opts = [], t = 0,
-                endAngle;
+                endAngle,
+                opts = [], t = 0;
 
             /**add coustomer attribute*/
             paper.customAttributes.arc = function (x, y, r, hollow, startAngle, endAngle, dir) {
-                return {path:getSectorPath({x:x, y:y, r:r, hollow:hollow, startAngle:startAngle, endAngle:endAngle, dir:dir}).path};
+                return {
+                    path:getSectorPath({x:x, y:y, r:r, hollow:hollow, startAngle:startAngle, endAngle:endAngle, dir:dir}).path
+                };
             };
 
             /**calculate summation of all data*/
-            for (var i = 0, L = series.length; i < L; i++) {
-                total += series[i].data;
-            }
+            series.forEach(function(s){
+                total+= s.data;
+            });
+
 
             /**draw each sector chart*/
-            for (var i = 0, L = series.length; i < L; i++) {
-                data = series[i].data;
-                endAngle = series[i].data / total * 360 + startAngle;
-                opts.push({startAngle:startAngle, endAngle:endAngle, color:colors[i], d:options.showText && data, time:Math.round(data / total * options.duration)});
+            series.forEach(function(s,i){
+                data = s.data;
+                percents.push((data/total*100).toFixed(2));
+                endAngle = s.data / total * 360 + startAngle;
+                opts.push({
+                    startAngle:startAngle,
+                    endAngle:endAngle,
+                    color:colors[i],
+                    d:options.showText && data,
+                    time:Math.round(data / total * options.duration)
+                });
                 startAngle = endAngle;
-            }
+            });
 
             opts.forEach(function (item, i) {
                 if (options.animation) {
@@ -3487,11 +3668,11 @@ Venus.config={
                 }
 
                 setTimeout(function () {
-                    elements.push(SectorChart(util.mix({paper:paper,
+                    elements.push(SectorChart(util.mix({
+                        paper:paper,
                         callback:function () {
-                            this.text && this.text.show();
-                        }
-                    }, util.mix(options, item))));
+                        this.text && this.text.show();
+                    }}, util.mix(options, item))));
                 }, t);
             });
 
@@ -3521,7 +3702,7 @@ Venus.config={
                     return false;
                 }
 
-                Array.prototype.forEach.call(this.legend.itemSet, function (item, i) {
+                this.legend.itemSet.forEach(function (item, i) {
                     var el = elements[i];
                     item.hover(
                         function () {
