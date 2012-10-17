@@ -1649,6 +1649,14 @@ Venus.config={
 //            }
 //            iDelta = max - min;
             if(iDelta==0){
+                if(min==0 && max==0){
+                    return {
+                        min:0,
+                        max:10,
+                        total:2,
+                        step:10
+                    }
+                }
                 return {
                     max:max,
                     min:max - Math.abs(max),
