@@ -1,9 +1,11 @@
-<canvas width="500" height="500" id="canvas" style="position:absolute; left:100; top:100"></canvas>
+<p>About heatmap.js heatmap.js is a JavaScript library that can be used to generate web heatmaps with the html5canvas element based on your data. Heatmap instances contain a store in order to colorize the heatmap based on relative data, which means if you're adding only a single datapoint to the store it will be displayed as the hottest(red) spot, then adding another point with a higher count, it will dynamically recalculate. The heatmaps are fully customizable - you're welcome to choose your own color gradient, change its opacity, datapoint radius and many more. The library is dual-licensed under the MIT and the Beerware license, feel free to use it in your projects. Contributions on github and feedback is very appreciated. If you have any questions or suggestions, please let me know. If you'd like to know how heatmap.js works here is an article about the inner life of heatmap.js You always wanted an easy way to add heatmap.js to your Wordpress installation? Please check out the Wordpress Visitor Heatmap Plugin It sets up a tracking script and visualizes recorded data for admins so you can study it. What is a heatmap? You've never heard of heatmaps? No problem! In short: a heatmap is a graphical representation of datapoints with different frequency, usually red spots on a heatmap are highly frequent spots and blue ones are less frequent spots. For a more detailed explanaition check wikipedia Usage demonstrations</p>
+<canvas width="500" height="500" id="canvas" style="position:fixed; top:0; left:0;"></canvas>
 <script src="./heatmap.js"></script>
 <script>
     var canvas = document.getElementById("canvas");
     var example = heatmap(canvas,{
-            radius:20
+            radius:20,
+            opacity:0.5
         }),
         x, y,
         pointSet = [];
