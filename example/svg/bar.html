@@ -13,6 +13,7 @@
 <script type="text/javascript" src="../../src/svg/svgchart_rebuild.js"></script>
 <script type="text/javascript" src="../../src/svg/types/bar.js"></script>
 <script type="text/javascript" src="../../src/svg/types/line.js"></script>
+<!--<script src="http://venus.dp/build/svgchart.latest.js"></script>-->
 
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
     <div id="chart_container3" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
@@ -24,15 +25,13 @@
             options = {
                 axis:{
                     x:{
-                        labelRotate:90,
                         rotate:90,
                         opposite:true,
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
-                        labelRotate:90,
-                        rotate:0,
-                        opposite:true
+                        opposite:true,
+                        rotate:0
                     }
                 },
                 bar:{

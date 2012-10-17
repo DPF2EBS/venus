@@ -54,7 +54,7 @@
                         }
 
                     }else{
-                        bar = paper.rect(x, coordinate.y.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
+                        bar = paper.rect(x, coordinate.x.model.beginY, width, 0, barOptions.radius).animate({height:height, y:y}, 500);
                     }
                 } else {
                     bar = paper.rect(x, y, width, height, barOptions.radius);
@@ -72,7 +72,11 @@
                                 this.toolTip(paper, this.attr('x'), this.attr('y') + this.attr('height') / 2, self.options.tooltip.call(self, tipObj), 'left');
                             }
                         }else{
-                            this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj));
+                            if(distance>=0){
+                                this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y')+this.attr('height'), self.options.tooltip.call(self,tipObj),"bottom");
+                            }else{
+                                this.toolTip(paper, this.attr('x') + this.attr('width') / 2, this.attr('y'), self.options.tooltip.call(self,tipObj),"top");
+                            }
                         }
                     }, function () {
                         this.toolTipHide();
@@ -163,12 +167,12 @@
                             yTick:xy.yTick
                         }
                     } else {
-                        distance < 0 ? (y = oY-sumY) : (y = beginX+sumY);
+                        distance < 0 ? (y = oY-sumY) : (y = beginY+sumY);
                         return {
                             x:oX - xTickWidth / 4 - xTickWidth / 2,
-                            y:oY - sumY,
+                            y:y,
                             width:xTickWidth / 2,
-                            height:beginY - oY,
+                            height:Math.abs(distance),
                             xTick:xy.xTick,
                             yTick:xy.yTick
                         }
