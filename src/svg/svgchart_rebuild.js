@@ -1245,8 +1245,8 @@
              * generate axis ticks according to min and max
              *
              * */
-            min === undefined && (min = 0);
-            max === undefined && (max = 10);
+            (min === undefined || min===null || isNaN(min)) && (min = 0);
+            (max === undefined || max===null || isNaN(max)) && (max = 10);
             var iDelta = max - min,
                 iExp,
                 iMultiplier,
