@@ -24,7 +24,8 @@
         , DEFAULT_X_AXIS = "x"
         , UNDER_TICK = 'under-tick'
         , CONTINUOUS  = "continuous"
-        , DISCRETE =  'discrete' ;
+        , DISCRETE =  'discrete'
+        , DATETIME = "datetime";
 
     /*Chart Begin*/
     /*
@@ -262,46 +263,10 @@
                         xObj , yObj,
                         x, y, xTick, yTick;
 
-//                    if (key != undefined) {
-//                        if (typeof key == "string") {
-//                            xTick = key;
-//                            xOpt.ticks.forEach(function (tick, i) {
-//                                if (tick == key) {
-//                                    key = i;
-//                                }
-//                            });
-//                        } else {
-//                            xTick = xOpt.ticks[key];
-//                        }
-//                        x = key * xModel.tickWidth / xModel.tickSize + xModel.pop * xModel.tickWidth;
-//                        xObj = this.x.getPoint(key);
-//                        x = xObj.length;
-//                        xTick = xObj.tick;
-//                    } else {
-//                        x = 0;
-//                        xTick = xOpt.ticks && xOpt.ticks.length ? xOpt.ticks[0] : xModel.min;
-//                    }
                     xObj = this.x.getPoint(key);
                     x = xObj.length;
                     xTick = xObj.tick;
 
-//                    if (value != undefined) {
-//                        if (yOpt.ticks && yOpt.ticks.length) {
-//                            yOpt.ticks.forEach(function (tick, i) {
-//                                if (tick == value) {
-//                                    value = i;
-//                                }
-//                            });
-//                            //y = yModel.beginY - value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) - yModel.pop * yModel.tickWidth
-//                            y = value * (yModel.totalWidth - yModel.pop * xModel.tickWidth) / (xOpt.ticks.length - 1) + yModel.pop * yModel.tickWidth
-//                        } else {
-//                            y = (value - yModel.min) * yModel.tickWidth / yModel.tickSize + yModel.pop * yModel.tickWidth;
-//                        }
-//                        yTick = value;
-//                    } else {
-//                        y = 0;
-//                        yTick = yOpt.ticks && yOpt.ticks.length ? yOpt.ticks[0] : yModel.min;
-//                    }
                     yObj = this.y.getPoint(value);
                     y = yObj.length;
                     yTick = yObj.tick;
@@ -718,7 +683,20 @@
                         if (!thisAxisOption.ticks) {
                             thisAxisOption.ticks = this.series.getLabels();
                         }
-                        thisAxisOption.type = DISCRETE;
+                        if (thisAxisOption.type == DATETIME && this.series.getLength()>1) {
+                            //datetime axis , get min and max
+                            var ticks = [];
+                            thisAxisOption.ticks.forEach(function (t) {
+                                ticks.push(util.date.parse(t, thisAxisOption.fromFormat));
+                            });
+                            ticks.sort(function (a, b) {
+                                return +a - +b;
+                            });
+                            thisAxisOption.min = ticks[0];
+                            thisAxisOption.max = ticks[ticks.length - 1];
+                        } else {
+                            thisAxisOption.type = DISCRETE;
+                        }
                     }
 
                     if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
@@ -850,13 +828,13 @@
                 if (gridOption.enableRow) {
                     //use coordinate.y to generate rows
                     if (coordinate.y && coordinate.y.model.rotate == 90) {
-                        coordinate.y.model.ticks.forEach(function (t) {
-                            rows.push(coordinate.get(undefined, t).y);
+                        coordinate.y.forEach(function(i,length){
+                            rows.push(coordinate.y.model.beginY-length)
                         });
                         gridOption._x = coordinate.x.model.beginX;
                     } else if (coordinate.x && coordinate.x.model.rotate == 90) {
-                        coordinate.x.model.ticks.forEach(function (t) {
-                            rows.push(coordinate.get(t).y);
+                        coordinate.x.forEach(function (i, length) {
+                            rows.push(coordinate.x.model.beginY - length)
                         });
 
                         gridOption._x = coordinate.y.model.beginX;
@@ -866,13 +844,13 @@
                 }
                 if (gridOption.enableColumn) {
                     if (coordinate.y && coordinate.y.model.rotate == 0) {
-                        coordinate.y.model.ticks.forEach(function (t) {
-                            columns.push(coordinate.get(undefined, t).x);
+                        coordinate.y.forEach(function(i,length){
+                            columns.push(coordinate.y.model.beginX+length)
                         });
                         gridOption._y = coordinate.x.model.beginY;
                     } else if (coordinate.x && coordinate.x.model.rotate == 0) {
-                        coordinate.x.model.ticks.forEach(function (t) {
-                            columns.push(coordinate.get(t).x);
+                        coordinate.x.forEach(function (i, length) {
+                            columns.push(coordinate.x.model.beginX + length)
                         });
                         gridOption._y = coordinate.y.model.beginY;
                     }
@@ -1139,7 +1117,35 @@
                 }
             }
             return labels;
-        }
+        },
+        getLength:function(){
+            /*
+            * get data length
+            * */
+            var length = 0,
+                series = this.series;
+            if (series.length) {
+                if (util.isNumber(series[0].data)) {
+                    length = series.length;
+                } else if (util.isArray(series[0].data)) {
+                    var l = [];
+                    series.forEach(function (i) {
+                        l.push(i.length);
+                    });
+                    length = Math.max.apply(Math, l);
+                } else if (util.isObject(series[0].data)) {
+                    var l = [], o;
+                    series.forEach(function (s, i) {
+                        l[i] = 0;
+                        for (o in s.data) {
+                            l[i]++;
+                        }
+                    });
+                    length = Math.max.apply(Math, l);
+                }
+            }
+            return length;
+         }
     }
 
     /*Class Series End */
@@ -1163,6 +1169,8 @@
             _svgHeight:0,
             _name:'',
             type:CONTINUOUS,      //default type is continuous (discrete,datetime)
+            toFormat:"",
+            fromFormat:"",
             labelRotate:0,          //rotate 0-360 of the labels in clockwise
             labelPosition:UNDER_TICK, //label is under the tick , otherwise in the center of two ticks
             enable:true,            //visible or not
@@ -1370,49 +1378,6 @@
 
             });
 
-            /*
-            for (i = 0, l = model.pop; i < l; i++) {
-                view.tickElements.push(stage.path().attr({
-                    path:['M', beginX + (i + 1) * model.tickWidth, beginY, 'v', tickHeight]
-                }).attr(pathAttr));
-            }
-            if(hasTicks){
-                i = 0;
-                l = opt.ticks.length - 1;
-            }else{
-                i = model.min;
-                l = model.max;
-            }
-            while (i < l) {
-                if (count != 0) {
-                    view.tickElements.push(stage.path().attr({
-                        path:['M', beginX + (count + model.pop) * model.tickWidth, beginY, 'v', tickHeight]
-                    }).attr(pathAttr));
-                }
-                if (!skip || skip <= 1 || count % skip == 0) {
-                    var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition == UNDER_TICK ? '0' : model.tickWidth / 2);
-                    label = stage.text(reverse ? (beginX + model.totalWidth - distance) : (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
-                        'font-size':this.options.fontSize
-                    });
-                    view.labelElements.push(label);
-                    bbox = label.getBBox();
-                    skip = Math.ceil((bbox.width * Math.cos((this.options.labelRotate || 0) * PI / 180) + 20) / model.tickWidth);
-                }
-                i = util.number.add(i, model.tickSize);
-                count++;
-            }
-
-            if ((opt.ticks && opt.ticks.length && i == l) || model.max) {
-                var distance = (count + model.pop) * model.tickWidth - (opt.labelPosition==UNDER_TICK?'0':model.tickWidth/2);
-                if (!skip || skip <= 1 || count % skip == 0) {
-                    label = stage.text(reverse?(beginX+model.totalWidth-distance): (beginX + distance), beginY, hasTicks ? opt.ticks[i] : i).attr({
-                        'font-size':this.options.fontSize
-                    });
-                    view.labelElements.push(label);
-                }
-            }
-            */
-
             view.axisElement.attr({
                 path:pathString
             }).attr(pathAttr);
@@ -1473,33 +1438,28 @@
     };
     Axis.types = {
         'continuous':{
-            'autoModel':function(){
+            autoModel:function(){
                 var opt = this.options,
                     model = this.model,
                     alpha = Math.atan(opt._svgHeight / opt._svgWidth),
                     beta = (opt.rotate || 0) * PI / 180,
                     percent = opt.percent,
-                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta),
-                    total, i,l;
+                    maxWidth = beta <= alpha ? opt._svgWidth / Math.cos(beta) : opt._svgHeight / Math.sin(beta);
 
                 model.pop = opt.pop || 0;
                 model.rotate = opt.rotate;
-                model.ticks = [];
 
                 //got min and max
                 var range = this.autoRange(opt.min, opt.max, opt.total);
                 model.max = range.max;
                 model.min = range.min;
                 model.tickSize = range.step;
+                model.desc = range.desc;
 
                 model.total = range.total;
 
                 model.tickWidth = opt.tickWidth || maxWidth * percent / (model.total + model.pop - 1);
                 model.totalWidth = model.tickWidth * (model.total + model.pop - 1);
-                for (i = model.min, l = model.max; i < l; i += model.tickSize) {
-                    model.ticks.push(i);
-                }
-                model.ticks.push(i);
             },
             getPoint:function (value) {
                 var model = this.model,
@@ -1520,8 +1480,8 @@
                     fn.call(this, i, (i + 1) * model.tickWidth)
                 }
                 for (i = model.min, l = model.max; i <= l;) {
-                    distance = (count + model.pop) * model.tickWidth
-                    fn.call(this, model.pop + count, distance, i);
+                    distance = (count + model.pop) * model.tickWidth;
+                    fn.call(this, model.pop + count, distance,l>=1000&& i / 100 === parseInt(i / 100) && i !== 0 ? i / 1000 + 'k' : i);
                     i = util.number.add(i, model.tickSize);
                     count++;
                 }
@@ -1539,7 +1499,6 @@
 
                 model.pop = opt.pop || 0;
                 model.rotate = opt.rotate;
-                model.ticks = [];
 
                 //got ticks and generate the visible ticks
                 if (opt.tickSize) {
@@ -1565,12 +1524,6 @@
                     model.tickSize = Math.ceil((opt.ticks.length - 1) / (total - 1)) || 1;
                 }
                 total = Math.ceil((opt.ticks.length - 1) / model.tickSize) + 1;
-                for (i = 0, l = opt.ticks.length - 1; i < l; i += model.tickSize) {
-                    model.ticks.push(i);
-                }
-                if (i == l) {
-                    model.ticks.push(i);
-                }
                 model.tickWidth = parseInt(opt.tickWidth || maxWidth * percent / (total + model.pop - 1));
                 model.totalWidth = model.tickWidth * (total + model.pop - 1);
                 model.total = total;
@@ -1617,6 +1570,162 @@
                     i = util.number.add(i, model.tickSize);
                     count++;
                 }
+            }
+        },
+        'datetime':{
+            autoModel:function(){
+                Axis.types.continuous.autoModel.call(this);
+
+            },
+            autoRange:function (a, b) {
+                var min = a ? (+a) : ( +new Date()) ,
+                    max = b ? (+b) : ( +new Date()) ,
+                    iDelta = max - min,
+                    step,
+                    total,
+                    desc,
+                    aSecond = 1000,
+                    aMinute = 60 * aSecond,
+                    aHour = 60 * aMinute,
+                    aDay = 24 * aHour,
+                    minTime = new Date(min),
+                    maxTime = new Date(max);
+
+
+                if (iDelta == 0) {
+                    return {
+                        max:max,
+                        min:0,
+                        step:max,
+                        total:2
+                    }
+                } else if (iDelta < aSecond * 2) {
+                    //within 2 seconds
+                } else if (iDelta < aMinute * 2) {
+                    //within 2 minutes
+                    min = minTime.setMilliseconds(0);
+                    max = maxTime.getMilliseconds() === 0 ? max : maxTime.setSeconds(maxTime.getSeconds() + 1);
+                    step = aSecond;
+                    desc = "second";
+                    total = (max - min) / step + 1;
+                } else if (iDelta < aHour * 2) {
+                    //within 2 hours
+                    min = minTime.setSeconds(0, 0);
+                    max = +(new Date(max).setSeconds(0, 0)) < max ? maxTime.setMinutes(maxTime.getMinutes() + 1,0,0) : max;
+                    step = aMinute;
+                    desc = "minute";
+                    total = (max - min) / step + 1;
+                } else if (iDelta < aDay * 2) {
+                    //within 2 days
+                    min = minTime.setMinutes(0, 0, 0);
+                    max = +(new Date(max).setMinutes(0, 0, 0)) < max ? maxTime.setHours(maxTime.getHours() + 1,0,0,0) : max;
+                    step = aHour;
+                    desc = "hour";
+                    total = (max - min) / step + 1;
+                } else if (new Date(min).setMonth(minTime.getMonth()+2) > max) {
+                    //within 2 month
+                    min = minTime.setHours(0, 0, 0, 0);
+                    max = +(new Date(max).setHours(0, 0, 0, 0)) < max ? +new Date(maxTime.getFullYear(), maxTime.getMonth(), maxTime.getDate() + 1) : max;
+                    step = aDay;
+                    desc = "day";
+                    total = (max - min) / step + 1;
+                } else if (new Date(min).setFullYear(minTime.getFullYear()+2)> max) {
+                    //within 2 years
+                    min = +new Date(minTime.getFullYear(), minTime.getMonth(), 1);
+                    max = +new Date(maxTime.getFullYear(), maxTime.getMonth()) < maxTime ? +new Date(maxTime.getFullYear(), maxTime.getMonth() + 1) : maxTime;
+                    minTime = new Date(min);
+                    maxTime = new Date(max);
+                    desc = "month";
+                    //no step because each month has different days
+                    total = (maxTime.getFullYear() - minTime.getFullYear()) * 12 + maxTime.getMonth() - minTime.getMonth() + 1;
+                } else {
+                    // more than two years
+                    min = +new Date(minTime.getFullYear());
+                    max = +new Date(maxTime.getFullYear(), 0) < maxTime ? +new Date(maxTime.getFullYear() + 1) : maxTime;
+                    minTime = new Date(min);
+                    maxTime = new Date(max);
+                    desc = "year";
+                    total = maxTime.getFullYear() - minTime.getFullYear() + 1;
+                }
+                return {
+                    max:max,
+                    min:min,
+                    step:step,
+                    total:total,
+                    desc:desc
+                }
+
+            },
+            getPoint:function (date) {
+                var value = +util.date.parse(date),
+                    model = this.model,
+                    length;
+                length = value === undefined ? 0 : (value - model.min) * (model.totalWidth - model.pop * model.tickWidth) / (model.max - model.min) + model.pop * model.tickWidth;
+                return {
+                    length:length,
+                    tick: util.date.format(new Date(value),this.options.toFormat)
+                }
+            },
+            forEach:function(fn){
+                var model = this.model,
+                    distance,
+                    format,
+                    i , l,
+                    count = 0,
+                    date,
+                    monthMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                for (i = 0, l = model.pop; i < l; i++) {
+                    fn.call(this, i, (i + 1) * model.tickWidth)
+                }
+                if (model.tickSize) {
+                    switch(model.desc){
+                        case "second":
+                            format = "ss";
+                            break;
+                        case "minute":
+                            format = "mm:ss";
+                            break;
+                        case "hour":
+                            format = "hh:mm";
+                            break;
+                        case "day":
+                            format = "MM-dd";
+                            break;
+                    }
+                    //got tickSize , means tickSize< month
+                    for (i = model.min, l = model.max; i <= l;) {
+                        distance = (count + model.pop) * model.tickWidth;
+                        fn.call(this, model.pop + count, distance, util.date.format(i, format));
+                        i = util.number.add(i, model.tickSize);
+                        count++;
+                    }
+                } else {
+                    //month or year
+                    date = new Date(model.min);
+                    if (model.desc == "month") {
+                        while (+date <= model.max) {
+                            distance = this.getPoint(date).length;
+                            fn.call(this, model.pop + count, distance, monthMap[date.getMonth()]);
+                            date = new Date(date.setMonth(date.getMonth() + 1));
+                            count++;
+                        }
+//                        for (i = model.min, l = model.max; i <= l;) {
+//                            distance = this.getPoint(date);
+//                            fn.call(this, model.pop + count, distance, monthMap[date.getMonth()]);
+//                            i = util.number.add(i, model.tickSize);
+//                            count++;
+//                        }
+                    } else if (model.desc == "year") {
+                        while (+date <= model.max) {
+                            distance = (count + model.pop) * model.tickWidth;
+                            fn.call(this, model.pop + count, distance, date.getFullYear());
+                            date = new Date(date.setFullYear(date.getFullYear() + 1));
+                            count++;
+                        }
+                    }
+                }
+
             }
         }
     };

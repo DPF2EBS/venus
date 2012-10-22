@@ -1,7 +1,7 @@
 ;(function () {
     var util=Venus.util||{};
     var _hsv2rgb = function (h, s, v) {
-        var hi, f, p, q, t, result = [];
+        var hi, f, p, q, result = [];
         hi = Math.floor(h / 60) % 6;
         f = hi % 2 ? h / 60 - hi : 1 - (h / 60 - hi);
         p = v * (1 - s);
@@ -31,7 +31,7 @@
         for (var j = 0, L = result.length; j < L; j++) {result[j] = Math.floor(result[j] * 255);}
 
         return result;
-    }
+    };
 
     /**
      * get a group of chart colors
@@ -56,7 +56,7 @@
 		}
 
         return colors;
-    }
+    };
 
 
     /*
@@ -71,31 +71,31 @@
             }
         }
         return o1;
-    }
+    };
 	
 
     /*
     * isArray
     * */
 
-   util.isArray =  function (arr) {
+    util.isArray = function (arr) {
         return __type(arr, "array");
-    }
+    };
 
     /*
      * isObject
      */
     util.isObject = function(obj){
         return __type(obj, "object");
-    }
+    };
 
     util.isNumber = function(nub){
         return __type(nub, "number");
-    }
+    };
 	
 	util.isFunction=function(func){
 		return __type(func,"function");
-	}
+	};
 
     /**
     *get variable true type 
@@ -109,7 +109,7 @@
         var clas = Object.prototype.toString.call(target).slice(8, -1);
         clas = clas.toLowerCase();
         return !type?clas:target !== undefined && target !== null && clas === type;
-    };
+    }
 
 
     /*
@@ -133,7 +133,7 @@
            return cloned;
        }
 
-   }
+   };
 
     /*
     * add and multiple function to fix float number bug
@@ -170,6 +170,48 @@
                 }
             });
             return sum / divider;
+        }
+    };
+
+    util.date = {
+        parse:function (d) {
+                try{
+                    if(typeof d==="string" && d.indexOf(' ')!==-1 && d.indexOf(':')==-1 && d.indexOf(' ')!== d.length-1){
+                        //yyyy-MM-dd hh, this cant't be parsed
+                        d+= ":00";
+                    }else if(util.isNumber(d)){
+                        return new Date(d)
+                    }
+                    var date = Date.parse(d);
+                    if (!date && date !== 0) {
+                        throw "can't convert date " + d;
+                    } else {
+                        return new Date(date);
+                    }
+                }catch(e){
+                    throw "can't convert date " + d;
+                }
+
+        },
+        format:function (date, formatString) {
+            /*
+            * convert Date instance to string
+            * */
+            date = this.parse(date);
+            var formatStr = formatString || "yyyy-MM-dd hh:mm::ss",
+                year = date.getFullYear().toString(),
+                month = "0" + (date.getMonth() + 1),
+                day = "0" + date.getDate(),
+                hour = "0" + date.getHours(),
+                minute = "0" + date.getMinutes(),
+                second = "0" + date.getSeconds();
+
+             var s =formatStr.replace('yyyy', year).replace('yy', year.substr(year.length - 2)).replace('MM', month.substr(month.length - 2))
+                .replace('dd', day.substr(day.length - 2)).replace('hh', hour.substr(hour.length - 2)).replace('mm', minute.substr(minute.length - 2))
+                .replace('ss', second.substr(second.length - 2));
+
+            return s;
+
         }
     }
 })();

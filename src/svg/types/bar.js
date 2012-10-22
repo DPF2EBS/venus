@@ -120,16 +120,18 @@
                 var xy = coordinate.get(x, y),
                     oX = xy.x,
                     oY = xy.y,
-                    xTickWidth = coordinate.x.model.tickWidth,
-                    xTickSize = coordinate.x.model.tickSize,
-                    beginY = coordinate.x.model.beginY,
-                    beginX = coordinate.x.model.beginX,
+                    xModel = coordinate.x.model,
+                    xTickWidth = xModel.tickWidth,
+                   // xTickSize = coordinate.x.model.tickSize,
+                    totalWidth = xModel.totalWidth,
+                    beginY = xModel.beginY,
+                    beginX = xModel.beginX,
                     times = 5, // width/space=times
                     distance ;
 
                 distance = coordinate.distance(coordinate.x, xy);
                 if (barOptions.multiple == sideBySide) {
-                    var total = xTickWidth / xTickSize * .8,
+                    var total = ((totalWidth - xModel.pop * xModel.tickWidth)||totalWidth) / self.series.getLength() * .8,
                         space = total / ((times + 1) * count + 1),
                         bWidth = times * space;
 
