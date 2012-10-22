@@ -22,13 +22,15 @@
 
         var rad = Math.PI / 180,
             angleOffset = opt.endAngle - opt.startAngle,
-            x1, y1, xm, ym, x2, y2, path;
+            x1, y1, xm, ym, x2, y2, path,xmr,ymr;
 
         x1 = opt.x + opt.r * Math.cos(dir * opt.startAngle * rad);
         y1 = opt.y + opt.r * Math.sin(dir * opt.startAngle * rad);
 
         xm = opt.x + opt.r / 2 * Math.cos(dir * (opt.startAngle + angleOffset / 2) * rad);
+        xmr = opt.x + opt.r  * Math.cos(dir * (opt.startAngle + angleOffset / 2) * rad);
         ym = opt.y + opt.r / 2 * Math.sin(dir * (opt.startAngle + angleOffset / 2) * rad);
+        ymr = opt.y + opt.r  * Math.sin(dir * (opt.startAngle + angleOffset / 2) * rad);
 
         x2 = opt.x + opt.r * Math.cos(dir * opt.endAngle * rad);
         y2 = opt.y + opt.r * Math.sin(dir * opt.endAngle * rad);
@@ -60,7 +62,7 @@
             ];
         }
 
-        return {path:path, pos:{xstart:x1, ystart:y1, xmiddle:xm, ymiddle:ym, xend:x2, yend:y2}};
+        return {path:path, pos:{xstart:x1, ystart:y1, xmiddle:xm,xMiddleOnBound:xmr, ymiddle:ym,yMiddleOnBound:ymr, xend:x2, yend:y2}};
     }
 
     /**
@@ -85,7 +87,8 @@
             opt = options || {},
             angleOffset = opt.endAngle - opt.startAngle,
             sectorPath = getSectorPath(opt),
-            strokeOpt = util.mix({'stroke-width':1, 'stroke':'#dedede', "stroke-linejoin":"round", 'fill':opt.color}, opt.stroke);
+            strokeOpt = util.mix({'stroke-width':1, 'stroke':'#dedede', "stroke-linejoin":"round", 'fill':opt.color}, opt.stroke),
+            pos;
 
         if (!opt.animation) {
             sector = Math.abs(angleOffset) === 360 ? opt.paper.circle(opt.x, opt.y, opt.r) : opt.paper.path(sectorPath.path.join(' '));
@@ -95,11 +98,12 @@
 
         opt.color && sector.attr(strokeOpt);
 
-        opt.d && (text = Math.abs(angleOffset) === 360 ? opt.paper.text(opt.x, opt.y, opt.d) : opt.paper.text(sectorPath.pos.xmiddle, sectorPath.pos.ymiddle, opt.d)).attr({'font-size':Math.max(Math.round(opt.r / 10), 10)});
+      //  opt.d && (text = Math.abs(angleOffset) === 360 ? opt.paper.text(opt.x, opt.y, opt.d) : opt.paper.text(sectorPath.pos.xmiddle, sectorPath.pos.ymiddle, opt.d)).attr({'font-size':Math.max(Math.round(opt.r / 10), 10)});
 
         opt.animation && opt.d && text.hide();
 
-        util.mix(sector, {cx:opt.x, cy:opt.y, mx:sectorPath.pos.xmiddle, my:sectorPath.pos.ymiddle, text:text});
+        pos = sectorPath.pos;
+        util.mix(sector, {cx:opt.x, cy:opt.y, mx:pos.xmiddle, mxr:pos.xMiddleOnBound, my:pos.ymiddle, myr:pos.yMiddleOnBound,_data:opt.d,_index:opt.index, text:text});
 
         return sector;
     }
@@ -118,6 +122,105 @@
         right:{}
     }
 
+    function initTexts(s,percents, opt, paper) {
+        var rows = {
+                0:[], // area 0
+                1:[],
+                2:[],
+                3:[]
+            },
+            lineHeight = 20,
+            texts = [],
+            cx = opt.x,
+            cy = opt.y,
+            self = this,
+            sectors = s.slice(0);
+
+        function getArea(x, y) {
+            if (x > cx && y < cy) {
+                return 0;
+            } else if (x > cx && y > cy) {
+                return 1;
+            } else if (x < cx && y > cy) {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+
+        function getPos(area, row) {
+            var l = lineHeight * (row + 0.5);
+            if (area == 0 || area == 3) {
+                return cy - l;
+            } else {
+                return cy + l;
+            }
+        }
+
+        sectors.sort(function(a,b){
+            return b._data - a._data
+        });
+
+
+        sectors.forEach(function (sector,i) {
+            var mxr = sector.mxr,
+                myr = sector.myr,
+                area = getArea(mxr, myr),
+                row = Math.floor(Math.abs(myr - cy) / lineHeight);
+
+            if (rows[area][row] !== undefined) {
+                // got text on this row
+                if (area == 0 || area == 2) {
+                    rows[area].splice(row, 0, i);
+                } else {
+                    for (var index = row + 1; ; index++) {
+                        if (rows[area][index] === undefined) {
+                            rows[area][index] = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                rows[area][row] = i;
+            }
+        });
+        for (var area in rows) {
+            rows[area].forEach(function (index,i) {
+                if(index!==undefined){
+                    var sector = sectors[index],
+                        originIndex = sector._index,
+                        label = self.labels[originIndex],
+                        percent = percents[originIndex] +"%",
+                        span = 30,
+                        text = paper.text(sector.mxr, getPos(area, i), label).attr({
+                            'font-size':13,
+                            'font-weight':'bolder'
+                        }),
+                        percentText = paper.text(sector.mxr, getPos(area, i), " "+percent).attr({
+                            'font-size':13
+                        });
+                    var width = text.getBBox().width,
+                        percentWidth = percentText.getBBox().width+10;
+
+                    text.attr({
+                        'x':sector.mxr + (area > 1 ? -(span + percentWidth + width / 2) : +(span + width / 2))
+                    });
+                    percentText.attr({
+                        'x':sector.mxr + (area > 1 ? -(span + percentWidth / 2) : (span + width + percentWidth / 2))
+                    });
+                    paper.path().attr({
+                        path:['M', sector.mxr, sector.myr, 'S', sector.mxr, getPos(area, i), sector.mxr + (area > 1 ? -span : span), getPos(area, i)],
+                        "stroke-width":1,
+                        "stroke":"#000000"
+                    });
+
+                }
+            });
+        }
+
+
+    }
+
     Venus.SvgChart.addChart('pie', {
         draw:function (opt) {
             /*
@@ -125,11 +228,11 @@
             */
             var chartWidth = this.options.width,
                 chartHeight = this.options.height,
-
+                self = this,
                 options = util.mix({
                 x:chartWidth/ 2,                                //position of the pie center
                 y:chartHeight/ 2,
-                radius:Math.min(chartWidth, chartHeight) / 2.5, //radius of the p
+                radius:Math.min(chartWidth, chartHeight) / 4, //radius of the p
                 duration:900,
                 animation:true,
                 showText:true,
@@ -182,7 +285,8 @@
                     endAngle:endAngle,
                     color:colors[i],
                     d:options.showText && data,
-                    time:Math.round(data / total * options.duration)
+                    time:Math.round(data / total * options.duration),
+                    index:i
                 });
                 startAngle = endAngle;
             });
@@ -206,6 +310,11 @@
                         callback:function () {
                         this.text && this.text.show();
                     }}, util.mix(options, item))));
+                    if (i == opts.length - 1) {
+                        //last sector finish
+                        //draw texts
+                        initTexts.call(self,elements,percents,options,paper);
+                    }
                 }, t);
             });
 
