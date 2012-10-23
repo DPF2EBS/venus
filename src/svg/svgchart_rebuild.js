@@ -37,11 +37,12 @@
      *  will bind to Venus.SvgChart later
      */
     function Chart(container, data, options) {
-        this.container = typeof container==="string"? document.getElementById(container):container;
+        container = typeof container === "string" ? document.getElementById(container) : container;
         if (!container || !container.nodeType) {
             //not dom
             return;
         }
+        this.container = container;
         this.data = data || [];
         this.events = new Venus.util.CustomEvent();
 

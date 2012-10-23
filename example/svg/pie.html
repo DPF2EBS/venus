@@ -140,8 +140,8 @@
 				pie:{
 					//duration:8000,
 					animation:true, //[true, false, 'simultaneous'],
-					hollow:35,
-					dir:-1,
+					hollow:10,
+					//dir:-1,
 					stroke:{
 						'stroke-width':3,
 						'stroke':'#dfdfdf',
@@ -154,5 +154,26 @@
 		
 		//new DPChart(dd[0], data[0], opt[0]);
 	</script>
+<div style="width:1000px; height: 600px; margin: 100px auto 0;" id="pie">
+    
+</div>
+<script type="text/javascript" >
+    var _opt = {
+        pie:{
+            animation:true, //[true, false, 'simultaneous'],
+            hollow:10,
+            stroke:{
+                'stroke-width':1,
+                'stroke':'#dfdfdf'
+            },
+            radius:100
+
+        },
+        legend:{}
+    };
+    _data = [25, 25, 40, 10, 8, 22, 91,1,1,1,1,1,1,1,1,1];
+
+    new Venus.SvgChart("pie", _data, _opt)
+</script>
 </body>
 </html>

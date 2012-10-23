@@ -100,10 +100,10 @@
 
       //  opt.d && (text = Math.abs(angleOffset) === 360 ? opt.paper.text(opt.x, opt.y, opt.d) : opt.paper.text(sectorPath.pos.xmiddle, sectorPath.pos.ymiddle, opt.d)).attr({'font-size':Math.max(Math.round(opt.r / 10), 10)});
 
-        opt.animation && opt.d && text.hide();
+      //  opt.animation && opt.d && text.hide();
 
         pos = sectorPath.pos;
-        util.mix(sector, {cx:opt.x, cy:opt.y, mx:pos.xmiddle, mxr:pos.xMiddleOnBound, my:pos.ymiddle, myr:pos.yMiddleOnBound,_data:opt.d,_index:opt.index, text:text});
+        util.mix(sector, {cx:opt.x, cy:opt.y, mx:pos.xmiddle, mxr:pos.xMiddleOnBound, my:pos.ymiddle, myr:pos.yMiddleOnBound,_data:opt.d,_index:opt.index, text:text,startAngle:opt.startAngle});
 
         return sector;
     }
@@ -129,12 +129,13 @@
                 2:[],
                 3:[]
             },
-            lineHeight = 20,
-            texts = [],
+            lineHeight = 16,
+            maxRow = Math.ceil(opt.r / lineHeight) - 1,
             cx = opt.x,
             cy = opt.y,
             self = this,
-            sectors = s.slice(0);
+            sectors = s.slice(0),
+            startSwitch;
 
         function getArea(x, y) {
             if (x > cx && y < cy) {
@@ -157,11 +158,6 @@
             }
         }
 
-        sectors.sort(function(a,b){
-            return b._data - a._data
-        });
-
-
         sectors.forEach(function (sector,i) {
             var mxr = sector.mxr,
                 myr = sector.myr,
@@ -173,6 +169,22 @@
                 if (area == 0 || area == 2) {
                     rows[area].splice(row, 0, i);
                 } else {
+                    if (area == 3 && row == maxRow && mxr > cx - .1 * opt.r) {
+                        if (startSwitch === undefined) {
+                            //compute the start index to switch to area 0
+                            if (sectors.length - i <= rows[3].length - maxRow) {
+                                // all switch
+                                startSwitch = i;
+                            } else {
+                                startSwitch = Math.ceil(sectors.length - i - (rows[3].length - maxRow)) / 2 + i;
+                            }
+                        }
+                        if (i >= startSwitch) {
+                            //area 3 and in max Row, put the text in area 0
+                            rows[0][maxRow + sectors.length - i] = i;
+                            return;
+                        }
+                    }
                     for (var index = row + 1; ; index++) {
                         if (rows[area][index] === undefined) {
                             rows[area][index] = i;
@@ -184,6 +196,7 @@
                 rows[area][row] = i;
             }
         });
+
         for (var area in rows) {
             rows[area].forEach(function (index,i) {
                 if(index!==undefined){
@@ -232,7 +245,7 @@
                 options = util.mix({
                 x:chartWidth/ 2,                                //position of the pie center
                 y:chartHeight/ 2,
-                radius:Math.min(chartWidth, chartHeight) / 4, //radius of the p
+                radius:Math.min(chartWidth, chartHeight) / 2.5, //radius of the p
                 duration:900,
                 animation:true,
                 showText:true,
@@ -310,7 +323,7 @@
                         callback:function () {
                         this.text && this.text.show();
                     }}, util.mix(options, item))));
-                    if (i == opts.length - 1) {
+                    if (i == opts.length - 1 && options.showText) {
                         //last sector finish
                         //draw texts
                         initTexts.call(self,elements,percents,options,paper);
