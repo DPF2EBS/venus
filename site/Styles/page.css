@@ -92,6 +92,9 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .demo-box .demo-cont {float:left;width:500px;}
 .mark-panel .mark-box h2 { float: none;}
 .mark-box .mark-cont {float:left;width:200px;}
+/* heatmap */
+.mark-box .heat-cont { width:165px;margin-top:10px; }
+.heat-cont a { display:block;}
 
 
 .intro-box .intro-cont p {line-height:24px;margin-top:10px;text-indent:28px;color:#777;font-size:14px;}
@@ -151,10 +154,29 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 	padding: 8px 15px;
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 }
+.button-big {
+	zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
+	*display: inline-block;
+	vertical-align: baseline;
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	font: 14px/100% Arial, Helvetica, sans-serif;
+	padding: 16px 40px;
+	text-shadow: 0 1px 1px rgba(0,0,0,.3);
+}
 .button:hover {
 	text-decoration: none;
 }
 .button:active {
+	position: relative;
+	top: 1px;
+} 
+.button-big:hover {
+	text-decoration: none;
+}
+.button-big:active {
 	position: relative;
 	top: 1px;
 }
@@ -264,5 +286,10 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .nav .cont {margin-top:10px;margin-bottom:10px;padding-left:60px;height:60px;line-height:60px;background-color:#FFF;border:1px solid #CCC;}
 .nav input { width: 240px; height: 24px;margin:0 30px ; padding:1px 2px;}
 .ml30 {margin-left:30px;}
+
+.heatmap-nav { text-align:center;}
+.heatmap-nav a { display:block; margin:10px;}
+.heat-content { margin: 0 10px;}
+.heat-content img { width:1140px; height:692px;}
 
 
