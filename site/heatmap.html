@@ -68,9 +68,10 @@
 		$('J_heatmap').addEvent('click', function (e) {
 			var canvas = document.getElementById("canvas");
 		    var example = heatmap(canvas, {
-		            radius:20,
+		            radius:50,
 		            opacity:0.5
 		        });
+			
 		    canvas.addEventListener("mousemove", function(e){
 		        example.addPoint(e.offsetX,e.offsetY);
 		    });
