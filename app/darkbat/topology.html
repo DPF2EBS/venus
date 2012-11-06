@@ -265,10 +265,11 @@
             layerHeight:200,
             click:function (e, node ){
                 console.log(this, node, e);
-                chart.highLightParents(node);
+                chart.highlightParents(node);
             },
-            contextmenu:function(e){
-                e.preventDefault()
+            contextmenu:function(e,node){
+                e.preventDefault();
+                chart.cancelHighlightParents(node);
             },
             badStatus:[2],
             nodeType:'circle',

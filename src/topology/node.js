@@ -56,6 +56,29 @@
         },
         position:function(x,y){
             return Node.types[this.type].position.call(this,x, y);
+        },
+        highlight:function(){
+            var attr = {
+                    'stroke':'#D02090',
+                    'stroke-width':2
+                };
+            //high light edges
+            if(!this.isHighlight){
+                this.isHighlight = true;
+                this.viewCache = {
+                    'stroke':this.view.attr('stroke'),
+                    'stroke-width':this.view.attr('stroke-width')
+                };
+                this.view.attr(attr);
+                return true;
+            }
+        },
+        cancelHighlight:function(){
+            if(this.isHighlight){
+                this.isHighlight = false;
+                this.view.attr(this.viewCache);
+                return true;
+            }
         }
     };
     Node.types = {};

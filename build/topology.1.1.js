@@ -490,6 +490,29 @@ Venus.config={
         },
         position:function(x,y){
             return Node.types[this.type].position.call(this,x, y);
+        },
+        highlight:function(){
+            var attr = {
+                    'stroke':'#D02090',
+                    'stroke-width':2
+                };
+            //high light edges
+            if(!this.isHighlight){
+                this.isHighlight = true;
+                this.viewCache = {
+                    'stroke':this.view.attr('stroke'),
+                    'stroke-width':this.view.attr('stroke-width')
+                };
+                this.view.attr(attr);
+                return true;
+            }
+        },
+        cancelHighlight:function(){
+            if(this.isHighlight){
+                this.isHighlight = false;
+                this.view.attr(this.viewCache);
+                return true;
+            }
         }
     };
     Node.types = {};
@@ -1688,34 +1711,55 @@ Venus.config={
                 })
             });
         },
-        highLightParents:function(node){
-            var self = this,
-                attr = {
-                    'stroke':'#D02090',
-                    'stroke-width':2
-                };
-            //high light edges
-            if(!node.highlight){
-                node.hightlight = true;
-                node.viewCache = {
-                    'stroke':node.view.attr('stroke'),
-                    'stroke-width':node.view.attr('stroke-width')
-                };
-                node.view.attr(attr);
-            }else{
-                return;
-            }
-            node.parentsEdges.forEach(function (edge) {
-                edge.arrow.attr('fill', '#D02090');
-                edge.line.attr('stroke', '#D02090');
-            });
-            node.parents.forEach(function(p){
-                p.view.attr(attr);
-                self.highLightParents(p);
-            });
-        },
-        cancelHighLightParents:function(){
+        highlightParents:function(node){
+            var parents = [];
 
+            function h(n) {
+                if (parents.indexOf(n) !== -1) {
+                    //already highlight it's parents
+                    return false;
+                }
+                parents.push(n);
+                n.highlight();
+                n.parentsEdges.forEach(function (edge) {
+                    edge.viewCache = {
+                        arrow:{
+                            'fill':edge.arrow.attr('fill')
+                        },
+                        line:{
+                            'stroke':edge.line.attr('stroke')
+                        }
+                    };
+                    edge.arrow.attr('fill', '#D02090');
+                    edge.line.attr('stroke', '#D02090');
+                });
+                n.parents.forEach(function (p) {
+                    h(p);
+                });
+            }
+            h(node);
+
+        },
+        cancelHighlightParents:function(node){
+            var parents = [];
+            function h(n) {
+                if (parents.indexOf(n) !== -1) {
+                    //already highlight it's parents
+                    return false;
+                }
+                parents.push(n);
+                n.cancelHighlight();
+                n.parentsEdges.forEach(function (edge) {
+                    if(edge.viewCache){
+                        edge.arrow.attr(edge.viewCache.arrow);
+                        edge.line.attr(edge.viewCache.line);
+                    }
+                });
+                n.parents.forEach(function (p) {
+                    h(p);
+                });
+            }
+            h(node);
         }
     };
 
