@@ -287,9 +287,19 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .nav input { width: 240px; height: 24px;margin:0 30px ; padding:1px 2px;}
 .ml30 {margin-left:30px;}
 
-.heatmap-nav { text-align:center;}
-.heatmap-nav a { display:block; margin:10px;}
-.heat-content { margin: 0 10px;}
-.heat-content img { width:1140px; height:692px;}
+/* 热力图样式部分 */
+.heat-content { }
+.heatmap-item {position: relative;padding:20px;background-color: #FFF;text-align: center;margin-top:10px;}
+.heat-content img { width:443px;height:459px;border:1px dotted #CCC;margin-top:10px;}
+
+.heatmap-left {width:45%;float:left;margin-left:20px;}
+.heatmap-left a {display:block;}
+.heatmap-left .canvas-chart0 {position:absolute;top:79px;left:67px;}
+.heatmap-left .canvas-chart2 {position:absolute;top:79px;left:67px;}
+
+.heatmap-right { width:45%;float:right;margin-right:20px;}
+.heatmap-right a { display:block;}
+.heatmap-right .canvas-chart1 {position:absolute;top:79px;left:67px;}
+.heatmap-right .canvas-chart4 {position:absolute;top:79px;left:67px;}
 
 
