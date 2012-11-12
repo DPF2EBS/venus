@@ -126,15 +126,25 @@
                     x:{
                         tickWidth:50,  // 刻度间距（像素）
                         ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] // 刻度所对应的标签字
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // 刻度所对应的标签字
+                        opposite: false, // x轴的方向改变（下方会变为上方）,
+                        rotate: 0  // 轴方向改变（rotate=90时，x轴会变为竖轴）
                     },
                     // 配置y坐标轴
                     y:{
                         min:0,   // 刻度最小值
                         max:100, // 刻度最大值
                         tickWidth:20,  // 刻度间距（像素）
-                        tickSize:10    // 相隔刻度相差值
-                    }
+                        tickSize:10,    // 相隔刻度相差值
+                        roate: 90 // 轴方向改变（rotate=0时，y轴会变为横轴）
+                    },
+                    x1: {},  // x1为新增x轴(内部配置同x轴)
+                    y1: {},   // y1为新增y轴（内部配置同y轴）
+
+                },
+                axisUsage: {
+                    0: ['x', 'y'],  // 使用正常的x,y轴为数据轴（label标签会在这两个轴上起效）
+                    1: ['x1', 'y1'] // 使用x1, y1轴作为数据轴（label标签会在这两个轴上起效）
                 },
                 // 对线图的配置对象
                 line:{
@@ -156,6 +166,11 @@
                     columnHover: true,
                     // 线条的宽度
                     "line-width": 2
+                },
+                // 配置线图连接点的形状，目前有['rect', 'circle', 'triangle', 'lozenge']
+                // 分别为：正方形，圆形，三角形，棱形
+                icons: {
+                    0: "rect" // 默认为正方形
                 },
                 // 配置网格，不配置不会有网格
                 grid:{ 
@@ -243,15 +258,24 @@
 	                axis:{
 	                    x:{
 	                        tickWidth:150,   // x轴刻度实际像素距离
-	                        ticks:['Q1', 'Q2', 'Q3', 'Q4']  // x轴上的标文字
+	                        ticks:['Q1', 'Q2', 'Q3', 'Q4'],  // x轴上的标文字
+                            opposite: false, // x轴的方向改变（下方会变为上方）,
+                            rotate: 0  // 轴方向改变（rotate=90时，x轴会变为竖轴）
 	                    },
 	                    y:{
 	                        min:0,  // 最小的值
 	                        max:100,  // 最大的值
 	                        tickWidth:30,  // y轴刻度实际像素距离
-	                        tickSize:10  // 刻度的差值
+	                        tickSize:10,  // 刻度的差值
+                            roate: 90 // 轴方向改变（rotate=0时，y轴会变为横轴）
 	                    }
+                        x1: {},  // x1为新增x轴(内部配置同x轴)
+                        y1: {},   // y1为新增y轴（内部配置同y轴）
 	                },
+                    axisUsage: {
+                        0: ['x', 'y'],  // 使用正常的x,y轴为数据轴（label标签会在这两个轴上起效）
+                        1: ['x1', 'y1'] // 使用x1, y1轴作为数据轴（label标签会在这两个轴上起效）
+                    },
 					// 开始配置柱状图
 	                bar:{
 	                    radius:2,  // 柱子圆角半径
