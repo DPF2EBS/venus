@@ -93,10 +93,20 @@
 					<option value="1">1</option>
 					<option value="2">2</option>
 					<option value="3">3</option>
-					<option value="4" selected="true">4</option>
-					<option value="6">6</option>
+					<option value="4">4</option>
+					<option value="6" selected="true">6</option>
 					<option value="8">8</option>
 					<option value="10">10</option>
+            	</select>
+			</li>
+
+			<li>
+				<label>连接点形状：</label>
+				<select class="sel" data-type="dotType">
+					<option value="rect">正方形</option>
+					<option value="circle" selected="true">圆形</option>
+					<option value="triangle">三角形</option>
+					<option value="lozenge">菱形</option>
             	</select>
 			</li>
 
@@ -152,7 +162,7 @@
 			</ul>
 			</div>
 			
-			<h3 class="toggler last"><a href="javascript:void(0)">设置网格</a></h3>
+			<h3 class="toggler"><a href="javascript:void(0)">设置网格</a></h3>
 			<div class="accordion">
 			<ul>
 			<li>
@@ -172,6 +182,22 @@
 			</li>
 			
 			</ul>
+			</div>
+
+			<h3 class="toggler last"><a href="javascript:void(0)">配置坐标轴</a></h3>
+
+			<div class="accordion">
+				<a class="btns axis-dir" data-type="left-bottom" href="javascript:;">左下轴</a>
+				<a class="btns axis-dir" data-type="left-top" href="javascript:;">左上轴</a>
+				<a class="btns axis-dir" data-type="right-bottom" href="javascript:;">右下轴</a>
+				<a class="btns axis-dir" data-type="right-top" href="javascript:;">右上轴</a>
+				<a class="btns axis-dir" data-type="single-xy" href="javascript:;">单轴XY</a>
+				<a class="btns axis-dir" data-type="double-yy" href="javascript:;">双轴YY(刻度依照左边Y轴)</a>
+				<a class="btns axis-dir" data-type="double-yyO" href="javascript:;">双轴YY(刻度依照右边Y轴)</a>
+				<a class="btns axis-dir" data-type="double-yyRD" href="javascript:;">双轴YY(依照右边Y轴倒序)</a>
+				<a class="btns axis-dir" data-type="double-yyLD" href="javascript:;">双轴YY(依照左边Y轴倒序)</a>
+				<a class="btns axis-dir" data-type="double-xx" href="javascript:;">双轴XX(刻度依照下边X轴)</a>
+				<a class="btns axis-dir" data-type="double-xxO" href="javascript:;">双轴XX(刻度依照上边X轴)</a>
 			</div>
 			
     	</div>
@@ -209,21 +235,24 @@
 			width: 900,
 			height: 400,
 			axis:{
-				x:{
+				x:{	
+					opposite:false,
 					tickWidth:50,
 					ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 				},
-				y:{
-					min:0,
-					max:100,
-					tickWidth:20,
-					tickSize:10
+				y: {
+					min:0
 				}
 			},
+			icons: {
+				0: "circle"
+			},
 			line:{
-				smooth:false
+				smooth:false,
+				dotRadius: 6
 			},
 			grid:{
+
 			}
 
 		};
@@ -249,6 +278,109 @@
 		container.innerHTML = '';
 		new Venus.SvgChart(container, lineData, lineOptions);
 	});
+
+
+	$$('.axis-dir').addEvent('click', function (e) {
+		e && e.preventDefault();
+		var _this = $(this),
+			axisDataX = {
+				opposite:false,
+				tickWidth:50,
+				ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			},
+			axisDataY = {
+				min:0
+			},
+			attr = _this.getProperty('data-type');
+		if(attr == 'left-bottom') {
+			lineOptions.axis.x.opposite = false;
+			lineOptions.axis.y.opposite = false;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = null;
+		} else if(attr == 'left-top') {
+			lineOptions.axis.x.opposite = true;
+			lineOptions.axis.y.opposite = false;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = null;
+		} else if(attr == 'right-bottom') {
+			lineOptions.axis.x.opposite = false;
+			lineOptions.axis.y.opposite = true;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = null;
+		} else if(attr =='right-top') {
+			lineOptions.axis.x.opposite = true;
+			lineOptions.axis.y.opposite = true;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = null;
+		} else if(attr == 'single-xy') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = null;
+		} else if(attr == 'double-yy') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = {};
+			lineOptions.axisUsage = { 1: ['x', 'y']};
+		} else if(attr == 'double-yyO') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.x1 = null;
+			lineOptions.axis.y1 = {};
+			lineOptions.axisUsage = { 0: ['x', 'y1']};
+		} else if(attr == 'double-xx') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.x1 = { 
+				opposite: true,
+				tickWidth:50,
+				ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			};
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = { 1: ['x', 'y']};
+		} else if(attr == 'double-xxO') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.x1 = { 
+				opposite: true,
+				tickWidth:50,
+				ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			};
+			lineOptions.axis.y1 = null;
+			lineOptions.axisUsage = { 1: ['x1', 'y']};
+		} else if(attr == 'double-yyRD') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.y = { opposite: false};
+			lineOptions.axis.x1 = { 
+				opposite: true,
+				tickWidth:50,
+				ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			};
+			lineOptions.axis.y1 = { opposite: false};
+			lineOptions.axisUsage = { 0: ['x', 'y1']};
+		} else if(attr == 'double-yyLD') {
+			lineOptions.axis.x = axisDataX;
+			lineOptions.axis.y = axisDataY;
+			lineOptions.axis.y = { opposite: false};
+			lineOptions.axis.x1 = { 
+				opposite: true,
+				tickWidth:50,
+				ticks:['Jan', 'Feb', "Mar", 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			};
+			lineOptions.axis.y1 = { opposite: false };
+			lineOptions.axisUsage = { 1: ['x', 'y1']};
+		}
+		container.innerHTML = '';
+		new Venus.SvgChart(container, lineData, lineOptions);
+	});
+
 	// 设置
 	$$('.accordion select').addEvent('change', function () {
 		var _this = $(this),
@@ -270,6 +402,8 @@
 			case 'dotRadius':
 				lineOptions.line.dotRadius = parseInt(val);
 				break;
+			case 'dotType':
+				lineOptions.icons['0'] = val;
 			case 'area':
 				if(val == '0') lineOptions.line.area = true;
 				else { lineOptions.line.area = false; }

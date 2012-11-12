@@ -95,8 +95,8 @@
 			<li>
 				<label>动画的半径：</label>
 				<select class="sel" data-type="radius">
-					<option value="0">0</option>
-					<option value="2" selected="true">2</option>
+					<option value="0" selected="true">0</option>
+					<option value="2">2</option>
 					<option value="4">4</option>
 					<option value="8">8</option>
 					<option value="10">10</option>
@@ -162,15 +162,15 @@
 					<option value="right-bottom">右下角</option>
 					<option value="left-top">左上角</option>
 					<option value="left-bottom">左下角</option>
-					<option value="center-top">上侧居中</option>
-					<option value="center-bottom" selected="true">下侧居中</option>
+					<option value="center-top" selected="true">上侧居中</option>
+					<option value="center-bottom">下侧居中</option>
             	</select>
 			</li>
 			
 			</ul>
 			</div>
 			
-			<h3 class="toggler last"><a href="javascript:void(0)">设置网格</a></h3>
+			<h3 class="toggler"><a href="javascript:void(0)">设置网格</a></h3>
 			<div class="accordion">
 			<ul>
 			<li>
@@ -190,6 +190,18 @@
 			</li>
 			
 			</ul>
+			</div>
+
+
+			<h3 class="toggler last"><a href="javascript:void(0)">设置坐标轴</a></h3>
+			<div class="accordion">
+			<a class="btns axis-dir" data-type="left-bottom" href="javascript:;">左下轴</a>
+			<a class="btns axis-dir" data-type="left-top" href="javascript:;">左上轴</a>
+			<a class="btns axis-dir" data-type="right-bottom" href="javascript:;">右下轴</a>
+			<a class="btns axis-dir" data-type="right-top" href="javascript:;">右上轴</a>
+			<a class="btns axis-dir" data-type="single-xy" href="javascript:;">单轴XY</a>
+			<a class="btns axis-dir" data-type="single-dl" href="javascript:;">左倒立</a>
+			<a class="btns axis-dir" data-type="single-dr" href="javascript:;">右倒立</a>
 			</div>
 
     	</div>
@@ -228,18 +240,15 @@ var container = document.getElementById('chart_container'),
             	height: 500,
                 axis:{
                     x:{
-                        tickWidth:150,
+                    	opposite:false,
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
-                        min:0,
-                        max:100,
-                        tickWidth:30,
-                        tickSize:10
+                        min:0
                     }
                 },
                 bar:{
-                    radius:2
+                    radius:0
                 },
                 grid:{
                     //enableRow:true,
@@ -247,7 +256,7 @@ var container = document.getElementById('chart_container'),
                 },
                 legend:{
                     direction:'horizontal',
-                    position:['center','bottom']
+                    position:['center','top']
                 }
             }
     for (var i = 0, l = 3; i < l; i++) {
@@ -274,6 +283,77 @@ var container = document.getElementById('chart_container'),
 		container.innerHTML = '';
 		new Venus.SvgChart(container, barData, barOptions);
 	});
+
+	$$('.axis-dir').addEvent('click', function (e) {
+		e && e.preventDefault();
+		var _this = $(this),
+			axisDataX = {
+                ticks:['Q1', 'Q2', 'Q3', 'Q4']
+			},
+			axisDataY = {
+				min:0
+			},
+			attr = _this.getProperty('data-type');
+		if(attr == 'left-bottom') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.opposite = false;
+			barOptions.axis.y.opposite = false;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr == 'left-top') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.opposite = true;
+			barOptions.axis.y.opposite = false;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr == 'right-bottom') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.opposite = false;
+			barOptions.axis.y.opposite = true;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr =='right-top') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.opposite = true;
+			barOptions.axis.y.opposite = true;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr == 'single-xy') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr == 'single-dl') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.rotate = 90;
+			barOptions.axis.y.rotate = 0;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		} else if(attr == 'single-dr') {
+			barOptions.axis.x = axisDataX;
+			barOptions.axis.y = axisDataY;
+			barOptions.axis.x.rotate = 90;
+			barOptions.axis.y.rotate = 0;
+			barOptions.axis.x.opposite = true;
+			barOptions.axis.x1 = null;
+			barOptions.axis.y1 = null;
+			barOptions.axisUsage = null;
+		}
+		container.innerHTML = '';
+		new Venus.SvgChart(container, barData, barOptions);
+	});
+
 
 	//
 	$$('.accordion select').addEvent('change', function () {
