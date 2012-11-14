@@ -66,7 +66,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .header-cont .header-logo { float:left;display:block;width:200px;height:82px; }
 
 .header-cont .header-nav {float:left;width:600px;height:40px;margin-left:100px;margin-top:42px;}
-.header-nav a {display:block;width:90px;text-decoration:none;color:#DFDFDF;text-align:center;}
+.header-nav a {display:block;width:90px;text-decoration:none;color:#DFDFDF;text-align:center;font-size: 12px;}
 .header-nav li {float:left;width:100px;height:40px;line-height:40px;position:relative;}
 .header-nav .demo-menu { width:90px;position:absolute;top:40px;;left:0;border:1px solid #DFDFDF;border-top:0 none;background-color:#FBFBFB;color:#444;-moz-box-shadow: 0 5px 5px #BBB;-webkit-box-shadow: 0 5px 5px #BBB;box-shadow: 0 5px 5px #BBB;}
 .header-nav .demo-menu li {width:90px;height:40px; line-height:40px;}
