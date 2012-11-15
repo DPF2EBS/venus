@@ -59,7 +59,7 @@
         },
         highlight:function(){
             var attr = {
-                    'stroke':'#D02090',
+                    'stroke':'#FF6600',
                     'stroke-width':2
                 };
             //high light edges

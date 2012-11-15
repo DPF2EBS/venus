@@ -770,21 +770,21 @@
 
             edge.arrow  = (edge.arrow || paper.path()).attr({
                 path:path.arrowPath,
-                'fill':'#000',
+                'fill':'#999',
                 stroke:'none'
             });
 
             edge.line= (edge.line || paper.path()).attr({
                 'path':path.path,
                 'stroke-width':options.arrowWidth,
-                'stroke':'#000'
+                'stroke':'#999'
             });
 
             edge.line.transform('R' + path.alpha + "," + path.x + "," + path.y);
             edge.arrow.transform('R' + path.alpha + "," + path.x + "," + path.y);
             if (y1 > y2) {
-                edge.arrow.attr('fill', 'red');
-                edge.line.attr('stroke', 'red');
+                edge.arrow.attr('fill', '#999');
+                edge.line.attr('stroke', '#999');
             }
         },
         polyLinePath:function (x1, y1, x2, y2,xOffset, yOffset) {
@@ -889,8 +889,9 @@
                             'stroke':edge.line.attr('stroke')
                         }
                     };
-                    edge.arrow.attr('fill', '#D02090');
-                    edge.line.attr('stroke', '#D02090');
+                    edge.arrow.attr('fill', '#FF6600');
+                    edge.line.attr('stroke', '#FF6600');
+                    edge.line.attr('stroke-width', 2);
                 });
                 n.parents.forEach(function (p) {
                     h(p);

@@ -253,14 +253,14 @@
         ]
         console.log(data.length)
         chartContainer.innerHTML = "";
-        var colors = Venus.util.getColors(3);
+        var colors = Venus.util.getColors(12);
         var chart = new Venus.Topology(chartContainer, data, {
             click:function (data) {
             },
             colorMap:{
-                1:colors[0],
+                1:colors[4],
                 2:colors[1],
-                3:colors[2]
+                3:colors[10]
             },
             layerHeight:200,
             click:function (e, node ){
