@@ -1132,7 +1132,7 @@ Venus.config={
                                 } else if (layers[node._layer  - 1] && layers[node._layer  - 1].indexOf(child) != -1) {
                                     edge.node1 = child;
                                     edge.node2 = node;
-                                    edges[node._layer ].push(edge);
+                                    edges[node._layer-1 ].push(edge);
                                 }else{
                                     //cross layer edge
                                     crossLayerEdges.push(edge);
