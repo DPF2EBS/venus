@@ -3,7 +3,7 @@
  */
 var MUB = {
     _uid : 0,
-    _minRoot : '/min/?',
+    _minRoot : '/site/min/?',
     /**
      * In a given array of strings, find the character they all have at
      * a particular index
@@ -39,7 +39,7 @@ var MUB = {
             ++pos;
         }
         base = base.replace(/[^\/]+$/, '');
-        var uri = MUB._minRoot + 'f=' + sources.join(',');
+        var uri = MUB._minRoot + 'f=site/' + sources.join(',');
         if (base.charAt(base.length - 1) === '/') {
             // we have a base dir!
             var basedSources = sources,
@@ -49,7 +49,7 @@ var MUB = {
                 basedSources[i] = sources[i].substr(base.length);
             }
             base = base.substr(0, base.length - 1);
-            var bUri = MUB._minRoot + 'b=' + base + '&f=' + basedSources.join(',');
+            var bUri = MUB._minRoot + 'b=site/' + base + '&f=' + basedSources.join(',');
             uri = uri.length < bUri.length ? uri : bUri;
         }
         return uri;
