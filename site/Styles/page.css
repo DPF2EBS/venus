@@ -78,7 +78,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 /* ---------- index.html begins ----------- */
 .main .left-main {float:left;width:600px;}
 .main .right-main {float:right;width:350px;}
-.intro-panel {width:585px;margin-bottom:20px;}
+.intro-panel {width:585px;margin-bottom:20px;margin-top: 20px;}
 .mark-panel {width:248px;margin-bottom:20px;margin-left:9px;margin-top:20px;border-right:1px solid #CCC;}
 .isay-top { background-position:-3257px 0;height:1px;overflow:hidden;}
 .isay-middle  {padding:0 2px 0 23px;background-position:-1015px 0;background-repeat:repeat-y;}
@@ -86,7 +86,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 
 .mark-panel .banner-box {padding:22px;}
 .mark-panel .banner-box img {border:1px solid #EFEFEF;}
-.mark-panel .mark-box,.intro-panel .intro-box,.demo-panel .demo-box {padding:22px 0 22px 30px;}
+.mark-panel .mark-box,.intro-panel .intro-box,.demo-panel .demo-box {padding:15px 0 15px 20px;}
 .mark-panel .mark-box h2,.intro-panel .intro-box h2,.demo-panel .demo-box h2 {float:left;font-size:18px;line-height:31px;padding-left:28px;font-weight:normal;background-position:-72px -1095px;color:#444;}
 .intro-box .intro-cont,
 .demo-box .demo-cont {float:left;width:500px;}
@@ -266,7 +266,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 /* ====== Good Part ======= */
 
 /* right part */
-.cont-main { margin-top:30px;position:relative;}
+.cont-main { margin-top:20px;position:relative;}
 
 .sidebar { width: 240px; min-height: 600px;border-bottom: 1px solid #CCC; float:left; border-right:1px solid #CCC;background-color:#FFF; }
 .content { position:absolute;left: 240px; margin: 0 15px 0 30px; background-color:#FFF;}
@@ -286,11 +286,11 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .svg-case {width:960px;height:600px;background-color:#FFF;}
 /* api page */
 .nav-side {width:110px; height:100%; float:left;}
-.nav-list {margin-top:30px;}
+.nav-list {margin-top:20px;}
 .nav-list li {float:left;display:inline;width:110px;height:110px;line-height:110px;margin-top:1px;}
-.nav-list li a { display:block; text-align: center;color:#CCC;background-color:#444;text-decoration: none;font-size:16px;text-shadow: 0 1px 1px rgba(0,0,0,.4);}
-.nav-list li a:hover { background-color: #666;color:orange;}
-.right-cont { float:left;width:800px;margin-top:30px;margin-left:20px;}
+.nav-list li a { display:block; text-align: center;color:#666;background-color:#FFF;text-decoration: none;font-size:16px;text-shadow: 0 1px 1px rgba(0,0,0,.4);}
+.nav-list li a:hover { background-color: #666;color:#FFF;}
+.right-cont { float:left;width:800px;margin-top:0px;margin-left:20px;}
 .right-cont h2 { color: #09F;font-weight:normal;}
 .margin-t {margin-top:80px;}
 
