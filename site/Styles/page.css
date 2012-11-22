@@ -29,7 +29,7 @@ input, select {vertical-align:middle;}
 ul, li {list-style: none;white-space:nowrap}
 /* CSS page */
 /* header css */
-body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font-family:Arial,"Microsoft YaHei","微软雅黑",tahoma,simhei,"黑体"; }
+body { background:gainsboro url(../image/header-bg.png) top left repeat-x;background-color:#EDEDEF; font-family:Arial,"Microsoft YaHei","微软雅黑",tahoma,simhei,"黑体"; }
 
 /* css tools */
 .Hide { display:none; }
@@ -63,17 +63,17 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 
 /* ---------- header begins ----------- */
 .header {width:100%;margin-bottom:24px;-moz-box-shadow: 0 5px 9px #888;-webkit-box-shadow: 0 5px 9px #888;box-shadow: 0 5px 9px #888;}
-.header-cont .header-logo { float:left;display:block;width:200px;height:82px; }
+.header-cont .header-logo { float:left;display:block;width:200px;height:88px;margin-left:60px;}
 
-.header-cont .header-nav {float:left;width:600px;height:40px;margin-left:100px;margin-top:42px;}
-.header-nav a {display:block;width:90px;text-decoration:none;color:#DFDFDF;text-align:center;font-size: 12px;}
+.header-cont .header-nav {float:left;width:600px;height:40px;margin-left:50px;margin-top:48px;}
+.header-nav a {display:block;width:90px;text-decoration:none;color:#666;text-align:center;font-size: 14px;font-family:Helvetica, Arial, "Liberation Sans", sans-serif;text-shadow:#EEE 0px 1px 0px;}
 .header-nav li {float:left;width:100px;height:40px;line-height:40px;position:relative;}
 .header-nav .demo-menu { width:90px;position:absolute;top:40px;;left:0;border:1px solid #DFDFDF;border-top:0 none;background-color:#FBFBFB;color:#444;-moz-box-shadow: 0 5px 5px #BBB;-webkit-box-shadow: 0 5px 5px #BBB;box-shadow: 0 5px 5px #BBB;}
 .header-nav .demo-menu li {width:90px;height:40px; line-height:40px;}
 .header-nav .demo-menu a {color:#666;}
 .header-nav .demo-menu a:hover, .header-nav .hover:hover {background-color:#DFDFE1;color:#333;}
 .header-nav .hover {border:1px solid #DFDFDF;border-bottom:0 none;background-position:0;background-color:#FBFBFB;color:#444;}
-.header-nav a:hover { color:#FFF; }
+.header-nav a:hover { color:#D54E21; }
 
 /* ---------- index.html begins ----------- */
 .main .left-main {float:left;width:600px;}
@@ -273,8 +273,8 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 
 .sidebar h3 a, .sidebar .hovern a { display:block;padding:12px 0 12px 84px;background:url(../image/icon.png) no-repeat;}
 .sidebar h3 { font-size: 14px;height:34px;overflow:hidden;font-weight:normal;cursor:pointer;background-position: 0 0;}
-.sidebar h3 a { text-decoration:none; color:#333;background-position:206px -360px;}
-.sidebar .hovern a {background-position:206px -1004px;color:#0368A8;}
+.sidebar h3 a { text-decoration:none; color:#666;background-position:206px -360px;}
+.sidebar .hovern a {background-position:206px -1004px;color:#F06015;}
 .sidebar a:hover {color:#F06015;}
 .accordion li { height:40px; line-height:30px; padding-left:30px; }
 .accordion li label { font-size:12px; color: #6D6D6D;}
@@ -294,19 +294,20 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .right-cont h2 { color: #09F;font-weight:normal;}
 .margin-t {margin-top:80px;}
 
-.footer { float:left;width:100%;margin: 0 auto;background-color: #444;}
+.footer { float:left;width:100%;margin: 0 auto;background-color: gainsboro;}
 /*footer*/
-.footer { padding-bottom: 30px; padding-top: 20px;margin-top:30px; color: #999; border-top: 1px dashed #E4E4E4;}
-.footer a { color: #CCC;}
-.footer a:hover { text-decoration: underline; color: #FFF;}
+.footer { padding-bottom: 30px; padding-top: 20px;margin-top:30px; color: #999; }
+.footer a { color: #666;}
+.footer a:hover { text-decoration: underline; color: #D54E21;}
 
 /*静态简尾*/
 .footer-static { text-align: center; border-top: 1px solid #FFF;}
 .footer-static ul { margin-bottom: 10px;}
 .footer-static li { display: inline; margin-right: 8px; color: #CCC;}
-.footer-static li a { margin-right: 10px; color: #C0C0C0;text-decoration: none;}
+.footer-static li a { margin-right: 10px; text-decoration: none;font-size: 12px;}
 .footer-static li a:hover { text-decoration: none;}
 .footer-static li.fn-tuan { background-position: 41px -674px;}
+.footer-static p {font-size: 12px;}
 .footer-static p a { color: #CCC;}
 .footer-static p a:hover { text-decoration: none;}
 .footer-static p a.note:hover { color: #FFF; cursor: default;}
@@ -337,7 +338,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 	border-radius:2px;
 	color:#555;
 	font-size:12px;
-	padding:20px;
+	padding:6px 20px;
 	text-decoration:none;
 	margin:8px 0px 0px 24px;
 	background-color: #E0E0E0;

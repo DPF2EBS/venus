@@ -80,7 +80,7 @@ h1 {margin-top:0;}
 <body>
 	<div class="header">
     	<div class="header-cont clearfix">
-        <a class="header-logo" href="../../index.html"><img src="../../image/logo.png" /></a>
+        <a class="header-logo" href="../../index.html"><img src="../../image/logonew.png" /></a>
         <div class="header-nav">
         	<ul>
             	<li><a href="../../index.html">首页</a></li>
