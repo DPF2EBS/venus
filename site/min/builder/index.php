@@ -54,6 +54,12 @@ ob_start();
 ?>
 <!DOCTYPE html>
 <title>Minify URI Builder</title>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36468754-1']);
+  _gaq.push(['_trackPageview']);
+var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trackPageview:vga};
+</script>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <link type="text/css" rel="stylesheet" href="../../Styles/page.css"></link>
 <style>
@@ -65,7 +71,7 @@ h1 {margin-top:0;}
 .hide {display:none}
 .items{overflow:hidden;}
 .items li {height:40px;line-height:40px;background-color:#FFF;margin:10px;}
-.items label {background-color:#F48307;padding-left:20px;cursor:pointer;color:#FFF;margin-right:30px;width:130px;display:inline-block;}
+.items label {background-color:#666;padding-left:20px;cursor:pointer;color:#EFEFEF;margin-right:30px;width:130px;display:inline-block;}
 .link-me {margin:10px 20px;margin-bottom:0px;}
 .ext {text-decoration:none;color:#66C;}
 .ext:hover {background-color:#66C;color:#FFF;}
@@ -74,28 +80,16 @@ h1 {margin-top:0;}
 <body>
 	<div class="header">
     	<div class="header-cont clearfix">
-            <a class="header-logo" href="#logo"><img src="../../image/logo.png" /></a>
-            <div class="header-nav">
-            	<ul>
-                	<li><a href="../../index.html">首页</a></li>
-                    <li><a href="../../api.html">接口文档</a></li>
-                    <li class="J_menu">
-						<a href="../../canvaspie.html" class="J_trigger">演示</a>
-						<ul class="demo-menu J_list Hide">
-							<li><a href="../../canvaspie.html">canvas</a></li>
-							<li><a href="../../svgpie.html">svg</a></li>
-						</ul>
-					</li>
-                    <li class="J_menu">
-						<a href="../../canvascase.html" class="J_trigger">案例</a>
-						<ul class="demo-menu J_list Hide">
-							<li><a href="../../canvascase.html">canvas</a></li>
-							<li><a href="../../svgcase.html">svg</a></li>
-						</ul>
-					</li>
-					<li><a href="../../min/" target="_blank">下载</a></li>
-                </ul>
-		 </div>
+        <a class="header-logo" href="../../index.html"><img src="../../image/logo.png" /></a>
+        <div class="header-nav">
+        	<ul>
+            	<li><a href="../../index.html">首页</a></li>
+              <li><a href="../../api.html">接口文档</a></li>
+              <li><a href="../../svgpie.html">演示</a></li>
+              <li><a href="../../svgcase.html">案例</a></li>
+			        <li><a href="../../min/" target="_blank">下载</a></li>
+          </ul>
+		    </div>
 		</div>
 </div>
 <?php if ($symlinkOption): ?>
@@ -181,6 +175,13 @@ h1 {margin-top:0;}
   </ul>      
   <p>©2012 点评商务前端团队, All Rights Reserved.　　本站发布的所有内容，未经许可，不得转载。</p>      
 </div>
+<script type="text/javascript">
+   (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
 <script>window.jQuery || document.write('<script src="jquery-1.6.3.min.js"><\/script>')</script>
 <script>
 (function () {

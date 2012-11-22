@@ -2,8 +2,7 @@
 {
 	font-family: "Consolas", "Courier New", Courier, mono, serif;
 	font-size: 12px;
-	background-color: #EFEFEF;
-	width: 99%;
+	background-color: #FFF;
 	overflow: auto;
 	margin: 18px 0 18px 0;
 	padding-top: 1px; /* adds a little border on top when controls are hidden */
@@ -40,7 +39,7 @@
 
 .dp-highlighter ol
 {
-	font-family: Courier, "Courier New", "Consolas", mono, serif;
+	font-family: Arial, serif;
 	list-style: decimal; /* for ie */
 	background-color: #fff;
 	margin: 0px 0px 1px 45px !important; /* 1px bottom margin seems to fix occasional Firefox scrolling */
@@ -98,7 +97,7 @@
 }
 .dp-highlighter ol li span
 {
-	color: black;
+	color: #666;
 	background-color: inherit;
 }
 
@@ -186,4 +185,4 @@
 .dp-highlighter .string { color: blue; background-color: inherit; }
 .dp-highlighter .keyword { color: #069; font-weight: bold; background-color: inherit; }
 .dp-highlighter .preprocessor { color: gray; background-color: inherit; }
-.dp-highlighter {overflow-y:hidden;border:1px solid #CCC;margin-left: 23px;}
+.dp-highlighter {overflow-y:hidden;margin-left: 23px;}
