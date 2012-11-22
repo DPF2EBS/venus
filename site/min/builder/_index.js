@@ -3,7 +3,7 @@
  */
 var MUB = {
     _uid : 0,
-    _minRoot : '/site/min/?',
+    _minRoot : '/min/?',
     /**
      * In a given array of strings, find the character they all have at
      * a particular index
