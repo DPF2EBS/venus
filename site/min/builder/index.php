@@ -124,43 +124,43 @@ h1 {margin-top:0;}
 </div>
 <ol id="sources" class="items">
    <li id="li0">
-   		<label><input type="checkbox" size="20" value="venus/lib/raphael/raphael-min.js">raphael.min.js</label>
+   		<label><input type="checkbox" size="20" value="js/raphael-min.js">raphael.min.js</label>
 		<span class="intro">Raphael.js是第三方库，我们基于此库来开发，所以这个是核心文件。</span>
    </li>
    <li id="li1">
-   		<label><input type="checkbox" size="20" value="venus/src/common/lang.js">lang.js</label>
+   		<label><input type="checkbox" size="20" value="js/lang.js">lang.js</label>
 		<span class="intro">Lang.js是基础的函数扩展库，比如常见的Array的each方法等。</span>
    </li> 
    <li id="li2">
-   		<label><input type="checkbox" size="20" value="venus/src/common/common.js">common.js</label>
+   		<label><input type="checkbox" size="20" value="js/common.js">common.js</label>
 		<span class="intro">Common.js是一些可视化工程所需的工具函数，比如getColor这样的函数获取随机的函数</span>
    </li>
 	<li id="li3">
-   		<label><input type="checkbox" size="20" value="venus/src/common/venus.js">venus.js</label>
+   		<label><input type="checkbox" size="20" value="js/venus.js">venus.js</label>
 		<span class="intro">Venus.js是venus命名空间和配置的定义。</span>
    </li>
    <li id="li4">
-   		<label><input type="checkbox" size="20" value="venus/src/common/customevent.js">customevent.js</label>
+   		<label><input type="checkbox" size="20" value="js/customevent.js">customevent.js</label>
 		<span class="intro">Customevent.js是关于svg图形的事件的部分实现。（目前还是很弱）</span>
    </li>
    <li id="li5">
-   		<label><input type="checkbox" size="20" value="venus/src/svg/svgchart.js">svgchart.js</label>
+   		<label><input type="checkbox" size="20" value="js/svgchart.js">svgchart.js</label>
 		<span class="intro">Svgchart.js是svg基础图形的总体实现步骤的代码实现，是架构和蓝图。</span>
    </li>
    <li id="li6">
-   		<label><input type="checkbox" size="20" value="venus/src/svg/types/line.js">line.js</label>
+   		<label><input type="checkbox" size="20" value="js/types/line.js">line.js</label>
 		<span class="intro">Line.js是线图绘制的具体实现。</span>
    </li>
    <li id="li7">
-   		<label><input type="checkbox" size="20" value="venus/src/svg/types/bar.js">bar.js</label>
+   		<label><input type="checkbox" size="20" value="js/types/bar.js">bar.js</label>
 		<span class="intro">Bar.js是柱状图绘制的具体实现。</span>
    </li>
    <li id="li8">
-   		<label><input type="checkbox" size="20" value="venus/src/svg/types/pie.js">pie.js</label>
+   		<label><input type="checkbox" size="20" value="js/types/pie.js">pie.js</label>
 		<span class="intro">Pie.js是饼图绘制的具体实现。</span>
    </li>
    <li id="li9">
-   		<label><input type="checkbox" size="20" value="venus/src/svg/types/dot.js">dot.js</label>
+   		<label><input type="checkbox" size="20" value="js/types/dot.js">dot.js</label>
 		<span class="intro">Dot.js是点图的绘制的具体实现。</span>
    </li> 
 </ol>
