@@ -81,7 +81,7 @@ body {background:url(../image/body.png) repeat-x; background-color:#EDEDEF; font
 .intro-panel {width:585px;margin-bottom:20px;margin-top: 20px;}
 .mark-panel {width:248px;margin-bottom:20px;margin-left:9px;margin-top:20px;border-right:1px solid #CCC;}
 .isay-top { background-position:-3257px 0;height:1px;overflow:hidden;}
-.isay-middle  {padding:0 2px 0 23px;background-position:-1015px 0;background-repeat:repeat-y;}
+.isay-middle  {padding:0 2px 0 45px;background-position:-1015px 0;background-repeat:repeat-y;}
 .isay-bottom {height:3px;overflow:hidden;background-position:-1649px 0;}
 
 .mark-panel .banner-box {padding:22px;}
