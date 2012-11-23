@@ -25,7 +25,7 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
                     <li><a href="index.html">首页</a></li>
                     <li><a href="api.html">接口文档</a></li>
                     <li><a href="svgpie.html">演示</a></li>
-                    <li class="J_menu"><a href="svgcase.html">案例</a></li>
+                    <li><a href="svgcase.html">案例</a></li>
                     <li><a href="min/builder/">下载</a></li>
                 </ul>
             </div>
@@ -44,74 +44,52 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（1）步骤一：需要依赖的js文件</h2>
+                        <h2>第一步：下载并添加所需js文件到你的html代码中</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            // 我们不需要样式，样式应该由你来定义
-            // 引入venus脚本文件
-            <script type="text/javascript" src="venus.js"></script>
-            </textarea>
+            <p class="details">（1）确认你下载的js文件含有如下：</p>
+            <ul class="needjs-list">
+                <li>raphael-min.js</li>
+                <li>venus.js</li>
+                <li>lang.js</li>
+                <li>common.js</li>
+                <li>customevent.js</li>
+                <li>svgchart_rebuild.js</li>
+                <li>line.js（或者bar.js、pie.js、dot.js中的一个或多个）</li>
+            </ul>
+            <p class="details notice">注意：如果你下载的是完整的打包文件，你只需svgchart.latest.min.js单独一个文件即可。</p>
+            <p class="details">（2）添加确认的js文件到html页面，如下图所示:</p>
+            <div class="details"><img src="image/needjs.png"/></div>
+            <p class="details">或者如下：</p>
+            <div class="details"><img src="image/onlyneedjs.png"/></div>
 
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（2）步骤二：准备好图表容器，数据和配置三个参数</h2>
+                        <h2>第二步：准备好图形容器，数据和配置参数（我们以线图为例）</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-                // 定义一个空的div
-                <div id="chart_container" class="chart-box"></div>
-                // 容器元素
-                var container = document.getElementById('chart_container');
-                // 展示所需数据
-                var data = [
-                    {data:10, label:"FF"},
-                    {data:80, label:"IE"},
-                    {data:60, label: "Chrome"},
-                    {data:10, label: "Ohter"},
-                    {data:40, label: "Safari"},
-                    {data:78, label: "Opera"},                ];
-                // 配置参数对象
-                var options = {
-                    width:930, height:400, margin:100,
-                    axis:{
-                        x: { ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera"] },
-                        y: { ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }
-                    },
-                    line: {
-                        hasDot: true,
-                        smooth: false,
-                        dotRadius: 8,
-                        shadow: false
-                    },
-                    legend:{
-                        position:["right", "top"],
-                        height: 200,
-                        itemType:"circle"
-                    }
-                };
-            </textarea>
-
+             
+            <p class="details">（1）在引入的所依赖的js文件后面添加自己的script标签</p>
+            <p class="details">（2）准备好图形显示的div块，如图：</p>
+            <div class="details"><img src="image/svgbox.png"/></div>
+            <p class="details">（3）coding图形生成代码，如图：</p>
+            <div class="details"><img src="image/svg.png"/></div>
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（3）步骤三：完成图形</h2>
+                        <h2>第三步：打开浏览器，看看图形吧～</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            // 最后new DPChart对象，就这么简单！
-            new Venus.CanvasChart(container, data, options);
-            </textarea>
-
+            <div class="details"><img style="border:1px solid #CCC;" src="image/line_chart.png"/></div>
         </div>
 
     </div>
@@ -142,7 +120,7 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
 		TG.app.toTop();
 	});
 	</script>
-    
+    <!--
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>
     <script class="javascript" src="Scripts/shBrushCss.js"></script>
@@ -150,5 +128,6 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
     <script class="javascript">
     	dp.SyntaxHighlighter.HighlightAll('code');
     </script>
+    -->
 </body>
 </html>

@@ -20,21 +20,9 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
             	<ul>
                 	<li><a href="index.html">首页</a></li>
                     <li><a href="api.html">接口文档</a></li>
-                    <li class="J_menu">
-						<a href="canvaspie.html" class="J_trigger">演示</a>
-						<ul class="demo-menu J_list Hide">
-							<li><a href="canvaspie.html">canvas</a></li>
-							<li><a href="svgpie.html">svg</a></li>
-						</ul>
-					</li>
-                    <li class="J_menu">
-						<a href="canvascase.html" class="J_trigger">案例</a>
-						<ul class="demo-menu J_list Hide">
-							<li><a href="canvascase.html">canvas</a></li>
-							<li><a href="svgcase.html">svg</a></li>
-						</ul>
-					</li>
-<li><a href="min/builder/">下载</a></li>
+                    <li><a href="svgpie.html">演示</a></li>
+                    <li><a href="svgcase.html" class="J_trigger">案例</a></li>
+					<li><a href="min/builder/">下载</a></li>
                 </ul>
             </div>
         </div>
@@ -45,13 +33,13 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
     		<div class="heatmap-left">
 
     			<div class="heatmap-item">
-    				<a href="javascript:void(0)" id="J_heatmap0" class="button-big orange">鼠标移动操作热力图(仅在虚线框区域内)</a>
+    				<a href="javascript:void(0)" id="J_heatmap0" class="btns">鼠标移动操作热力图(仅在虚线框区域内)</a>
 					<img src="image/iphone.png"/>
 					<canvas width="443" height="459" id="canvas0" class="canvas-chart0"></canvas>
     			</div>
 				
 				<div class="heatmap-item">
-    				<a href="javascript:void(0)" id="J_heatmap2" class="button-big orange">点击操作热力图(仅在虚线框区域内)</a>
+    				<a href="javascript:void(0)" id="J_heatmap2" class="btns">点击操作热力图(仅在虚线框区域内)</a>
 					<img src="image/ipad.png"/>
 					<canvas width="443" height="459" id="canvas2" class="canvas-chart2"></canvas>
     			</div>
@@ -60,13 +48,13 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
 		    <div class="heatmap-right">
 
 		    	<div class="heatmap-item">
-    				<a href="javascript:void(0)" id="J_heatmap1" class="button-big orange">随即生成热力图(仅在虚线框区域内)</a>
+    				<a href="javascript:void(0)" id="J_heatmap1" class="btns">随即生成热力图(仅在虚线框区域内)</a>
 					<img src="image/imac.png"/>
 					<canvas width="443" height="459" id="canvas1" class="canvas-chart1"></canvas>
     			</div>
 
     			<div class="heatmap-item">
-    				<a href="javascript:void(0)" id="J_heatmap4" class="button-big orange">根据数据生成热力图(仅在虚线框区域内)</a>
+    				<a href="javascript:void(0)" id="J_heatmap4" class="btns">根据数据生成热力图(仅在虚线框区域内)</a>
 					<img src="image/macbook.jpeg"/>
 					<canvas width="443" height="459" id="canvas4" class="canvas-chart4"></canvas>
     			</div>
@@ -100,7 +88,6 @@ var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trac
 	<script type="text/javascript" src="../src/heatmap/heatmap.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
-		Myra.app.dropMenu();
 		TG.app.toTop();
 		// 用户mouvemove动作
 		$('J_heatmap0').addEvent('click', function (e) {

@@ -182,7 +182,7 @@
 /* Language specific styles */
 
 .dp-highlighter .comment, .dp-highlighter .comments { color: #008200; background-color: inherit; }
-.dp-highlighter .string { color: blue; background-color: inherit; }
-.dp-highlighter .keyword { color: #069; font-weight: bold; background-color: inherit; }
+.dp-highlighter .string { color: #08C; background-color: inherit; }
+.dp-highlighter .keyword { color: #08C; background-color: inherit; }
 .dp-highlighter .preprocessor { color: gray; background-color: inherit; }
 .dp-highlighter {overflow-y:hidden;margin-left: 23px;}
