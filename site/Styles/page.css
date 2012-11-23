@@ -181,7 +181,6 @@ body { background:gainsboro url(../image/header-bg.png) top left repeat-x;backgr
 	text-decoration: none;
 	font: 14px/100% Arial, Helvetica, sans-serif;
 	padding: 8px 15px;
-	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 }
 .button-big {
 	zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */

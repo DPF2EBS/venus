@@ -2,7 +2,6 @@
 if (phpversion() < 5) {
     exit('Minify requires PHP5 or greater.');
 }
-
 // check for auto-encoding
 $encodeOutput = (function_exists('gzdeflate')
                  && !ini_get('zlib.output_compression'));
@@ -53,7 +52,7 @@ if (! isset($min_cachePath) && ! function_exists('sys_get_temp_dir')) {
 ob_start();
 ?>
 <!DOCTYPE html>
-<title>Minify URI Builder</title>
+<title>Venus，前端可视化方案</title>
 <script type="text/javascript">
 var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-36468754-1']);
@@ -70,10 +69,10 @@ h1 {margin-top:0;}
 .hide {display:none}
 .items{overflow:hidden;margin-left:13px;}
 .items li {height:40px;line-height:40px;background-color:#FFF;margin:10px;border-radius:4px;}
-.items label {background-color:#999;padding-left:20px;cursor:pointer;color:#FFF;margin-right:30px;width:130px;display:inline-block;border-top-left-radius:4px;border-bottom-left-radius: 4px;}
+.items label {background-color:#999;padding-left:20px;cursor:pointer;color:#FFF;margin-right:30px;width:150px;display:inline-block;border-top-left-radius:4px;border-bottom-left-radius: 4px;}
 .link-me {margin:10px 20px;margin-bottom:0px;}
-.ext {text-decoration:none;color:#66C;}
-.ext:hover {background-color:#66C;color:#FFF;}
+.ext {text-decoration:none;color:#08C;}
+.ext:hover {background-color:#08C;color:#FFF;}
 .intro {color:#666;}
 </style>
 <body>
@@ -110,35 +109,35 @@ h1 {margin-top:0;}
         <div class="isay-top pngfix"></div>
         <div class="isay-middle pngfix">
             <div class="intro-box clearfix">
-                <h2>SVG下载区</h2>
+                <h2>SVG下载区<strong style="color:#D54E21;">（必须包含前六项）</strong></h2>
             </div>
         </div>
 		<div class="isay-bottom pngfix"></div>
 </div>
 <ol id="sources" class="items">
    <li id="li0">
-   		<label><input type="checkbox" size="20" value="js/raphael-min.js">&nbsp;raphael.min.js</label>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/raphael-min.js">&nbsp;raphael.min.js</label>
 		<span class="intro">Raphael.js是第三方库，我们基于此库来开发，所以这个是核心文件。</span>
    </li>
    <li id="li1">
-   		<label><input type="checkbox" size="20" value="js/lang.js">&nbsp;lang.js</label>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/lang.js">&nbsp;lang.js</label>
 		<span class="intro">Lang.js是基础的函数扩展库，比如常见的Array的each方法等。</span>
    </li> 
    <li id="li2">
-   		<label><input type="checkbox" size="20" value="js/common.js">&nbsp;common.js</label>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/common.js">&nbsp;common.js</label>
 		<span class="intro">Common.js是一些可视化工程所需的工具函数，比如getColor这样的函数获取随机的函数</span>
    </li>
 	<li id="li3">
-   		<label><input type="checkbox" size="20" value="js/venus.js">&nbsp;venus.js</label>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/venus.js">&nbsp;venus.js</label>
 		<span class="intro">Venus.js是venus命名空间和配置的定义。</span>
    </li>
    <li id="li4">
-   		<label><input type="checkbox" size="20" value="js/customevent.js">&nbsp;customevent.js</label>
-		<span class="intro">Customevent.js是关于svg图形的事件的部分实现。（目前还是很弱）</span>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/customevent.js">&nbsp;customevent.js</label>
+		<span class="intro">Customevent.js是关于svg图形的事件的部分实现。</span>
    </li>
    <li id="li5">
-   		<label><input type="checkbox" size="20" value="js/svgchart.js">&nbsp;svgchart.js</label>
-		<span class="intro">Svgchart.js是svg基础图形的总体实现步骤的代码实现，是架构和蓝图。</span>
+   		<label><input type="checkbox" checked="checked" size="20" value="js/svgchart_rebuild.js">&nbsp;svgchart_rebuild.js</label>
+		<span class="intro">Svgchart_rebuild.js是svg基础图形的总体实现步骤的代码实现，是架构和蓝图。</span>
    </li>
    <li id="li6">
    		<label><input type="checkbox" size="20" value="js/types/line.js">&nbsp;line.js</label>
@@ -159,11 +158,15 @@ h1 {margin-top:0;}
 </ol>
 <div id=bmUris></div>
 
-<p><button id="update" class="button white">选择项合并下载</button></p>
-
-<div id="results" class="link-me hide">
+<p style="margin:10px 20px;"><button id="update" class="button white">确定所选合并JS</button>
+<span id="results" class="link-me hide">
     <a id="uriA" class="ext">/min</a>
-</div>
+</span>
+</p>
+
+
+<p class="details">如果你想使用四种类型（饼图，线图，柱状图，点图），也可以直接下载完整压缩版，如下按钮：</p>
+<p style="margin:20px;"><a href="test.php" class="button white">一键下载svgchart完整压缩版</a></p>
 </div>
 <div class="footer footer-static clearfix">
   <ul>

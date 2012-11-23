@@ -61,14 +61,6 @@ var MUB = {
         var sources = [],
             ext = false,
             fail = false;
-		var downloadFile = function (url) {
-				try{
-					var eleF = document.createElement('iframe');
-					eleF.src = url;
-					eleF.style.display = 'none';
-					document.body.appendChild(eleF);
-				} catch(e) { }
-		 };
         $('#sources input:checked').each(function (e) {
             var m, val;
             if (! fail && this.value && (m = this.value.match(/\.(css|js)$/))) {
@@ -92,7 +84,7 @@ var MUB = {
         var uri = MUB.getBestUri(sources),
             uriH = uri.replace(/</, '&lt;').replace(/>/, '&gt;').replace(/&/, '&amp;')
 		$('#uriA').html('点击我下载吧~');
-		$('#uriA').attr('href',uri);
+		$('#uriA').attr('href','combine.php?personaljs=http://venus.dp' + encodeURIComponent(uri));
         $('#results').show();
     },
     /**
@@ -100,6 +92,9 @@ var MUB = {
      */
     init : function () {
 		$('#update').click(MUB.update);
+        $('.items li input').click(function() {
+            $('#results').hide();
+        });
     }
 };
 $(MUB.init);
