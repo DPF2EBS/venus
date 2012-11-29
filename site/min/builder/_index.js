@@ -109,6 +109,7 @@ var MUB = {
                 }
                 basePic.attr('checked', true);
             } else {
+                svgPic.attr('checked', false);
                 if (topoPic.attr('checked') == 'checked') {
                     updata.attr('data', topoPic.attr('data-type'));
                 } else {
@@ -128,6 +129,7 @@ var MUB = {
                 }
                 basePic.attr('checked', true);
             } else {
+                topoPic.attr('checked', false);
                 if (svgPic.attr('checked') == 'checked') {
                     updata.attr('data', svgPic.attr('data-type'));
                 } else {

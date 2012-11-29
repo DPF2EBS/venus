@@ -105,15 +105,6 @@ h1 {margin-top:0;}
 <?php endIf; ?>
 
 <div id="app" class="main">
-<div class="intro-panel">
-        <div class="isay-top pngfix"></div>
-        <div class="isay-middle pngfix">
-            <div class="intro-box clearfix">
-                <h2>SVG下载区<strong style="color:#D54E21;">（必须包含前六项）</strong></h2>
-            </div>
-        </div>
-		<div class="isay-bottom pngfix"></div>
-</div>
 <ol id="sources" class="items">
    <li id="li0" class="Hide">
    		<label><input id="J_base" type="checkbox" checked="checked" size="20" value="js/base.min.js">&nbsp;venus基础图形</label>
