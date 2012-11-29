@@ -69,7 +69,7 @@ h1 {margin-top:0;}
 .hide {display:none}
 .items{overflow:hidden;margin-left:13px;}
 .items li {height:40px;line-height:40px;background-color:#FFF;margin:10px;border-radius:4px;}
-.items label {background-color:#999;padding-left:20px;cursor:pointer;color:#FFF;margin-right:30px;width:150px;display:inline-block;border-top-left-radius:4px;border-bottom-left-radius: 4px;}
+.items label {background-color:#999;padding-left:20px;cursor:pointer;color:#FFF;margin-right:30px;width:110px;display:inline-block;border-top-left-radius:4px;border-bottom-left-radius: 4px;}
 .link-me {margin:10px 20px;margin-bottom:0px;}
 .ext {text-decoration:none;color:#08C;}
 .ext:hover {background-color:#08C;color:#FFF;}
@@ -107,20 +107,20 @@ h1 {margin-top:0;}
 <div id="app" class="main">
 <ol id="sources" class="items">
    <li id="li0" class="Hide">
-   		<label><input id="J_base" type="checkbox" checked="checked" size="20" value="js/base.min.js">&nbsp;venus基础图形</label>
-		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
+   		<label><input id="J_base" type="checkbox" checked="checked" size="20" value="js/base.min.js">&nbsp;基础</label>
+		<span class="intro">基础</span>
    </li>
    <li id="li1">
-   		<label><input id="J_svg" type="checkbox" checked="checked" size="20" value="js/svgchart.min.js" data-type="svgchart.min.js">&nbsp;venus基础图形</label>
+   		<label><input id="J_svg" type="checkbox" checked="checked" size="20" value="js/svgchart.min.js" data-type="svgchart.min.js">&nbsp;基础图形</label>
 		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
    </li> 
    <li id="li2">
       <label><input id="J_topo" type="checkbox" size="20" value="js/topology.min.js" data-type="topology.min.js">&nbsp;拓扑图</label>
-    <span class="intro">一种类似于树形的图形。</span>
+    <span class="intro">拓扑图是一种使用svg技术，展示节点间层级关系的可视化方案。</span>
    </li>
    <li id="li3">
       <label><input id="J_heatmap" type="checkbox" size="20" value="js/heatmap.js" data-type="heatmap.min.js">&nbsp;热力图</label>
-    <span class="intro">一种展示热点区域的图形。</span>
+    <span class="intro">热力图是一个基于html5canvas实现，可以根据您提供的数据生成热力图的类库，它还能根据数据的变更动态更新。</span>
    </li>
 </ol>
 <div id=bmUris></div>
