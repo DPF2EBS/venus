@@ -99,30 +99,40 @@ var MUB = {
             updata = $('#update');
         svgPic.click(function() {
             if(this.checked) {
-                if (topoPic.attr('checked') == 'checked') {
-                    topoPic.attr('checked', false);
-                };
                 if (heatmap.attr('checked') == 'checked') {
                     heatmap.attr('checked', false);
                 }
+                if(topoPic.attr('checked') == 'checked') {
+                    updata.attr('data', 'venus.min.js');
+                } else {
+                    updata.attr('data', svgPic.attr('data-type'));
+                }
                 basePic.attr('checked', true);
-                updata.attr('data', svgPic.attr('data-type'));
             } else {
-                basePic.attr('checked', false);
+                if (topoPic.attr('checked') == 'checked') {
+                    updata.attr('data', topoPic.attr('data-type'));
+                } else {
+                    basePic.attr('checked', false);
+                }
             }
         });
         topoPic.click(function() {
             if(this.checked) {
-                if (svgPic.attr('checked') == 'checked') {
-                    svgPic.attr('checked', false);
-                };
                 if (heatmap.attr('checked') == 'checked') {
                     heatmap.attr('checked', false);
                 }
+                if (svgPic.attr('checked') == 'checked') {
+                    updata.attr('data', 'venus.min.js');
+                } else {
+                    updata.attr('data', topoPic.attr('data-type'));
+                }
                 basePic.attr('checked', true);
-                updata.attr('data', topoPic.attr('data-type'));
             } else {
-                basePic.attr('checked', false);
+                if (svgPic.attr('checked') == 'checked') {
+                    updata.attr('data', svgPic.attr('data-type'));
+                } else {
+                    basePic.attr('checked', false);
+                }
             }
         });
         heatmap.click(function() {
