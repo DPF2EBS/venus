@@ -1,0 +1,6 @@
+;
+(function () {
+    Venus.Topology = {
+
+    };
+})();

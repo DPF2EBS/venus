@@ -362,3 +362,5 @@ body { background:gainsboro url(../image/header-bg.png) top left repeat-x;backgr
 .needjs-list {margin-left: 90px;}
 .needjs-list li {height: 24px;line-height: 24px;color: #08C;}
 .notice {color:#D54E21;font-size: 12px;}
+.download-href {text-decoration: none;color: #D54E21;}
+.download-href:hover {color: red;}

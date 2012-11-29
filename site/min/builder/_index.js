@@ -91,6 +91,47 @@ var MUB = {
      * Runs on DOMready
      */
     init : function () {
+        var basePic = $('#J_base'),
+            svgPic = $('#J_svg'),
+            topoPic = $('#J_topo'),
+            heatmap = $('#J_heatmap');
+        svgPic.click(function() {
+            if(this.checked) {
+                if (topoPic.attr('checked') == 'checked') {
+                    topoPic.attr('checked', false);
+                };
+                if (heatmap.attr('checked') == 'checked') {
+                    heatmap.attr('checked', false);
+                }
+                basePic.attr('checked', true);
+            } else {
+                basePic.attr('checked', false);
+            }
+        });
+        topoPic.click(function() {
+            if(this.checked) {
+                if (svgPic.attr('checked') == 'checked') {
+                    svgPic.attr('checked', false);
+                };
+                if (heatmap.attr('checked') == 'checked') {
+                    heatmap.attr('checked', false);
+                }
+                basePic.attr('checked', true);
+            } else {
+                basePic.attr('checked', false);
+            }
+        });
+        heatmap.click(function() {
+            if(this.checked) {
+                if (svgPic.attr('checked') == 'checked') {
+                    svgPic.attr('checked', false);
+                };
+                if (topoPic.attr('checked') == 'checked') {
+                    topoPic.attr('checked', false);
+                }
+                basePic.attr('checked', false);
+            }
+        });
 		$('#update').click(MUB.update);
         $('.items li input').click(function() {
             $('#results').hide();

@@ -115,58 +115,31 @@ h1 {margin-top:0;}
 		<div class="isay-bottom pngfix"></div>
 </div>
 <ol id="sources" class="items">
-   <li id="li0">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/raphael-min.js">&nbsp;raphael.min.js</label>
-		<span class="intro">Raphael.js是第三方库，我们基于此库来开发，所以这个是核心文件。</span>
+   <li id="li0" class="Hide">
+   		<label><input id="J_base" type="checkbox" checked="checked" size="20" value="js/base.min.js">&nbsp;venus基础图形</label>
+		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
    </li>
    <li id="li1">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/lang.js">&nbsp;lang.js</label>
-		<span class="intro">Lang.js是基础的函数扩展库，比如常见的Array的each方法等。</span>
+   		<label><input id="J_svg" type="checkbox" checked="checked" size="20" value="js/svgchart.min.js">&nbsp;venus基础图形</label>
+		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
    </li> 
    <li id="li2">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/common.js">&nbsp;common.js</label>
-		<span class="intro">Common.js是一些可视化工程所需的工具函数，比如getColor这样的函数获取随机的函数</span>
+      <label><input id="J_topo" type="checkbox" size="20" value="js/topology.min.js">&nbsp;拓扑图</label>
+    <span class="intro">一种类似于树形的图形。</span>
    </li>
-	<li id="li3">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/venus.js">&nbsp;venus.js</label>
-		<span class="intro">Venus.js是venus命名空间和配置的定义。</span>
+   <li id="li3">
+      <label><input id="J_heatmap" type="checkbox" size="20" value="js/heatmap.js">&nbsp;热力图</label>
+    <span class="intro">一种展示热点区域的图形。</span>
    </li>
-   <li id="li4">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/customevent.js">&nbsp;customevent.js</label>
-		<span class="intro">Customevent.js是关于svg图形的事件的部分实现。</span>
-   </li>
-   <li id="li5">
-   		<label><input type="checkbox" checked="checked" size="20" value="js/svgchart_rebuild.js">&nbsp;svgchart_rebuild.js</label>
-		<span class="intro">Svgchart_rebuild.js是svg基础图形的总体实现步骤的代码实现，是架构和蓝图。</span>
-   </li>
-   <li id="li6">
-   		<label><input type="checkbox" size="20" value="js/types/line.js">&nbsp;line.js</label>
-		<span class="intro">Line.js是线图绘制的具体实现。</span>
-   </li>
-   <li id="li7">
-   		<label><input type="checkbox" size="20" value="js/types/bar.js">&nbsp;bar.js</label>
-		<span class="intro">Bar.js是柱状图绘制的具体实现。</span>
-   </li>
-   <li id="li8">
-   		<label><input type="checkbox" size="20" value="js/types/pie.js">&nbsp;pie.js</label>
-		<span class="intro">Pie.js是饼图绘制的具体实现。</span>
-   </li>
-   <li id="li9">
-   		<label><input type="checkbox" size="20" value="js/types/dot.js">&nbsp;dot.js</label>
-		<span class="intro">Dot.js是点图的绘制的具体实现。</span>
-   </li> 
 </ol>
 <div id=bmUris></div>
 
-<p style="margin:10px 20px;"><button id="update" class="button white">确定所选合并JS</button>
+<p style="margin:10px 20px;"><button id="update" class="button white">确定所选图形并下载</button>
 <span id="results" class="link-me hide">
     <a id="uriA" class="ext">/min</a>
 </span>
 </p>
 
-
-<p class="details">如果你想使用四种类型（饼图，线图，柱状图，点图），也可以直接下载完整压缩版，如下按钮：</p>
-<p style="margin:20px;"><a href="test.php" class="button white">一键下载svgchart完整压缩版</a></p>
 </div>
 <div class="footer footer-static clearfix">
   <ul>
