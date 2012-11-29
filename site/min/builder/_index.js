@@ -64,7 +64,6 @@ var MUB = {
             type;
         $('#sources input:checked').each(function (e) {
             var m, val;
-            console.log(type);
             if (! fail && this.value && (m = this.value.match(/\.(css|js)$/))) {
                 var thisExt = m[1];
                 if (ext === false)
