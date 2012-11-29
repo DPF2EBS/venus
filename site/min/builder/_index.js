@@ -60,9 +60,11 @@ var MUB = {
     update : function () {
         var sources = [],
             ext = false,
-            fail = false;
+            fail = false,
+            type;
         $('#sources input:checked').each(function (e) {
             var m, val;
+            console.log(type);
             if (! fail && this.value && (m = this.value.match(/\.(css|js)$/))) {
                 var thisExt = m[1];
                 if (ext === false)
@@ -84,7 +86,7 @@ var MUB = {
         var uri = MUB.getBestUri(sources),
             uriH = uri.replace(/</, '&lt;').replace(/>/, '&gt;').replace(/&/, '&amp;')
 		$('#uriA').html('点击我下载吧~');
-		$('#uriA').attr('href','combine.php?personaljs=http://venus.dp' + encodeURIComponent(uri));
+		$('#uriA').attr('href','combine.php?personaljs=http://venus.dp' + encodeURIComponent(uri) + '&type=' + $('#update').attr('data'));
         $('#results').show();
     },
     /**
@@ -94,7 +96,8 @@ var MUB = {
         var basePic = $('#J_base'),
             svgPic = $('#J_svg'),
             topoPic = $('#J_topo'),
-            heatmap = $('#J_heatmap');
+            heatmap = $('#J_heatmap'),
+            updata = $('#update');
         svgPic.click(function() {
             if(this.checked) {
                 if (topoPic.attr('checked') == 'checked') {
@@ -104,6 +107,7 @@ var MUB = {
                     heatmap.attr('checked', false);
                 }
                 basePic.attr('checked', true);
+                updata.attr('data', svgPic.attr('data-type'));
             } else {
                 basePic.attr('checked', false);
             }
@@ -117,6 +121,7 @@ var MUB = {
                     heatmap.attr('checked', false);
                 }
                 basePic.attr('checked', true);
+                updata.attr('data', topoPic.attr('data-type'));
             } else {
                 basePic.attr('checked', false);
             }
@@ -130,6 +135,7 @@ var MUB = {
                     topoPic.attr('checked', false);
                 }
                 basePic.attr('checked', false);
+                updata.attr('data', heatmap.attr('data-type'));
             }
         });
 		$('#update').click(MUB.update);

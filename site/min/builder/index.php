@@ -120,21 +120,21 @@ h1 {margin-top:0;}
 		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
    </li>
    <li id="li1">
-   		<label><input id="J_svg" type="checkbox" checked="checked" size="20" value="js/svgchart.min.js">&nbsp;venus基础图形</label>
+   		<label><input id="J_svg" type="checkbox" checked="checked" size="20" value="js/svgchart.min.js" data-type="svgchart.min.js">&nbsp;venus基础图形</label>
 		<span class="intro">基础图形包含柱状图、线状图、饼图和点图四种类型的图形</span>
    </li> 
    <li id="li2">
-      <label><input id="J_topo" type="checkbox" size="20" value="js/topology.min.js">&nbsp;拓扑图</label>
+      <label><input id="J_topo" type="checkbox" size="20" value="js/topology.min.js" data-type="topology.min.js">&nbsp;拓扑图</label>
     <span class="intro">一种类似于树形的图形。</span>
    </li>
    <li id="li3">
-      <label><input id="J_heatmap" type="checkbox" size="20" value="js/heatmap.js">&nbsp;热力图</label>
+      <label><input id="J_heatmap" type="checkbox" size="20" value="js/heatmap.js" data-type="heatmap.min.js">&nbsp;热力图</label>
     <span class="intro">一种展示热点区域的图形。</span>
    </li>
 </ol>
 <div id=bmUris></div>
 
-<p style="margin:10px 20px;"><button id="update" class="button white">确定所选图形并下载</button>
+<p style="margin:10px 20px;"><button id="update" class="button white" data="svgchart.min.js">确定所选图形并下载</button>
 <span id="results" class="link-me hide">
     <a id="uriA" class="ext">/min</a>
 </span>
