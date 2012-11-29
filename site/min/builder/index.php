@@ -116,11 +116,11 @@ h1 {margin-top:0;}
    </li> 
    <li id="li2">
       <label><input id="J_topo" type="checkbox" size="20" value="js/topology.min.js" data-type="topology.min.js">&nbsp;拓扑图</label>
-    <span class="intro">拓扑图是一种使用svg技术，展示节点间层级关系的可视化方案。</span>
+    <span class="intro">拓扑图是一种使用svg技术，展示节点间层级关系的可视化方案</span>
    </li>
    <li id="li3">
       <label><input id="J_heatmap" type="checkbox" size="20" value="js/heatmap.js" data-type="heatmap.min.js">&nbsp;热力图</label>
-    <span class="intro">热力图是一个基于html5canvas实现，可以根据您提供的数据生成热力图的类库，它还能根据数据的变更动态更新。</span>
+    <span class="intro">热力图是一个基于html5canvas实现，可以根据您提供的数据生成热力图的类库，它还能根据数据的变更动态更新</span>
    </li>
 </ol>
 <div id=bmUris></div>
