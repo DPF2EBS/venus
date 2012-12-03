@@ -57,7 +57,7 @@
         position:function(x,y){
             return Node.types[this.type].position.call(this,x, y);
         },
-        highlight:function(){
+        highlight:function(color){
             var attr = {
                     'stroke':'#FF6600',
                     'stroke-width':2

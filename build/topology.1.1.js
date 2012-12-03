@@ -491,9 +491,9 @@ Venus.config={
         position:function(x,y){
             return Node.types[this.type].position.call(this,x, y);
         },
-        highlight:function(){
+        highlight:function(color){
             var attr = {
-                    'stroke':'#D02090',
+                    'stroke':'#FF6600',
                     'stroke-width':2
                 };
             //high light edges
@@ -890,8 +890,14 @@ Venus.config={
                     2:'#7CFC00',
                     3:'#B1C9ED'
                 },
+                edgeColor:{
+                    'normal':'#999',
+                    'error':'red',
+                    'focus':'#FF6600'
+                },
                 badStatus:[],
-                align:'left',
+                align:'middle', //or left
+                defaultView:"",
                 singleMax:4,
                 edgeType:STRAITLINE,
                 enableController:true, //enable the controller or not
@@ -1362,10 +1368,12 @@ Venus.config={
                     _edges = stage.set(),
                     layers = graph.resultLayers,
                     max = options.singleMax,
-                    right = 100;
+                    right = 100,
+                    minLeft = 0;
 
                 if (i == 0) {
-                    var maxLengthInLayer ; //max count of nodes on layer
+                    var maxLengthInLayer , //max count of nodes on layer
+                        lastHeight ;
 
                     maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
                         return layer.length
@@ -1388,7 +1396,7 @@ Venus.config={
                         var startX = options.align=="left"? options.nodeRadius: (chartWidth - (layer.length - 1) * width) / 2;
                         layer.forEach(function (node, j) {
                             var x = startX + j * width,
-                                y = i * height + options.padding;
+                                y = options.padding+ height*i;
 
                             var color = options.colorMap[node.info.status] || 'green',
                                 rgb = Raphael.getRGB(color),
@@ -1404,15 +1412,17 @@ Venus.config={
                             _texts.push(_text);
                         });
                     });
+
                 }else{
                     if (layers.length > 1) {
+                        //多层
                         layers.forEach(function(layer,i){
                             var startX = (options.align == "left" ? -options.nodeRadius : -(chartWidth - (layer.length - 1) * width) / 2)-right,
                                 startY = currentY;
                             layer.forEach(function (node, j) {
                                 var x = startX - j * width,
                                     y =  startY ;
-
+                                minLeft = Math.min(minLeft, x);
                                 var color = options.colorMap[node.info.status] || 'green',
                                     rgb = Raphael.getRGB(color),
                                     hsl = Raphael.rgb2hsl(rgb.r, rgb.g, rgb.b),
@@ -1429,10 +1439,13 @@ Venus.config={
                             currentY += height;
                         });
                     }else{
+                        //单独节点
                         if (layers[0] && layers[0][0]) {
                             var node = layers[0][0],
                                 x = -options.nodeRadius  -(currentIndex % max) * width - right ,
                                 y = height * Math.floor(currentIndex / max) + currentY;
+
+                            minLeft = Math.min(minLeft,x);
 
                             var _circle =  drawNode(node, x, y);
                             _circles.push(_circle);
@@ -1443,6 +1456,14 @@ Venus.config={
                         }
                     }
                 }
+
+                if(options.defaultView=="all"){
+                    //显示全部图形，不显示最大的图
+                    self.transformX = maxLengthInLayer - options.nodeRadius;//self.options.width / 2 - node.position().x;
+                    self.transformY = self.transformX ||0;
+                    self.group.transform('T' + self.transformX  + "," + self.transformY );
+                }
+
                 graph.relation = relation;
                 graph.nodeElements  = _circles;
                 graph.textElements  = _texts;
@@ -1493,9 +1514,8 @@ Venus.config={
                     for(var k= 0,length=this.graphs[i].resultLayers[j].length;k<length;k++){
                         var node = this.graphs[i].resultLayers[j][k];
                         if(self.options.badStatus.indexOf(node.info.status)!==-1){
-                            self.transformX = 0;//self.options.width / 2 - node.position().x;
                             self.transformY = -node.position().y + self.options.nodeRadius;
-                            self.group.transform('T' + self.transformX  + "," + self.transformY );
+                            self.group.transform('T' + (self.transformX||0)  + "," + self.transformY );
                             return;
                         }
                     }
@@ -1584,6 +1604,8 @@ Venus.config={
                 x2 = parseInt(pos2.x),
                 y2 = parseInt(pos2.y),
                 options = this.options,
+                normal = options.edgeColor.normal,
+                error = options.edgeColor.error,
                 path;
 
             if (options.edgeType == POLYLINE && y1 < y2) {
@@ -1611,21 +1633,21 @@ Venus.config={
 
             edge.arrow  = (edge.arrow || paper.path()).attr({
                 path:path.arrowPath,
-                'fill':'#000',
+                'fill':normal,
                 stroke:'none'
             });
 
             edge.line= (edge.line || paper.path()).attr({
                 'path':path.path,
                 'stroke-width':options.arrowWidth,
-                'stroke':'#000'
+                'stroke':normal
             });
 
             edge.line.transform('R' + path.alpha + "," + path.x + "," + path.y);
             edge.arrow.transform('R' + path.alpha + "," + path.x + "," + path.y);
             if (y1 > y2) {
-                edge.arrow.attr('fill', 'red');
-                edge.line.attr('stroke', 'red');
+                edge.arrow.attr('fill', error);
+                edge.line.attr('stroke', error);
             }
         },
         polyLinePath:function (x1, y1, x2, y2,xOffset, yOffset) {
@@ -1713,6 +1735,8 @@ Venus.config={
         },
         highlightParents:function(node){
             var parents = [];
+            var color = this.options.edgeColor;
+
 
             function h(n) {
                 if (parents.indexOf(n) !== -1) {
@@ -1720,18 +1744,20 @@ Venus.config={
                     return false;
                 }
                 parents.push(n);
-                n.highlight();
+                n.highlight(color.focus);
                 n.parentsEdges.forEach(function (edge) {
                     edge.viewCache = {
                         arrow:{
                             'fill':edge.arrow.attr('fill')
                         },
                         line:{
-                            'stroke':edge.line.attr('stroke')
+                            'stroke':edge.line.attr('stroke'),
+                            'stroke-width':edge.line.attr('stroke-width')
                         }
                     };
-                    edge.arrow.attr('fill', '#D02090');
-                    edge.line.attr('stroke', '#D02090');
+                    edge.arrow.attr('fill', color.focus);
+                    edge.line.attr('stroke',  color.focus);
+                    edge.line.attr('stroke-width', 2);
                 });
                 n.parents.forEach(function (p) {
                     h(p);
