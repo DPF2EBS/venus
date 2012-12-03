@@ -2,7 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Venus Show Stage</title>
+<title>Venus，前端可视化方案</title>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36468754-1']);
+  _gaq.push(['_trackPageview']);
+var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trackPageview:vga};
+</script>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 </head>
@@ -10,14 +16,14 @@
 
 	<div class="header">
     	<div class="header-cont clearfix">
-            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <a class="header-logo" href="index.html"><img src="image/logonew.png" /></a>
             <div class="header-nav">
             	<ul>
                     <li><a href="index.html">首页</a></li>
                     <li><a href="api.html">接口文档</a></li>
                     <li><a href="svgpie.html">演示</a></li>
                     <li class="J_menu"><a href="svgcase.html">案例</a></li>
-                    <li><a href="download.html" target="_blank">下载</a></li>
+                    <li><a href="min/builder/">下载</a></li>
                 </ul>
             </div>
         </div>
@@ -93,9 +99,16 @@
 	</div>
 	<!-- footer ends -->
 	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript">
+	 (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
 	<script type="text/javascript" src="Scripts/g.mt.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
-    <script type="text/javascript" src="http://venus.dp/build/svgchart.latest.js"></script>
+    <script type="text/javascript" src="../build/svgchart.latest.js"></script>
 	<script type="text/javascript" src="../app/hippo/convert.js"></script>
 	<script type="text/javascript" src="Scripts/svgcase.js"></script>
 	<script type="text/javascript">
@@ -104,14 +117,5 @@
 		TG.app.toTop();
 	});
 	</script>
-	<!--
-    <script class="javascript" src="Scripts/shCore.js"></script>
-    <script class="javascript" src="Scripts/shBrushJScript.js"></script>
-    <script class="javascript" src="Scripts/shBrushCss.js"></script>
-
-    <script class="javascript">
-    	dp.SyntaxHighlighter.HighlightAll('code');
-    </script>
-	-->
 </body>
 </html>

@@ -2,21 +2,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Venus Show Stage</title>
+<title>Venus，前端可视化方案</title>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36468754-1']);
+  _gaq.push(['_trackPageview']);
+var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trackPageview:vga};
+</script>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 </head>
 <body>
 	<div class="header">
     	<div class="header-cont clearfix">
-            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <a class="header-logo" href="index.html"><img src="image/logonew.png" /></a>
             <div class="header-nav">
             	<ul>
                     <li><a href="index.html">首页</a></li>
                     <li><a href="api.html">接口文档</a></li>
                     <li><a href="svgpie.html">演示</a></li>
                     <li class="J_menu"><a href="svgcase.html">案例</a></li>
-                    <li><a href="download.html" target="_blank">下载</a></li>
+                    <li><a href="min/builder/">下载</a></li>
                 </ul>
             </div>
         </div>
@@ -28,6 +34,8 @@
 			<li><a href="svgline.html" class="btns">线状图</a></li>
 			<li><a href="svgdot.html" class="btns">点状图</a></li>
 			<li><a href="svgbar.html" class="btns">柱状图</a></li>
+			<li><a href="../app/darkbat/topology.html" class="btns" target="_blank">拓扑图</a></li>
+			<li><a href="heatmap.html" class="btns" target="_blank">热力图</a></li>
 		</ul>
     </div>
     
@@ -59,7 +67,7 @@
 			</ul>
 			</div>
 			
-			<h3 class="toggler last"><a href="javascript:void(0)">设置图例</a></h3>
+			<h3 class="toggler"><a href="javascript:void(0)">设置图例</a></h3>
 			<div class="accordion">
 			<ul>
 			<li>
@@ -140,6 +148,13 @@
 	</div>
 	<!-- footer ends -->
 	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript">
+	 (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
 	<script type="text/javascript" src="Scripts/g.mt.js"></script>
     <script type="text/javascript" src="Scripts/accordion.js"></script>
     <script type="text/javascript" src="../build/svgchart.latest.min.js"></script>

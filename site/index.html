@@ -2,7 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Venus Show Stage</title>
+<title>Venus，前端可视化方案</title>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36468754-1']);
+  _gaq.push(['_trackPageview']);
+var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trackPageview:vga};
+</script>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 <!--[if IE 6]>
@@ -13,14 +19,14 @@
 <body>
 	<div class="header">
     	<div class="header-cont clearfix">
-            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <a class="header-logo" href="index.html"><img src="image/logonew.png" /></a>
             <div class="header-nav">
             	<ul>
                 	<li><a href="index.html">首页</a></li>
-                    <li><a href="api.html">接口文档</a></li>
-                    <li><a href="svgpie.html">演示</a></li>
-                    <li class="J_menu"><a href="svgcase.html">案例</a></li>
-					<li><a href="download.html" target="_blank">下载</a></li>
+                    <li><a href="api.html" onclick="pageTracker._trackPageview('venus_api_doc');">接口文档</a></li>
+                    <li><a href="svgpie.html" onclick="pageTracker._trackPageview('venus_demo');">演示</a></li>
+                    <li class="J_menu"><a href="svgcase.html" onclick="pageTracker._trackPageview('venus_case');">案例</a></li>
+					<li><a href="min/builder/" onclick="pageTracker._trackPageview('venus_download');">下载</a></li>
                 </ul>
 		 </div>
 		</div>
@@ -70,39 +76,6 @@
 
 		</div>
 		<div class="right-main">
-			<div class="m-menu">
-				<div class="menu-top pngfix"></div>
-				<div class="menu-middle clearfix pngfix">
-					<ul class="menu-list clearfix">
-						<li class="first"><a target="_blank" href="http://www.kineticjs.com/">KineticJS</a></li>
-						<li><a target="_blank" href="http://raphaeljs.com/">RaphaelJS</a></li>
-						<li><a target="_blank" href="http://datavlab.org/">淘宝可视化</a></li>
-                        <li><a target="_blank" href="http://f2e.dp/blog/">点评前端博客</a></li>
-                        <li><a target="_blank" href="http://f2e.dp/wiki/">点评前端wiki</a></li>
-                        <li><a target="_blank" href="https://bitbucket.org/island205/venus">Venus Git</a></li>
-					</ul>
-				</div>
-				<div class="menu-bottom pngfix"></div>
-			</div>
-			<!-- mark begins -->
-			<div class="mark-panel">
-				<div class="isay-top pngfix"></div>
-				<div class="isay-middle pngfix">
-					<div class="mark-box clearfix">
-						<h2>快捷标签</h2>
-						<div class="mark-cont">
-							<ul class="mark-list">
-								<li><a href="svgpie.html">svg饼图</a></li>
-								<li><a href="svgline.html">svg线图</a></li>
-								<li><a href="svgdot.html">svg点图</a></li>
-								<li><a href="svgbar.html">svg柱状图</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-				<div class="isay-bottom pngfix"></div>
-			</div>
-			
 
 			<div class="mark-panel">
 				<div class="isay-top pngfix"></div>
@@ -129,6 +102,42 @@
 				</div>
 				<div class="isay-bottom pngfix"></div>
 			</div>
+
+			<div class="mark-panel">
+				<div class="isay-top pngfix"></div>
+				<div class="isay-middle pngfix">
+					<div class="mark-box clearfix">
+						<h2>快捷标签</h2>
+						<div class="mark-cont">
+							<ul class="mark-list">
+								<li><a href="svgpie.html">svg饼图</a></li>
+								<li><a href="svgline.html">svg线图</a></li>
+								<li><a href="svgdot.html">svg点图</a></li>
+								<li><a href="svgbar.html">svg柱状图</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="isay-bottom pngfix"></div>
+			</div>
+
+			<div class="m-menu">
+				<div class="menu-top pngfix"></div>
+				<div class="menu-middle clearfix pngfix">
+					<ul class="menu-list clearfix">
+						<li class="first"><a target="_blank" href="http://www.kineticjs.com/">KineticJS</a></li>
+						<li><a target="_blank" href="http://raphaeljs.com/">RaphaelJS</a></li>
+						<li><a target="_blank" href="http://datavlab.org/">淘宝可视化</a></li>
+						<li><a target="_blank" href="http://f2e.dp/face/">点评前端Face</a></li>
+                        <li><a target="_blank" href="http://f2e.dp/blog/">点评前端博客</a></li>
+                        <li><a target="_blank" href="http://f2e.dp/wiki/">点评前端wiki</a></li>
+                        <li><a target="_blank" href="https://github.com/DPF2EBS/venus">Venus GitHub</a></li>
+                        <li><a target="_blank" href="http://venus.dp:8080">PageMender Chrome插件</a></li>
+					</ul>
+				</div>
+				<div class="menu-bottom pngfix"></div>
+			</div>
+			<!-- mark begins -->
 			
 			<!-- mark ends -->
 		</div>
@@ -146,11 +155,17 @@
 	</div>
 
 	<a class="toTop" id="toTop" href="#top"></a>
+	<script type="text/javascript">
+	 (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
 	<script type="text/javascript" src="Scripts/g.mt.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
 	window.addEvent('domready', function() {
-		// Myra.app.dropMenu();
 		TG.app.toTop();
 	});
 	</script>

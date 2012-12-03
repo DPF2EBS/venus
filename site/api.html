@@ -2,7 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Venus Show Stage</title>
+<title>Venus，前端可视化方案</title>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36468754-1']);
+  _gaq.push(['_trackPageview']);
+var vga=function(key){_gaq.push(['_trackPageview', key||''])},pageTracker={_trackPageview:vga};
+</script>
 <link type="text/css" rel="stylesheet" href="Styles/SyntaxHighlighter.css"></link>
 <link type="text/css" rel="stylesheet" href="Styles/page.css"></link>
 <!--[if IE 6]>
@@ -13,25 +19,24 @@
 <body>
 	<div class="header">
     	<div class="header-cont clearfix">
-            <a class="header-logo" href="#logo"><img src="image/logo.png" /></a>
+            <a class="header-logo" href="index.html"><img src="image/logonew.png" /></a>
             <div class="header-nav">
             	<ul>
                     <li><a href="index.html">首页</a></li>
                     <li><a href="api.html">接口文档</a></li>
                     <li><a href="svgpie.html">演示</a></li>
-                    <li class="J_menu"><a href="svgcase.html">案例</a></li>
-                    <li><a href="download.html" target="_blank">下载</a></li>
+                    <li><a href="svgcase.html">案例</a></li>
+                    <li><a href="min/builder/">下载</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="cont-main margin-t clearfix">
+    <div class="cont-main clearfix">
     	<div class="nav-side">
         	<ul class="nav-list clearfix">
                 <li><a href="api.html">使用教程</a></li>
                 <li><a href="svgapi.html">配置</a></li>
-                <li><a href="#">api</a></li>
             </ul>
         </div>
         <div class="right-cont">
@@ -39,74 +44,38 @@
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（1）步骤一：需要依赖的js文件</h2>
+                        <h2>第一步：<a href="min/builder/" class="download-href">下载</a>并添加所需js文件到你的html代码中</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            // 我们不需要样式，样式应该由你来定义
-            // 引入venus脚本文件
-            <script type="text/javascript" src="venus.js"></script>
-            </textarea>
+            
 
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（2）步骤二：准备好图表容器，数据和配置三个参数</h2>
+                        <h2>第二步：准备好图形容器，数据和配置参数（我们以线图为例）</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-                // 定义一个空的div
-                <div id="chart_container" class="chart-box"></div>
-                // 容器元素
-                var container = document.getElementById('chart_container');
-                // 展示所需数据
-                var data = [
-                    {data:10, label:"FF"},
-                    {data:80, label:"IE"},
-                    {data:60, label: "Chrome"},
-                    {data:10, label: "Ohter"},
-                    {data:40, label: "Safari"},
-                    {data:78, label: "Opera"},                ];
-                // 配置参数对象
-                var options = {
-                    width:930, height:400, margin:100,
-                    axis:{
-                        x: { ticks:['FF', 'IE', 'Chrome', 'Ohter', "Safari", "Opera"] },
-                        y: { ticks:[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }
-                    },
-                    line: {
-                        hasDot: true,
-                        smooth: false,
-                        dotRadius: 8,
-                        shadow: false
-                    },
-                    legend:{
-                        position:["right", "top"],
-                        height: 200,
-                        itemType:"circle"
-                    }
-                };
-            </textarea>
-
+             
+            <p class="details">（1）在引入的所依赖的js文件后面添加自己的script标签</p>
+            <p class="details">（2）准备好图形显示的div块，如图：</p>
+            <div class="details"><img src="image/svgbox.png"/></div>
+            <p class="details">（3）coding图形生成代码，如图：</p>
+            <div class="details"><img src="image/svg.png"/></div>
             <div class="intro-panel">
                 <div class="isay-top pngfix"></div>
                 <div class="isay-middle pngfix">
                     <div class="intro-box clearfix">
-                        <h2>（3）步骤三：完成图形</h2>
+                        <h2>第三步：打开浏览器，看看图形吧～</h2>
                     </div>
                 </div>
                 <div class="isay-bottom pngfix"></div>
             </div>
-            <textarea name="code" class="js" rows="50" cols="100">
-            // 最后new DPChart对象，就这么简单！
-            new Venus.CanvasChart(container, data, options);
-            </textarea>
-
+            <div class="details"><img style="border:1px solid #CCC;" src="image/line_chart.png"/></div>
         </div>
 
     </div>
@@ -122,6 +91,13 @@
     </div>
     
 	<a class="toTop" id="toTop" href="#top"></a>
+    <script type="text/javascript">
+     (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
     <script type="text/javascript" src="Scripts/g.mt.js"></script>
 	<script type="text/javascript" src="Scripts/g.dp.js"></script>
 	<script type="text/javascript">
@@ -130,7 +106,7 @@
 		TG.app.toTop();
 	});
 	</script>
-    
+    <!--
     <script class="javascript" src="Scripts/shCore.js"></script>
     <script class="javascript" src="Scripts/shBrushJScript.js"></script>
     <script class="javascript" src="Scripts/shBrushCss.js"></script>
@@ -138,5 +114,6 @@
     <script class="javascript">
     	dp.SyntaxHighlighter.HighlightAll('code');
     </script>
+    -->
 </body>
 </html>
