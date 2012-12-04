@@ -904,14 +904,16 @@ Venus.config={
                 useAsText:'text', //use which property of the data as Text
                 enableDrag:true, //enable node drag or not
                 keepLayerWhenDrag:false, //whether keep the node on the layer when dragging it
-                click:function (data) {
+                click:function (e,node) {
                     //'this' will be parsed as circle object , data is the node data
                 },
-                mouseover:function (data) {
+                mouseover:function (e,node) {
                 },
-                mouseout:function (data) {
+                mouseout:function (e,node) {
                 },
                 contextmenu:function(e,node){
+                },
+                drag:function(e,node){
 
                 },
                 showCrossLayerEdge:false,
@@ -1721,6 +1723,7 @@ Venus.config={
                         node.childrenEdges.forEach(function (edge) {
                             self.arrow(self.stage, edge);
                         });
+                        self.options.drag.call(e,circle);
                     }, function (x, y, e) {
                         //on start
                         e.stopPropagation();
