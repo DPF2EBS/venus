@@ -1786,6 +1786,19 @@ Venus.config={
                 });
             }
             h(node);
+        },
+        forEach:function (fn) {
+            var self = this;
+            self.graphs.forEach(function (graph) {
+                graph.resultLayers.forEach(function (layer) {
+                    layer.forEach(function (node) {
+                        fn.call(self, node);
+                    });
+                });
+            });
+        },
+        append:function(raphaelEl){
+            this.group.node.appendChild(raphaelEl.node);
         }
     };
 
