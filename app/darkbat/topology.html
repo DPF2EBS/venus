@@ -255,7 +255,8 @@
         chartContainer.innerHTML = "";
         var colors = Venus.util.getColors(12);
         var chart = new Venus.Topology(chartContainer, data, {
-            click:function (data) {
+            click:function (e,node) {
+                console.log(e,node)
             },
             colorMap:{
                 1:colors[4],
@@ -273,9 +274,12 @@
                 e.preventDefault();
                 chart.cancelHighlightParents(node);
             },
-            badStatus:[2],
             nodeType:'circle',
-            showCrossLayerEdge:true
+            showCrossLayerEdge:true,
+            defaultView:'all',
+            drag:function(e,node){
+                console.log(e,node)
+            }
         });
         console.log(chart.graphs[0].start)
 

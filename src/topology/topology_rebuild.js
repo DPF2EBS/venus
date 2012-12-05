@@ -473,6 +473,7 @@
                 group = stage.g(),              //move , scale will all operated on this element
                 currentY = options.padding,
                 currentIndex = 0,
+                minLeft = 0,
                 width,height;
 
             this.group = group;
@@ -529,8 +530,8 @@
                     _edges = stage.set(),
                     layers = graph.resultLayers,
                     max = options.singleMax,
-                    right = 100,
-                    minLeft = 0;
+                    right = 100;
+
 
                 if (i == 0) {
                     var maxLengthInLayer , //max count of nodes on layer
@@ -618,18 +619,18 @@
                     }
                 }
 
-                if(options.defaultView=="all"){
-                    //显示全部图形，不显示最大的图
-                    self.transformX = maxLengthInLayer - options.nodeRadius;//self.options.width / 2 - node.position().x;
-                    self.transformY = self.transformX ||0;
-                    self.group.transform('T' + self.transformX  + "," + self.transformY );
-                }
-
                 graph.relation = relation;
                 graph.nodeElements  = _circles;
                 graph.textElements  = _texts;
 
             });
+
+            if(options.defaultView=="all"){
+                //显示全部图形，不显示最大的图
+                self.transformX =  -minLeft + options.nodeRadius;//self.options.width / 2 - node.position().x;
+                self.transformY = self.transformY ||0;
+                self.group.transform('T' + self.transformX  + "," + self.transformY );
+            }
         },
         _renderEdges:function(){
             var group = this.group,
@@ -882,7 +883,7 @@
                         node.childrenEdges.forEach(function (edge) {
                             self.arrow(self.stage, edge);
                         });
-                        self.options.drag.call(e,circle);
+                        self.options.drag.call(circle,e,node);
                     }, function (x, y, e) {
                         //on start
                         e.stopPropagation();
