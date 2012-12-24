@@ -962,12 +962,20 @@
         },
         append:function(raphaelEl){
             this.group.node.appendChild(raphaelEl.node);
+        },
+        getNodeById:function(id){
+            var node;
+            this.forEach(function(n){
+                if(n.id===id){
+                    node = n;
+                }
+            });
+            return node;
         }
     };
 
     Venus.util.mix(Graph,Venus.Topology);
     Venus.Topology = Graph;
-
 
 })();
 
