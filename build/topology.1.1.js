@@ -1315,7 +1315,8 @@ Venus.config={
                 currentY = options.padding,
                 currentIndex = 0,
                 minLeft = 0,
-                width,height;
+                firstGraphMinLeft = null,
+                width,height,right;
 
             this.group = group;
 
@@ -1370,20 +1371,19 @@ Venus.config={
                     relation = {},
                     _edges = stage.set(),
                     layers = graph.resultLayers,
-                    max = options.singleMax,
-                    right = 100;
+                    maxLengthInLayer,   //max count of nodes on layer
+                    max = options.singleMax;
 
+                maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
+                    return layer.length;
+                })) || 1;
 
                 if (i == 0) {
-                    var maxLengthInLayer , //max count of nodes on layer
-                        lastHeight ;
-
-                    maxLengthInLayer = Math.max.apply(Math, layers.map(function (layer) {
-                        return layer.length
-                    })) || 1;
+                    //first map
                     maxLengthInLayer == 2 && (maxLengthInLayer = 3); // if max is 2 then set it to 3 to let width be half of chart
-
                     //draw nodes
+
+                    //layer height and width
                     height = options.layerHeight || (layers.length > 1 ? (chartHeight - options.padding * 2 ) / (layers.length - 1) : (chartHeight - options.padding * 2 ) );
                     width = maxLengthInLayer > 1 ? (chartWidth - options.padding * 2) / (maxLengthInLayer - 1) : 0;
 
@@ -1392,6 +1392,7 @@ Venus.config={
                         width < 4 * options.nodeRadius && (width = 4 * options.nodeRadius);
                         height < 4 * options.nodeRadius && (height = 4 * options.nodeRadius);
                     }
+                    right  = width;
                     self.layerHeight = height;
                     layers.forEach(function (layer, i) {
                         //draw nodes on each layer
@@ -1400,6 +1401,7 @@ Venus.config={
                         layer.forEach(function (node, j) {
                             var x = startX + j * width,
                                 y = options.padding+ height*i;
+                            firstGraphMinLeft===null? firstGraphMinLeft = x: firstGraphMinLeft =  Math.min(firstGraphMinLeft,x);
 
                             var color = options.colorMap[node.info.status] || 'green',
                                 rgb = Raphael.getRGB(color),
@@ -1420,10 +1422,13 @@ Venus.config={
                     if (layers.length > 1) {
                         //多层
                         layers.forEach(function(layer,i){
-                            var startX = (options.align == "left" ? -options.nodeRadius : -(chartWidth - (layer.length - 1) * width) / 2)-right,
+                            var startX = (options.align == "left" ? -options.nodeRadius-right :( -(maxLengthInLayer +layer.length/2-1) * width)-right),
                                 startY = currentY;
+                            if(options.align!=="left" && options.defaultView==="all"){
+                                startX += firstGraphMinLeft;
+                            }
                             layer.forEach(function (node, j) {
-                                var x = startX - j * width,
+                                var x = startX + j * width,
                                     y =  startY ;
                                 minLeft = Math.min(minLeft, x);
                                 var color = options.colorMap[node.info.status] || 'green',
@@ -1447,6 +1452,9 @@ Venus.config={
                             var node = layers[0][0],
                                 x = -options.nodeRadius  -(currentIndex % max) * width - right ,
                                 y = height * Math.floor(currentIndex / max) + currentY;
+                            if(options.align!=="left" && options.defaultView==="all"){
+                                x += firstGraphMinLeft;
+                            }
 
                             minLeft = Math.min(minLeft,x);
 
@@ -1786,6 +1794,60 @@ Venus.config={
                     }
                 });
                 n.parents.forEach(function (p) {
+                    h(p);
+                });
+            }
+            h(node);
+        },
+        highlightChildren:function(node){
+            var children = [];
+            var color = this.options.edgeColor;
+
+
+            function h(n) {
+                if (children.indexOf(n) !== -1) {
+                    //already highlight it's parents
+                    return false;
+                }
+                children.push(n);
+                n.highlight(color.focus);
+                n.childrenEdges.forEach(function (edge) {
+                    edge.viewCache = {
+                        arrow:{
+                            'fill':edge.arrow.attr('fill')
+                        },
+                        line:{
+                            'stroke':edge.line.attr('stroke'),
+                            'stroke-width':edge.line.attr('stroke-width')
+                        }
+                    };
+                    edge.arrow.attr('fill', color.focus);
+                    edge.line.attr('stroke',  color.focus);
+                    edge.line.attr('stroke-width', 2);
+                });
+                n.children.forEach(function (p) {
+                    h(p);
+                });
+            }
+            h(node);
+
+        },
+        cancelHighlightChildren:function(node){
+            var children = [];
+            function h(n) {
+                if (children.indexOf(n) !== -1) {
+                    //already highlight it's parents
+                    return false;
+                }
+                children.push(n);
+                n.cancelHighlight();
+                n.childrenEdges.forEach(function (edge) {
+                    if(edge.viewCache){
+                        edge.arrow.attr(edge.viewCache.arrow);
+                        edge.line.attr(edge.viewCache.line);
+                    }
+                });
+                n.children.forEach(function (p) {
                     h(p);
                 });
             }
