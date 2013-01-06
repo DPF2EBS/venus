@@ -443,6 +443,7 @@ Venus.config={
         this._childrenHash = {};
         this.parentsEdges = [];
         this.childrenEdges = [];
+        this.textElement= null;
         Node.index++;
     };
 
@@ -470,6 +471,9 @@ Venus.config={
         },
         setGraph:function(graph){
             this.graph = graph;
+        },
+        setTextElement:function(t){
+            this.textElement = t;
         },
         getIndex:function(){
             return this.indexInLayer;
@@ -534,8 +538,8 @@ Venus.config={
                 }
             }
             this.view.attr({
-                "x":x,
-                "y":y
+                "cx":x,
+                "cy":y
             });
         }
     });
@@ -1413,6 +1417,7 @@ Venus.config={
 
                             _circles.push(_circle);
                             _text = stage.text(x, y, options.useAsText === undefined ? node.id : node.info[options.useAsText]);
+                            node.setTextElement(_text);
                             group.node.appendChild(_text.node);
                             _texts.push(_text);
                         });
@@ -1440,6 +1445,7 @@ Venus.config={
 
                                 _circles.push(_circle);
                                 _text = stage.text(x, y, options.useAsText === undefined ? node.id : node.info[options.useAsText]);
+                                node.setTextElement(_text);
                                 group.node.appendChild(_text.node);
                                 _texts.push(_text);
 
@@ -1461,6 +1467,7 @@ Venus.config={
                             var _circle =  drawNode(node, x, y);
                             _circles.push(_circle);
                             var _text = stage.text(x, y, options.useAsText === undefined ? node.id : node.info[options.useAsText]);
+                            node.setTextElement(_text);
                             group.node.appendChild(_text.node);
                             _texts.push(_text);
                             currentIndex++;
@@ -1874,6 +1881,27 @@ Venus.config={
                 }
             });
             return node;
+        },
+        getTransform:function(){
+            return this.group.transform().toString();
+        },
+        setTransform:function(str){
+            this.group.transform(str);
+        },
+        setNodePosition:function(node,x,y){
+            node.position(x,y);
+            node.textElement.attr({
+                x:x,
+                y:y
+            });
+            var self = this;
+            //设置相关edge
+            node.parentsEdges.forEach(function(edge){
+                self.arrow(self.stage,edge);
+            });
+            node.childrenEdges.forEach(function(edge){
+                self.arrow(self.stage,edge);
+            });
         }
     };
 

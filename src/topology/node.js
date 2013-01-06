@@ -9,6 +9,7 @@
         this._childrenHash = {};
         this.parentsEdges = [];
         this.childrenEdges = [];
+        this.textElement= null;
         Node.index++;
     };
 
@@ -36,6 +37,9 @@
         },
         setGraph:function(graph){
             this.graph = graph;
+        },
+        setTextElement:function(t){
+            this.textElement = t;
         },
         getIndex:function(){
             return this.indexInLayer;
@@ -100,8 +104,8 @@
                 }
             }
             this.view.attr({
-                "x":x,
-                "y":y
+                "cx":x,
+                "cy":y
             });
         }
     });
