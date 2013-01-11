@@ -584,8 +584,8 @@
                         layers.forEach(function(layer,i){
                             var startX = (options.align == "left" ? -options.nodeRadius-right :( -(maxLengthInLayer +layer.length/2-1) * width)-right),
                                 startY = currentY;
-                            if(options.align!=="left" && options.defaultView==="all"){
-                                startX += firstGraphMinLeft;
+                            if(options.align!=="left"){
+                                startX += Math.min(firstGraphMinLeft,0);
                             }
                             layer.forEach(function (node, j) {
                                 var x = startX + j * width,
@@ -613,7 +613,7 @@
                             var node = layers[0][0],
                                 x = -options.nodeRadius  -(currentIndex % max) * width - right ,
                                 y = height * Math.floor(currentIndex / max) + currentY;
-                            if(options.align!=="left" && options.defaultView==="all"){
+                            if(options.align!=="left"){
                                 x += firstGraphMinLeft;
                             }
 
