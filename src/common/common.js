@@ -182,7 +182,7 @@
                     }else if(util.isNumber(d)){
                         return new Date(d)
                     }
-                    if(navigator.userAgent.indexOf('MSIE')!==-1){
+                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
                         //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
                         // use new Date
 
@@ -190,7 +190,7 @@
                         if(arr[1]){
                             arr[1]--;
                         }
-                        return eval("(new Date("+arr.join(',')+")");
+                        return eval("(new Date("+arr.join(',')+"))");
                     }
                     var date = Date.parse(d);
                     if (!date && date !== 0) {
