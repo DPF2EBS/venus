@@ -1,0 +1,115 @@
+﻿
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="style.css" type="text/css"/>
+  <title>商务前端导航页面</title>
+
+<script type='text/javascript' src='js/jquery.js'></script>
+
+<body>
+
+<div class="wrapper">
+<!-- HEADER BEGIN -->
+  <div id="header">
+    <div class="inner">
+      <div id="logo"><a href="#">
+        <img src="images/logo-new.png"/></a>
+      </div>
+      <div class="block_slogan">
+        <p>点评商务前端团队产品导航</p>
+      </div>
+      <div class="clearboth"></div>
+      </div>
+  </div>
+<!-- HEADER END -->
+
+<div id="content" class="page">
+  <div class="center">
+    <!-- inner BEGIN -->
+    <div class="inner ">
+      <div class="block_works_7 three_columns">
+        <ul>
+          <li>
+            <div>
+              <a href="http://venus.dp/" class="lnk_thumb" title="可视化Venus"><img src="images/product.png" alt="" /></a>
+              <a href="http://venus.dp/" class="details"><span>可视化Venus</span></a>
+            </div>
+            <img src="images/pic_shadow.png" class="shadow" alt="" />
+          </li>
+          <li>
+            <div>
+              <a href="http://venus.dp:8080/" class="lnk_thumb" title="Chrome插件"><img src="images/product1.png" alt="" /></a>
+              <a href="http://venus.dp:8080/" class="details"><span>Chrome插件</span></a>
+            </div>
+            <img src="images/pic_shadow.png" class="shadow" alt="" />
+          </li>
+          <li>
+            <div>
+              <a href="http://lint.fb.dp" class="lnk_thumb" title="Lint（在线代码检查工具）"><img src="images/product2.png" alt="" /></a>
+              <a href="http://lint.fb.dp" class="details"><span>Lint（在线代码检查工具）</span></a>
+            </div>
+            <img src="images/pic_shadow.png" class="shadow" alt="" />
+          </li>
+          <li>
+            <div>
+              <a href="#" class="lnk_thumb" title="猎户座标签图"><img src="images/timthumb1.jpeg" alt="" /></a>
+              <a href="#" class="details"><span>猎户座标签图</span></a>
+            </div>
+            <img src="images/pic_shadow.png" class="shadow" alt="" />
+          </li>
+        </ul> 
+        <div class="clearboth"></div>
+      </div>
+</div>
+<!-- inner END -->
+</div>
+  
+</div>
+    <!-- FOOTER BEGIN -->
+    <div id="footer">
+      <div class="section_bottom">
+        <div class="inner">
+          <div class="block_footer_menu">
+            <ul id="menu-footer" class="menu">
+              <li>
+                <a href="http://t.dianping.com/">点评团</a>
+              </li>
+              <li>
+                <a href="http://f2e.dp/face/">Face</a>
+              </li>
+              <li>
+                <a href="http://f2e.dp/blog/">Blog</a>
+              </li>
+              <li>
+                <a href="http://f2e.dp/wiki/">Wiki</a>
+              </li>
+              <li>
+                <a href="https://github.com/DPF2EBS">Git</a>
+              </li>
+            </ul>
+          </div>                    
+          <div class="block_copyrights">
+            <p>©2012-2013 F2E&nbsp;&&nbsp;Designed by Liangliang</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER END -->
+</div>
+<script type="text/javascript">
+  jQuery(function () {
+    jQuery('.lnk_thumb').parent().hover(
+      function() {
+        jQuery(this).find('.details').stop(true).animate({height : 65}, 200);
+      },
+      function() {
+        jQuery(this).find('.details').stop(true).animate({height : 0}, 200);
+      }
+    );
+  });
+</script>
+</body>
+</html>
