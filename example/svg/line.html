@@ -24,12 +24,9 @@
             options = {
                 axis:{
                     x:{
-                        labelRotate:45,
-                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        type:"datetime"
                     },
                     y:{
-                    },
-                    y1:{
                     }
 
                 },
@@ -44,28 +41,20 @@
                     enableColumn:true
                 },
                 legend:{
-                },
-                axisUsage:{
-                    0:['x','y1']
                 }
 
             }
-    for (var i = 0, l = 3; i < l; i++) {
-        var arr = {}
-        options.axis.x.ticks.forEach(function (month) {
-            arr[month] = (Math.random()+(i==0?100:0)).toFixed(2)
-        })
-        data.push({name:i, data:arr})
-    }
-    data.push({
-        name:i,
-        data:[null,2,1,2,1,2,1,2,1,2,1,null]
-    })
-    var bar = new Venus.SvgChart(container, data, options);
+    var bar = new Venus.SvgChart(container, {
+            "2012-12-12":3176,
+            "2012-12-13":3206,
+            "2012-12-14":3261,
+            "2012-12-15":3318,
+            "2012-12-16":3354
+        }, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
-            data2 = [1,1,1,1,1,1,1,1,1],
+            data2 = [1, 1, 1, 1, 1, 1, 1, 1, 1],
             options2 = {
                 axis:{
                     x:{
@@ -88,12 +77,12 @@
                 }
 
             };
-//    options2.axis.x.ticks.forEach(function (month) {
-//        data2.push({name:month, data:parseInt(Math.random() * 100)})
-//    })
+    //    options2.axis.x.ticks.forEach(function (month) {
+    //        data2.push({name:month, data:parseInt(Math.random() * 100)})
+    //    })
 
 
-  //  var bar2 = new Venus.SvgChart(container2, data2, options2);
+    //  var bar2 = new Venus.SvgChart(container2, data2, options2);
 </script>
 </body>
 </html>

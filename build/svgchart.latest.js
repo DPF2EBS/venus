@@ -301,6 +301,16 @@ Venus.config={
                     }else if(util.isNumber(d)){
                         return new Date(d)
                     }
+                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
+                        //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
+                        // use new Date
+
+                        var arr = d.split(/\s|-|\/|\:/);
+                        if(arr[1]){
+                            arr[1]--;
+                        }
+                        return eval("(new Date("+arr.join(',')+"))");
+                    }
                     var date = Date.parse(d);
                     if (!date && date !== 0) {
                         throw "can't convert date " + d;
@@ -3276,17 +3286,19 @@ Venus.config={
                 //put all points in the point array, ignore some missing points
                  if (util.isArray(arr)) {
                      arr.forEach(function (d, i) {
-                         var value, point;
+                         var key, value, point;
                          if (util.isObject(d)) {
                              value = d.data;
                              label = self.labels[i];
+                             key = d.name;
                          } else {
                              value = d;
+                             key = i;
                          }
                          if(value===undefined || value===null || isNaN(value)){
                              return;
                          }
-                         point = pointBindModel(i, value);
+                         point = pointBindModel(key, value);
                          point.label = label;
                          points.push(point);
                      });

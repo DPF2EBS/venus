@@ -120,17 +120,19 @@
                 //put all points in the point array, ignore some missing points
                  if (util.isArray(arr)) {
                      arr.forEach(function (d, i) {
-                         var value, point;
+                         var key, value, point;
                          if (util.isObject(d)) {
                              value = d.data;
                              label = self.labels[i];
+                             key = d.name;
                          } else {
                              value = d;
+                             key = i;
                          }
                          if(value===undefined || value===null || isNaN(value)){
                              return;
                          }
-                         point = pointBindModel(i, value);
+                         point = pointBindModel(key, value);
                          point.label = label;
                          points.push(point);
                      });

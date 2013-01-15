@@ -182,6 +182,16 @@
                     }else if(util.isNumber(d)){
                         return new Date(d)
                     }
+                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
+                        //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
+                        // use new Date
+
+                        var arr = d.split(/\s|-|\/|\:/);
+                        if(arr[1]){
+                            arr[1]--;
+                        }
+                        return eval("(new Date("+arr.join(',')+"))");
+                    }
                     var date = Date.parse(d);
                     if (!date && date !== 0) {
                         throw "can't convert date " + d;
