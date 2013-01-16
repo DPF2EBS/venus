@@ -161,11 +161,11 @@ Venus.config={
      */
     util.getColors = function (colorCount) {
         var H=[.6, .2, .05, .1333, .75, 0], S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
-		
+
 		//if colorCount is not provide, set colorCount default value 20
 		colorCount=parseInt(colorCount,10)||10;
 		L=Math.min(colorCount,Math.max(colorCount/S.length,12));
-		
+
 		for(var c=0;c<colorCount;c++){
 			if (c < H.length&&colorCount<=H.length) {
                 colors.push('rgba(' + _hsv2rgb(H[c]*360, S[0], V[0]).join(',') + ', 1)');
@@ -191,7 +191,7 @@ Venus.config={
         }
         return o1;
     };
-	
+
 
     /*
     * isArray
@@ -211,15 +211,15 @@ Venus.config={
     util.isNumber = function(nub){
         return __type(nub, "number");
     };
-	
+
 	util.isFunction=function(func){
 		return __type(func,"function");
 	};
 
     /**
-    *get variable true type 
+    *get variable true type
     *@param {Unknown} target variable to be checked
-    *@param {String} type[optional] which variable type to be check. 
+    *@param {String} type[optional] which variable type to be check.
     *type can be any element of this array [Arguments, Array, Boolean, Date, Error, Function, JSON, Math, Number, Object, RegExp, String]
     *@return the result checked, if parameter type is provide, result will be true or false. else result is variable type.
     *@type {Boolean|String}
@@ -294,32 +294,45 @@ Venus.config={
 
     util.date = {
         parse:function (d) {
-                try{
-                    if(typeof d==="string" && d.indexOf(' ')!==-1 && d.indexOf(':')==-1 && d.indexOf(' ')!== d.length-1){
-                        //yyyy-MM-dd hh, this cant't be parsed
-                        d+= ":00";
-                    }else if(util.isNumber(d)){
-                        return new Date(d)
+            try{
+                if(typeof d ==="string"){
+                    var arr = d.split(/\s|-|\/|\:/);
+                    if(arr[1]){
+                        arr[1]--;
                     }
-                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
-                        //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
-                        // use new Date
-
-                        var arr = d.split(/\s|-|\/|\:/);
-                        if(arr[1]){
-                            arr[1]--;
-                        }
-                        return eval("(new Date("+arr.join(',')+"))");
-                    }
-                    var date = Date.parse(d);
-                    if (!date && date !== 0) {
-                        throw "can't convert date " + d;
-                    } else {
-                        return new Date(date);
-                    }
-                }catch(e){
-                    throw "can't convert date " + d;
+                    return eval("(new Date("+arr.join(',')+"))");
                 }
+                    return new Date(d);
+
+            }catch(e){
+                throw "can't convert date :" + d;
+            }
+//                try{
+//                    if(typeof d==="string" && d.indexOf(' ')!==-1 && d.indexOf(':')==-1 && d.indexOf(' ')!== d.length-1){
+//                        //yyyy-MM-dd hh, this cant't be parsed
+//                        d+= ":00";
+//                    }else if(util.isNumber(d)){
+//                        return new Date(d)
+//                    }
+//                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
+//                        //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
+//                        // use new Date
+//
+//                        var arr = d.split(/\s|-|\/|\:/);
+//                        if(arr[1]){
+//                            arr[1]--;
+//                        }
+//                        return eval("(new Date("+arr.join(',')+"))");
+//                    }
+//                    var date = Date.parse(d);
+//                    if (!date && date !== 0) {
+//                        throw "can't convert date " + d;
+//                    } else {
+//                        return new Date(date);
+//                    }
+//                }catch(e){
+//                    throw "can't convert date " + d;
+//                }
 
         },
         format:function (date, formatString) {
