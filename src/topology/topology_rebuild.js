@@ -76,7 +76,13 @@
 
                 },
                 showCrossLayerEdge:false,
-                reduceCrossing:true
+                reduceCrossing:true,
+                translate:{
+                    x:0,y:0
+                },
+                scale:{
+                    x:1,y:1
+                }
             }, Venus.util.clone(opt || {})),
             stage = this.stage = new Raphael(container, options.width, options.height),
             self = this;
@@ -127,9 +133,11 @@
         //init node drag
        options.enableDrag && this._enableDrag();
 
+        self.group.transform('S' + options.scale.x + "," + options.scale.y + "," + options.width / 2 + "," + options.height / 2 + "T" +  options.translate.x + "," + options.translate.y);
+
         //init controller
         if (options.enableController) {
-            Venus.initController.call(this, self.group, stage, options.width, options.height, options,self.transformX ,self.transformY );
+            Venus.initController.call(this, self.group, stage, options.width, options.height, options);
         }
     };
 
@@ -638,9 +646,7 @@
 
             if(options.defaultView=="all"){
                 //显示全部图形，不显示最大的图
-                self.transformX =  -minLeft + options.nodeRadius;//self.options.width / 2 - node.position().x;
-                self.transformY = self.transformY ||0;
-                self.group.transform('T' + self.transformX  + "," + self.transformY );
+                self.options.translate.x =  -minLeft + options.nodeRadius;//self.options.width / 2 - node.position().x;
             }
         },
         _renderEdges:function(){
@@ -687,8 +693,7 @@
                     for(var k= 0,length=this.graphs[i].resultLayers[j].length;k<length;k++){
                         var node = this.graphs[i].resultLayers[j][k];
                         if(self.options.badStatus.indexOf(node.info.status)!==-1){
-                            self.transformY = -node.position().y + self.options.nodeRadius;
-                            self.group.transform('T' + (self.transformX||0)  + "," + self.transformY );
+                            self.options.translate.y = -node.position().y + self.options.nodeRadius;
                             return;
                         }
                     }
@@ -1042,6 +1047,17 @@
         },
         setTransform:function(str){
             this.group.transform(str);
+            var t = this.group.transform(),
+                opt = this.options;
+            t.forEach(function(a){
+                if(a[0]==="S"){
+                    opt.scale.x = a[1];
+                    opt.scale.y = a[2];
+                }else if(a[0]==="T"){
+                    opt.translate.x = a[1];
+                    opt.translate.y = a[2];
+                }
+            });
         },
         setNodePosition:function(node,x,y){
             node.position(x,y);

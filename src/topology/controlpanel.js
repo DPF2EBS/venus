@@ -1,5 +1,5 @@
 (function(V){
-    V.initController = function (group, stage, chartWidth, chartHeight, options,x,y) {
+    V.initController = function (group, stage, chartWidth, chartHeight, options) {
     /*
      * init the controller panel and mouse events
      * move , scale , full screen
@@ -11,10 +11,13 @@
      * @param options{Object}
      *
      * */
-    var scaledX = 1, //already scaled x
-        scaledY = 1, //already scaled y
-        translatedX = x||0, //already translated x
-        translatedY = y||0 //already translated y
+//    var scaledX = 1, //already scaled x
+//        scaledY = 1, //already scaled y
+//        translatedX = x||0, //already translated x
+//        translatedY = y||0 //already translated y
+
+        var scaled = options.scale,
+            translated = options.translate;
 
     var scale = function (lager) {
             /*
@@ -24,14 +27,14 @@
              * */
             if (lager) {
                 //each time 1.25 by default
-                scaledX *= 1.25;
-                scaledY *= 1.25;
+                scaled.x *= 1.25;
+                scaled.y *= 1.25;
 
             } else {
-                scaledX /= 1.25;
-                scaledY /= 1.25;
+                scaled.x /= 1.25;
+                scaled.y /= 1.25;
             }
-            group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+            group.transform('S' + scaled.x + "," + scaled.y + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translated.x + "," + translated.y);
         },
         move = function (x, y) {
             /*
@@ -41,9 +44,9 @@
              * x and y are relative not absolute
              *
              * */
-            translatedX += x;
-            translatedY += y;
-            group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+            translated.x += x;
+            translated.y += y;
+            group.transform('S' + scaled.x + "," + scaled.y  + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translated.x + "," + translated.y);
         },
         lastX, lastY,
     //use google map's hand picture

@@ -134,50 +134,6 @@
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="bootstrap/package/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-        var navViewTask = $("#view_task"),
-                navAddTask = $("#add_task"),
-                viewTaskModal = $('#view_task_modal'),
-                addTaskModal = $("#add_task_modal"),
-                editTaskModal = $("#edit_task_modal"),
-                viewTaskConfirm = $("#view_task_confirm"),
-                chartMessage = $("#chart_message"),
-                chartContainer = document.getElementById('chart_container')
-
-        chartMessage.alert();
-        //查看任务按钮
-        viewTaskConfirm.click(function () {
-            //显示图表
-            viewTaskModal.modal('hide')
-            var data = [
-                {"text":2, "id":2, "parents":[6, 7], "status":2},
-                {"text":7, "id":7, "parents":[3], "status":2},
-                {"text":6, "id":6, "parents":[3, 5, 1], "status":2},
-                {"text":3, "id":3, "parents":[0], "status":2},
-                {"text":5, "id":5, "parents":[4], "status":2},
-                {"text":1, "id":1, "parents":[], "status":3},
-                {"text":0, "id":0, "parents":[], "status":1},
-                {"text":4, "id":4, "parents":[], "status":3}
-            ]
-            chartContainer.innerHTML = "";
-            var chart = new Venus.Topology(chartContainer, data, {
-                click:function (data) {
-                    editTaskModal.modal().find('h3').html('编辑任务' + data.id)
-                }
-            });
-            chartMessage.removeClass('hide').find('.message').html('成功')
-            setTimeout(function () {
-                chartMessage.alert('close')
-            }, 4000);
-
-        });
-
-        navViewTask.click(function () {
-            viewTaskModal.modal()
-        })
-
-        navAddTask.click(function () {
-            addTaskModal.modal()
-        })
 
         var data = [
             {"text":"200152", "id":"2001522012103000", "status":1, "isTarget":1, "parents":[2001722012103000], "children":[4000622012103000, 4000922012103000, 4001022012103000]},
@@ -252,9 +208,8 @@
             {"text":"400322", "id":"4003222012103000", "status":1, "isTarget":1, "parents":[3000822012103000, 3000822012103000, 3000822012103000], "children":[]}
         ]
         console.log(data.length)
-        chartContainer.innerHTML = "";
         var colors = Venus.util.getColors(12);
-        var chart = new Venus.Topology(chartContainer, data, {
+        var chart = new Venus.Topology(document.getElementById('chart_container'), data, {
             click:function (e,node) {
                 console.log(e,node)
             },
