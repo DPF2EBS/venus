@@ -82,7 +82,8 @@
                 },
                 scale:{
                     x:1,y:1
-                }
+                },
+                hide:false
             }, Venus.util.clone(opt || {})),
             stage = this.stage = new Raphael(container, options.width, options.height),
             self = this;
@@ -486,6 +487,9 @@
                 width,height,right;
 
             this.group = group;
+            if(options.hide){
+                this.hide();
+            }
 
             function drawNode(node,x,y){
                 //TODO types , onmenutext
@@ -1073,6 +1077,12 @@
             node.childrenEdges.forEach(function(edge){
                 self.arrow(self.stage,edge);
             });
+        },
+        hide:function(){
+            this.group.hide();
+        },
+        show:function(){
+            this.group.show();
         }
     };
 
