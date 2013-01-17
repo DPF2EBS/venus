@@ -161,11 +161,11 @@ Venus.config={
      */
     util.getColors = function (colorCount) {
         var H=[.6, .2, .05, .1333, .75, 0], S=[0.75,0.75,0.45,1,0.35], V=[0.75,0.45,0.9,0.6,0.9], colors = [], L;
-		
+
 		//if colorCount is not provide, set colorCount default value 20
 		colorCount=parseInt(colorCount,10)||10;
 		L=Math.min(colorCount,Math.max(colorCount/S.length,12));
-		
+
 		for(var c=0;c<colorCount;c++){
 			if (c < H.length&&colorCount<=H.length) {
                 colors.push('rgba(' + _hsv2rgb(H[c]*360, S[0], V[0]).join(',') + ', 1)');
@@ -191,7 +191,7 @@ Venus.config={
         }
         return o1;
     };
-	
+
 
     /*
     * isArray
@@ -211,15 +211,15 @@ Venus.config={
     util.isNumber = function(nub){
         return __type(nub, "number");
     };
-	
+
 	util.isFunction=function(func){
 		return __type(func,"function");
 	};
 
     /**
-    *get variable true type 
+    *get variable true type
     *@param {Unknown} target variable to be checked
-    *@param {String} type[optional] which variable type to be check. 
+    *@param {String} type[optional] which variable type to be check.
     *type can be any element of this array [Arguments, Array, Boolean, Date, Error, Function, JSON, Math, Number, Object, RegExp, String]
     *@return the result checked, if parameter type is provide, result will be true or false. else result is variable type.
     *@type {Boolean|String}
@@ -294,22 +294,45 @@ Venus.config={
 
     util.date = {
         parse:function (d) {
-                try{
-                    if(typeof d==="string" && d.indexOf(' ')!==-1 && d.indexOf(':')==-1 && d.indexOf(' ')!== d.length-1){
-                        //yyyy-MM-dd hh, this cant't be parsed
-                        d+= ":00";
-                    }else if(util.isNumber(d)){
-                        return new Date(d)
+            try{
+                if(typeof d ==="string"){
+                    var arr = d.split(/\s|-|\/|\:/);
+                    if(arr[1]){
+                        arr[1]--;
                     }
-                    var date = Date.parse(d);
-                    if (!date && date !== 0) {
-                        throw "can't convert date " + d;
-                    } else {
-                        return new Date(date);
-                    }
-                }catch(e){
-                    throw "can't convert date " + d;
+                    return eval("(new Date("+arr.join(',')+"))");
                 }
+                    return new Date(d);
+
+            }catch(e){
+                throw "can't convert date :" + d;
+            }
+//                try{
+//                    if(typeof d==="string" && d.indexOf(' ')!==-1 && d.indexOf(':')==-1 && d.indexOf(' ')!== d.length-1){
+//                        //yyyy-MM-dd hh, this cant't be parsed
+//                        d+= ":00";
+//                    }else if(util.isNumber(d)){
+//                        return new Date(d)
+//                    }
+//                    if(typeof d==="string" && navigator.userAgent.indexOf('MSIE')!==-1){
+//                        //is ie , can't use Date.parse to pase 'yyyy-MM-dd'
+//                        // use new Date
+//
+//                        var arr = d.split(/\s|-|\/|\:/);
+//                        if(arr[1]){
+//                            arr[1]--;
+//                        }
+//                        return eval("(new Date("+arr.join(',')+"))");
+//                    }
+//                    var date = Date.parse(d);
+//                    if (!date && date !== 0) {
+//                        throw "can't convert date " + d;
+//                    } else {
+//                        return new Date(date);
+//                    }
+//                }catch(e){
+//                    throw "can't convert date " + d;
+//                }
 
         },
         format:function (date, formatString) {
@@ -569,7 +592,7 @@ Venus.config={
 
 })();
 (function(V){
-    V.initController = function (group, stage, chartWidth, chartHeight, options,x,y) {
+    V.initController = function (group, stage, chartWidth, chartHeight, options) {
     /*
      * init the controller panel and mouse events
      * move , scale , full screen
@@ -581,10 +604,13 @@ Venus.config={
      * @param options{Object}
      *
      * */
-    var scaledX = 1, //already scaled x
-        scaledY = 1, //already scaled y
-        translatedX = x||0, //already translated x
-        translatedY = y||0 //already translated y
+//    var scaledX = 1, //already scaled x
+//        scaledY = 1, //already scaled y
+//        translatedX = x||0, //already translated x
+//        translatedY = y||0 //already translated y
+
+        var scaled = options.scale,
+            translated = options.translate;
 
     var scale = function (lager) {
             /*
@@ -594,14 +620,14 @@ Venus.config={
              * */
             if (lager) {
                 //each time 1.25 by default
-                scaledX *= 1.25;
-                scaledY *= 1.25;
+                scaled.x *= 1.25;
+                scaled.y *= 1.25;
 
             } else {
-                scaledX /= 1.25;
-                scaledY /= 1.25;
+                scaled.x /= 1.25;
+                scaled.y /= 1.25;
             }
-            group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+            group.transform('S' + scaled.x + "," + scaled.y + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translated.x + "," + translated.y);
         },
         move = function (x, y) {
             /*
@@ -611,9 +637,9 @@ Venus.config={
              * x and y are relative not absolute
              *
              * */
-            translatedX += x;
-            translatedY += y;
-            group.transform('S' + scaledX + "," + scaledY + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translatedX + "," + translatedY);
+            translated.x += x;
+            translated.y += y;
+            group.transform('S' + scaled.x + "," + scaled.y  + "," + chartWidth / 2 + "," + chartHeight / 2 + "T" + translated.x + "," + translated.y);
         },
         lastX, lastY,
     //use google map's hand picture
@@ -921,7 +947,14 @@ Venus.config={
 
                 },
                 showCrossLayerEdge:false,
-                reduceCrossing:true
+                reduceCrossing:true,
+                translate:{
+                    x:0,y:0
+                },
+                scale:{
+                    x:1,y:1
+                },
+                hide:false
             }, Venus.util.clone(opt || {})),
             stage = this.stage = new Raphael(container, options.width, options.height),
             self = this;
@@ -972,9 +1005,11 @@ Venus.config={
         //init node drag
        options.enableDrag && this._enableDrag();
 
+        self.group.transform('S' + options.scale.x + "," + options.scale.y + "," + options.width / 2 + "," + options.height / 2 + "T" +  options.translate.x + "," + options.translate.y);
+
         //init controller
         if (options.enableController) {
-            Venus.initController.call(this, self.group, stage, options.width, options.height, options,self.transformX ,self.transformY );
+            Venus.initController.call(this, self.group, stage, options.width, options.height, options);
         }
     };
 
@@ -1323,6 +1358,9 @@ Venus.config={
                 width,height,right;
 
             this.group = group;
+            if(options.hide){
+                this.hide();
+            }
 
             function drawNode(node,x,y){
                 //TODO types , onmenutext
@@ -1483,9 +1521,7 @@ Venus.config={
 
             if(options.defaultView=="all"){
                 //显示全部图形，不显示最大的图
-                self.transformX =  -minLeft + options.nodeRadius;//self.options.width / 2 - node.position().x;
-                self.transformY = self.transformY ||0;
-                self.group.transform('T' + self.transformX  + "," + self.transformY );
+                self.options.translate.x =  -minLeft + options.nodeRadius;//self.options.width / 2 - node.position().x;
             }
         },
         _renderEdges:function(){
@@ -1532,8 +1568,7 @@ Venus.config={
                     for(var k= 0,length=this.graphs[i].resultLayers[j].length;k<length;k++){
                         var node = this.graphs[i].resultLayers[j][k];
                         if(self.options.badStatus.indexOf(node.info.status)!==-1){
-                            self.transformY = -node.position().y + self.options.nodeRadius;
-                            self.group.transform('T' + (self.transformX||0)  + "," + self.transformY );
+                            self.options.translate.y = -node.position().y + self.options.nodeRadius;
                             return;
                         }
                     }
@@ -1887,6 +1922,17 @@ Venus.config={
         },
         setTransform:function(str){
             this.group.transform(str);
+            var t = this.group.transform(),
+                opt = this.options;
+            t.forEach(function(a){
+                if(a[0]==="S"){
+                    opt.scale.x = a[1];
+                    opt.scale.y = a[2];
+                }else if(a[0]==="T"){
+                    opt.translate.x = a[1];
+                    opt.translate.y = a[2];
+                }
+            });
         },
         setNodePosition:function(node,x,y){
             node.position(x,y);
@@ -1902,6 +1948,12 @@ Venus.config={
             node.childrenEdges.forEach(function(edge){
                 self.arrow(self.stage,edge);
             });
+        },
+        hide:function(){
+            this.group.hide();
+        },
+        show:function(){
+            this.group.show();
         }
     };
 
