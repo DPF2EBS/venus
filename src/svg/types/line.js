@@ -60,11 +60,19 @@
                 elements = [],              //save the element by series
                 coordinate = self.coordinate;
 
+            function isLineType(index){
+                return data[index].type === undefined || data[index].type === "line";
+            }
+
 
             function pointBindModel(x, y) {
                 function set() {
                     var xy = coordinate.get(x, y);
-                    point.x = xy.x;
+					if(coordinate.x.options.labelPosition==="between_ticks"){
+						point.x = xy.x-coordinate.x.model.tickWidth/2;
+					}else{
+						point.x = xy.x;
+					}
                     point.y = xy.y;
                     point.xTick = xy.xTick;
                     point.yTick = xy.yTick;
@@ -373,7 +381,11 @@
                     * */
                     data.forEach(function (item, i) {
                         //item is content of the data,draw a line
-                        drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
+                        if(isLineType(i)){
+                            drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
+                        }else{
+                            elements.push({}); //push an empty obj，to prevent index error
+                        }
                     });
                     bindLegendEvents();
 
@@ -385,10 +397,13 @@
                     * */
                     data.forEach(function (item, i) {
                         // item is content of the data,draw a line
-                        drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
+                        if(isLineType(i)){
+                            drawLine(item.data, i, colors[i], colors[i],self.labels[i]);
+                        }else{
+                            elements.push({});
+                        }
                     });
                     bindLegendEvents();
-
                 }
                 coordinate.useDefault();
 

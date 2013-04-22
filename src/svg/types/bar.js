@@ -26,7 +26,7 @@
                 self = this,
                 duration = 500;
 
-            coordinate.x.set('pop',1);
+                coordinate.x.set('pop',1);
 
 
             /*
@@ -85,6 +85,10 @@
             }
 
 
+            function isBarType(index) {
+                return series[index].type === undefined || series[index].type === "bar";
+            }
+
             function bindLegendEvents() {
                 /*
                  * bind legend active change event
@@ -92,7 +96,9 @@
                  * */
                 self.legend && self.legend.onActiveChange(function (active,activeArray) {
                     active.forEach(function (truth, i) {
-                        truth ? elements[i].show() : elements[i].hide();
+                        if(elements[i]){
+                            truth ? elements[i].show() : elements[i].hide();
+                        }
                     });
                     render(activeArray);
                 });
@@ -201,7 +207,13 @@
                 if (!seriesArray) {
                     seriesArray = [];
                     series.forEach(function (d, i) {
-                        seriesArray.push(i);
+                        if(isBarType(i)){
+                            seriesArray.push(i);
+                        }
+                    });
+                }else{
+                   seriesArray =  seriesArray.filter(function(d,i){
+                       return isBarType(d);
                     });
                 }
                 sumY = [];

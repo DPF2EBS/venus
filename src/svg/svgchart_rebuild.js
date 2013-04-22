@@ -952,6 +952,9 @@
          * [{data:(number or array or object),name:(if has)},....]
          * and save as series property
          *
+         * 2013-04-01 add 'type' property
+         * if has type , use this type ,otherwise use global type
+         *
          * */
         var series = []
         if (isArray(data)) {

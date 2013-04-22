@@ -25,18 +25,19 @@
             options = {
                 axis:{
                     x:{
-                        opposite:true,
                         ticks:['Q1', 'Q2', 'Q3', 'Q4']
                     },
                     y:{
-                        opposite:true,
                         rotate:90
                     }
                 },
-                bar:{
-                    radius:2,
-                    multiple:'nestification'
+                line:{
+
                 },
+                bar:{
+                    radius:2
+                },
+
                 grid:{
                     enableRow:true,
                     enableColumn:true
@@ -47,13 +48,14 @@
                 }
 
             }
-    for (var i = 0, l = 4; i < l; i++) {
+    for (var i = 0, l = 2; i < l; i++) {
         var arr = {}
         options.axis.x.ticks.forEach(function (month) {
             arr[month] = parseInt(Math.random() * 100)
         })
-        data.push({name:i, data:arr})
+        data.push({name:i, data:arr,type:'bar'})
     }
+    data[1].type="line";
     var bar = new Venus.SvgChart(container, data, options);
     options.bar.multiple = 'sidebyside';
 
