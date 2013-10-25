@@ -910,6 +910,14 @@
             this.stage && this.stage.clear();
             this.stage = null;
             this.container.innerHTML = "";
+        },
+        refreshData:function(data){
+            this.destroy();
+            this.constructor.call(this,this.container,data,this.options);
+        },
+        refreshOptions:function(options){
+            this.destroy();
+            this.constructor.call(this,this.container,this.data,mix(this.options,util.clone(options)||{}));
         }
     };
 
