@@ -170,6 +170,9 @@
         this._initLegend();
         this.events.fire('onLegendInit', this.legend);
 
+        //init title
+        this._initTitle();
+        
         // draw
         this._draw();
 
@@ -816,6 +819,15 @@
                     }
                 });
 
+            }
+        },
+        _initTitle:function(){
+            var opt = this.options,
+                titleOption = opt.title;
+            if (titleOption) {
+                titleOption._svgWidth = opt.width;
+                titleOption._svgHeight = opt.height;
+                title = this.title = new Title(this, titleOption, this.stage);
             }
         },
         _initGrid:function () {
@@ -1963,7 +1975,78 @@
 
     /*Class Legend End*/
 
+    /*Class Title Begin*/
+    
+    var Title = function (chart, options, paper) {
+        /*
+         * Class Title
+         * @param series{Series} instance of Series
+         * @param options{Object}
+         * @param paper{Raphael} instance of Raphael
+         *
+         * */
+         var defaultOption = {
+                position:['center', 'top'],  //position of the legend contains two elements (horizontal and vertical) each could be string and number
+                fontSize:20,                //text font size
+                fontWeight:'bold',
+            }
+            , textWidth
+            , textSet                           // set of texts
+            , margin = 10                       // margin to svg boundary
+            , padding = 10
+            , left , top
+            , self = this
+            , opt = this.options = mix(defaultOption, options);
 
+        //Raphael Set to contain the elements
+        text = paper.text(padding, padding/ 2, opt.name).attr({
+            'font-size':opt.fontSize,
+            'font-weight':opt.fontWeight
+        });
+
+        textWidth = text.getBBox().width;
+        totalWidth = textWidth + padding * 2;
+        text.translate(textWidth / 2, 0);
+
+        textSet = paper.set();
+        textSet.push(text);
+        this.textSet = textSet;
+        this.toFront();
+
+        //convert position string to value
+        if (typeof (left = this.options.position[0]) == "string") {
+            if (left == "right") {
+                left = this.options._svgWidth - totalWidth - margin;
+            } else if (left == "center") {
+                left = this.options._svgWidth / 2 - totalWidth / 2
+            } else {
+                left = margin
+            }
+        }
+
+        if (typeof (top = this.options.position[1]) == "string") {
+            if (top == "bottom") {
+                top = this.options._svgHeight - totalHeight - margin
+            } else if (top == 'center') {
+                top = this.options._svgHeight / 2 - totalHeight / 2
+            } else {
+                top = margin
+            }
+        }
+
+        this.setPosition(left, top);
+    };
+    Title.prototype = {
+        constructor:Title,
+        setPosition:function (left, top) {
+            this.textSet.translate(left, top);
+        },
+        toFront:function(){
+            this.textSet.toFront();
+        }
+    }
+    /*Class Title End*/    
+    
     /*Class Grid Begin*/
 
     var Grid = function (options, paper) {
