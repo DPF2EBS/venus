@@ -19,38 +19,63 @@
     <canvas width="1000" height="800" id="test" style="display: none;"></canvas>
 </div>
 <script type="text/javascript">
+    var data = {"size":60, "step":60000, "start":"2013/05/28 13:00", "subTitles":["SQL", "URL"], "titles":"Total", "values":[
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 399.0, 610.0, 606.0, 606.0, 606.0, 606.0, 404.0, 0.0, 0.0, 0.0, 0.0]
+    ]}
+    var parse = function (data) {
+        var res = [];
+        data.subTitles.forEach(function (title, i) {
+            var series = {}
+            series.name = title;
+            series.data = {};
+            data.values[i].forEach(function (value, j) {
+                var time = Date.parse(data.start);
+                var t = new Date(+time + j * data.step);
+                series.data[t.getFullYear() + "-" + (t.getMonth() + 1) + "-" + t.getDate() + " " + t.getHours() + ":" + t.getMinutes()] = value;
+            });
+            res.push(series);
+
+        })
+        return res;
+    }
+    console.log(parse(data));
+
+</script>
+<script type="text/javascript">
     var container = document.getElementById('chart_container'),
-            data = [],
-            options = {
-                axis:{
-                    x:{
-                        type:"datetime"
-                    },
-                    y:{
-                    }
-
-                },
-                line:{
-                    smooth:true,
-                    dotRadius:4,
-                    dotSelect:true,
-                    area:false
-                },
-                grid:{
-                    enableRow:true,
-                    enableColumn:true
-                },
-                legend:{
-                }
-
+            _data = parse(data);
+    options = {
+        axis:{
+            x:{
+                type:"datetime",
+                title:"y轴"
+            },
+            y:{
+            },
+            y1:{
+                opposite:true
             }
-    var bar = new Venus.SvgChart(container, {
-            "2012-12-12":3176,
-            "2012-12-13":3206,
-            "2012-12-14":3261,
-            "2012-12-15":3318,
-            "2012-12-16":3354
-        }, options);
+
+        },
+        axisUsage:{
+            0:['x','y1']
+        },
+        line:{
+            smooth:true,
+            dotRadius:4,
+            dotSelect:true,
+            area:false
+        },
+        grid:{
+            enableRow:true,
+            enableColumn:true
+        },
+        legend:{
+        }
+
+    }
+    var bar = new Venus.SvgChart(container, _data, options);
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
@@ -58,13 +83,13 @@
             options2 = {
                 axis:{
                     x:{
-                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        ticks:['上海人们广场伤不起啊', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     y:{
                     }
                 },
                 line:{
-                    dotRadius:4,
+                    dotRadius:8,
                     area:false,
                     smooth:true
                 },
@@ -83,6 +108,22 @@
 
 
     //  var bar2 = new Venus.SvgChart(container2, data2, options2);
+    var da = {
+        "id":"Cat",
+        "type":"project",
+        "status":1, "des":"",
+        "nodes":{
+            "cat":{ "id":"cat", "type":"database", "status":1, "des":"", "link":"", "weight":2 }
+        },
+        "edges":{
+            "Database:Cat:cat":{
+                "type":"Database", "target":"cat", "opposite":true, "status":1, "des":"", "link":"", "key":"Database:Cat:cat", "self":"Cat", "weight":2
+            },
+            "PigeonClient:Cat:MobileWapMWeb":{
+                "type":"PigeonClient", "target":"MobileWapMWeb", "opposite":true, "status":1, "des":"", "link":"", "key":"PigeonClient:Cat:MobileWapMWeb", "self":"Cat", "weight":1
+            },
+            "PigeonClient:Cat:UserWeb":{
+                "type":"PigeonClient", "target":"UserWeb", "opposite":true, "status":1, "des":"", "link":"", "key":"PigeonClient:Cat:UserWeb", "self":"Cat", "weight":1 }, "PigeonClient:Cat:UserBaseService":{ "type":"PigeonClient", "target":"UserBaseService", "opposite":true, "status":1, "des":"", "link":"", "key":"PigeonClient:Cat:UserBaseService", "self":"Cat", "weight":1 } } }
 </script>
 </body>
 </html>

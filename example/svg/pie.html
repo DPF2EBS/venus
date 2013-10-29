@@ -37,7 +37,16 @@
 		
 		<dd style="height: 130px;"></dd>
 	</dl>
-	
+	<script type="text/javascript">
+		var data1 = {"items":[{"title":"project.findAll","number":5.0},{"title":"event.findByDomainTime","number":4.0},{"title":"hostinfo.findAllIp","number":1.0},{"title":"sqltable.findAllByDomain","number":1.0},{"title":"project.findByDomain","number":1.0}]};
+		var parse = function(data){
+			var res = {};
+			data.items.forEach(function(item){
+					res[item.title]= item.number;
+			})
+			return res;
+		}
+	</script>
 	<script type="text/javascript">
 	var dt=document.getElementsByTagName('dt'),
 		dd=document.getElementsByTagName('dd'),
@@ -171,8 +180,7 @@
         },
         legend:{}
     };
-    _data = [25, 25, 40, 10, 8, 22, 91,1,1,1,1,1,1,1,1,1];
-
+    _data = parse(data1);
     new Venus.SvgChart("pie", _data, _opt)
 </script>
 </body>

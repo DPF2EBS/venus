@@ -1159,6 +1159,7 @@
 
     var Axis = function (options, series, paper) {
         var defaultOptions = {
+            title:"",               //title
             percent:0.8,            //length of the axis , percent of svg
             total:0,                //how many ticks to be shown
             max:0,
@@ -1337,6 +1338,7 @@
                 skip,//if label text is too wide , skip some
                 noOppositeLabel = (( model.rotate == 0  ) !== opt.opposite),
                 reverse = !!model.reverse,
+                hasTitle = !!opt.title;
                 transformString = "";
 
             if (!view.axisElement) {
@@ -1357,6 +1359,9 @@
                 view.labelElements.clear();
             } else {
                 view.labelElements = stage.set();
+            }
+            if(hasTitle && !view.titleElement){
+                view.titleElement = stage.text(beginX+model.totalWidth/2,beginY,opt.title);
             }
 
             pathString.push('M', beginX, beginY, 'h', model.totalWidth);
@@ -1396,6 +1401,7 @@
                 view.axisElement.transform(transformString);
                 view.tickElements.transform(transformString);
             }
+            var maxT = 0;
             view.labelElements.forEach(function (l) {
                 var str = "",
                     bBox = l.getBBox(),
@@ -1403,6 +1409,7 @@
                     totalRotate = ((opt.labelRotate || 0) + (model.rotate || 0))*PI/180,
                     t = (Math.max(bBox.height, line * Math.sin(totalRotate)) / 2 + labelMarginTop) * (noOppositeLabel ? 1 : -1);
 
+                maxT = Math[noOppositeLabel?'max':'min'](maxT,t);
 
                 if (model.rotate) {
                     str += ("R90");
@@ -1421,12 +1428,24 @@
                 }
             });
 
+            if(hasTitle){
+                var offset =  noOppositeLabel?maxT+20:maxT-20;
+                //view.titleElement.attr("y",beginY +offset);
+                if(model.rotate){
+                    view.titleElement.transform("T0,"+offset+"...R-90,"+beginX+","+beginY);
+                }else{
+                    view.titleElement.transform("T0,"+offset);
+
+                }
+            }
+
             if (!this.options.enable) {
                 //if invisible ,hide the elements
                 //but the coordinate is actually exist
                 view.axisElement.hide();
                 view.labelElements.hide();
                 view.tickElements.hide();
+                view.titleElement.hide();
             }
         },
         on:function(fn){

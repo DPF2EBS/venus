@@ -265,9 +265,9 @@
                     //draw dots
 
                     //dot is too large
-                    if(coordinate.x.model.tickWidth/coordinate.x.model.tickSize<4*dotRadius){
-                        dotRadius = coordinate.x.model.tickWidth/coordinate.x.model.tickSize/4;
-                    }
+                    // if(coordinate.x.model.tickWidth/coordinate.x.model.tickSize<4*dotRadius){
+                    //     dotRadius = coordinate.x.model.tickWidth/coordinate.x.model.tickSize/4;
+                    // }
 
                     points.forEach(function (d, i) {
                         var icon = self.iconFactory.create(indexOfSeries, d.x, d.y,dotRadius*2),

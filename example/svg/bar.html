@@ -4,15 +4,7 @@
     <title>test svg</title>
 </head>
 <body style="margin: 0;">
-
-<script type="text/javascript" src="../../lib/raphael/raphael-min.js"></script>
-<script type="text/javascript" src="../../src/common/venus.js"></script>
-<script type="text/javascript" src="../../src/common/lang.js"></script>
-<script type="text/javascript" src="../../src/common/common.js"></script>
-<script type="text/javascript" src="../../src/common/customevent.js"></script>
-<script type="text/javascript" src="../../src/svg/svgchart_rebuild.js"></script>
-<script type="text/javascript" src="../../src/svg/types/bar.js"></script>
-<script type="text/javascript" src="../../src/svg/types/line.js"></script>
+	<script src="../../build/svgchart.1.1.2.js"></script>
 <!--<script src="http://venus.dp/build/svgchart.latest.js"></script>-->
 
 <div id="chart_container" style="height: 800px; width:1200px; border: dashed 1px #ccc; margin: 10px auto 0;"></div>
@@ -21,7 +13,25 @@
 
 <script type="text/javascript">
     var container = document.getElementById('chart_container'),
-            data = [],
+	data = [{
+		name:"0",
+		data:{
+			"Q1":11,
+			"Q2":30,
+			"Q3":40,
+			"Q4":99
+		},
+		type:"bar"
+	},{
+		name:"1",
+	 	data:{
+			"Q1":20,
+			"Q2":40,
+			"Q3":70,
+			"Q4":44
+		},
+		type:"line"
+	}],
             options = {
                 axis:{
                     x:{
@@ -48,64 +58,8 @@
                 }
 
             }
-    for (var i = 0, l = 2; i < l; i++) {
-        var arr = {}
-        options.axis.x.ticks.forEach(function (month) {
-            arr[month] = parseInt(Math.random() * 100)
-        })
-        data.push({name:i, data:arr,type:'bar'})
-    }
-    data[1].type="line";
     var bar = new Venus.SvgChart(container, data, options);
-    options.bar.multiple = 'sidebyside';
 
-//    options.axisUsage={
-//        0:['x','y1']
-//    }
-//    options.axis.y1 = {}
-//    options.events = {
-//        onAxisInit:function () {
-//            var coordinate = this.coordinate,
-//                    x = coordinate.x;
-//            coordinate.axises['y1'].model.beginX = x.model.beginX + x.model.totalWidth
-//        }
-//    }
-    console.log(data)
-    container3 = document.getElementById('chart_container3');
-    var bar = new Venus.SvgChart(container3, data, options);
-</script>
-<script type="text/javascript">
-    var container2 = document.getElementById('chart_container2'),
-            data2 = [],
-            options2 = {
-                axis:{
-                    x:{
-                        ticks:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                    },
-                    y:{
-                        opposite:true
-                    }
-                },
-                bar:{
-                    radius:2
-                },
-
-                grid:{
-                    enableColumn:true,
-                    enableRow:true
-                },
-                legend:{
-                    direction:'horizontal',
-                    position:['center','top']
-                }
-
-            };
-    options2.axis.x.ticks.forEach(function (month) {
-        data2.push({name:month, data:parseInt(Math.random()*100)})
-    })
-
-
-    var bar2 = new Venus.SvgChart(container2, data2, options2);
 </script>
 </body>
 </html>
