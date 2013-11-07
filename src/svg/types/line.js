@@ -76,6 +76,8 @@
                     point.y = xy.y;
                     point.xTick = xy.xTick;
                     point.yTick = xy.yTick;
+                    point.xValue = x;
+                    point.yValue = y;
                 }
                 var point = {};
                 coordinate.y.on(set);
@@ -94,8 +96,8 @@
                     width: lineOpt.dotRadius * 4
                 }, 100);
                 dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
-                    x:point.xTick,
-                    y:point.yTick,
+                    x:point.xValue,
+                    y:point.yValue,
                     label:point.label
                 }));
             }

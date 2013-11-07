@@ -105,8 +105,7 @@
             * }
             * */
             tooltip:function (obj) {
-               // return obj.label + " " + obj.x + " " + obj.y;
-                return obj.y;
+                return [obj.label,obj.x,obj.y]
             },
 
             /*
@@ -1524,7 +1523,8 @@
                 }
                 for (i = model.min, l = model.max; i <= l;) {
                     distance = (count + model.pop) * model.tickWidth;
-                    fn.call(this, model.pop + count, distance,l>=1000&& i / 100 === parseInt(i / 100) && i !== 0 ? i / 1000 + 'k' : i);
+//                    fn.call(this, model.pop + count, distance,l>=1000 && i / 100 === parseInt(i / 100) && i !== 0 ? i / 1000 + 'k' : i);
+                    fn.call(this, model.pop + count, distance,util.formatNum(i,model.min,model.max));
                     i = util.number.add(i, model.tickSize);
                     count++;
                 }
@@ -2261,6 +2261,11 @@
                     'opacity':0,
                     'font-size':12
                 });
+                if(i==0){
+                    text.attr({
+                        'font-weight':'bold'
+                    });
+                }
                 width.push(bBox.width);
             });
             if (this._venus_tooltip_show)
