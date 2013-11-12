@@ -1017,8 +1017,17 @@
                 //get the max and min value depends on the data format
                 var d = series[index].data
                 if (isArray(d)) {
-                    var iMax = Math.max.apply(Math, d),
-                        iMin = Math.min.apply(Math, d);
+                    if(isObject(d[0]) && d[0].data){
+                        var filterData = d.map(function(_d){
+                            return _d.data;
+                        });
+                        var iMax = Math.max.apply(Math,filterData);
+                        var iMin = Math.min.apply(Math,filterData);
+
+                    }else {
+                        var iMax = Math.max.apply(Math, d),
+                            iMin = Math.min.apply(Math, d);
+                    }
                     (max === undefined || iMax > max) && (max = iMax);
                     (min === undefined || iMin < min) && (min = iMin);
                 } else if (isObject(d)) {
@@ -1089,11 +1098,18 @@
                 else {
                     var data = item.data;
                     if (isArray(data)) {
-                        //if data is array ,that means got no labels
-                        isArr = true;
-                        len = Math.max(data.length, len)
-                    }
-                    else if (isObject(data)) {
+                        if(isObject(data[0]) && data[0].name){
+                            isObj = true;
+                            data.forEach(function(d){
+                                _labels[d.name] = true;
+
+                            });
+                        }else {
+                            //got no labels
+                            isArr = true;
+                            len = Math.max(data.length, len)
+                        }
+                    }else if (isObject(data)) {
                         for (var o in data) {
                             //cache the labels in the object _labels first , this will avoid duplicated labels
                             //and later will convert it to array

@@ -1,0 +1,16 @@
+{
+    "input":[
+        "../lib/raphael/raphael-min.js",
+        "../src/common/lang.js",
+        "../src/common/venus.js",
+        "../src/common/common.js",
+        "../src/common/customevent.js",
+        "../src/svg/svgchart_rebuild.js",
+        "../src/svg/types/bar.js",
+        "../src/svg/types/dot.js",
+        "../src/svg/types/line.js",
+        "../src/svg/types/pie.js",
+        "../src/svg/ga.js"
+    ],
+    "output":"svgchart.1.3"
+}
