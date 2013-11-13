@@ -1142,7 +1142,8 @@
             /*
             * get data length
             * */
-            var length = 0,
+debugger;
+             var length = 0,
                 series = this.series;
             if (series.length) {
                 if (util.isNumber(series[0].data)) {
@@ -1150,7 +1151,7 @@
                 } else if (util.isArray(series[0].data)) {
                     var l = [];
                     series.forEach(function (i) {
-                        l.push(i.length);
+                        l.push(i.data.length);
                     });
                     length = Math.max.apply(Math, l);
                 } else if (util.isObject(series[0].data)) {
