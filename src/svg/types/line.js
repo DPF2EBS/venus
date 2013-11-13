@@ -128,12 +128,13 @@
                 //put all points in the point array, ignore some missing points
                 if (util.isArray(arr)) {
                     arr.forEach(function (d, i) {
-                        var key, value, point,icon;
+                        var key, value, point,icon,color;
                         if (util.isObject(d)) {
                             value = d.data;
                             label = self.labels[i];
                             key = d.name;
                             icon = d.icon;
+                            color = d.color;
                         } else {
                             value = d;
                             key = i;
@@ -144,6 +145,7 @@
                         point = pointBindModel(key, value);
                         point.label = label;
                         point.icon = icon;
+                        point.color = color;
                         points.push(point);
                     });
                 } else {
@@ -278,7 +280,7 @@
                     points.forEach(function (d, i) {
                         var icon =(d.icon && self.iconFactory.nativeIcons[d.icon])?self.iconFactory.nativeIcons[d.icon].create(raphael,d.x,d.y,dotRadius *2): self.iconFactory.create(indexOfSeries, d.x, d.y,dotRadius*2),
                         dot = icon.icon.attr({
-                            'fill':dotColor || colors[i],
+                            'fill':d.color ||dotColor || colors[i],
                             'stroke':'none'
                         }).hover(
                         //hover event which shows the toolTip and make the dot bigger
