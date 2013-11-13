@@ -131,7 +131,7 @@
                         var key, value, point,icon,color;
                         if (util.isObject(d)) {
                             value = d.data;
-                            label = self.labels[i];
+                            label = label || self.labels[i];
                             key = d.name;
                             icon = d.icon;
                             color = d.color;
