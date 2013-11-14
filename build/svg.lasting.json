@@ -12,5 +12,5 @@
         "../src/svg/types/pie.js",
         "../src/svg/ga.js"
     ],
-    "output":"svgchart.20131107"
+    "output":"svgchart.20131114"
 }
