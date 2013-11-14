@@ -241,13 +241,13 @@
     util.formatNum = function(cur,min,max){
         var res = cur;
         var i = parseInt((max-min)/2+min);
-        if(parseInt(i/1000000000) > 0){
+        if(i >= 1000000000){
             res = cur/1000000000+'B';
         }
-        else if(parseInt(i/1000000) > 0){
+        else if(i >= 1000000){
             res = cur/1000000+'M';
         }
-        else if(parseInt(i/1000) > 0){
+        else if(i >= 1000){
             res = cur/1000+'K';
         }
         return res;
