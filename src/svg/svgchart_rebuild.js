@@ -700,10 +700,18 @@
                         } else {
                             thisAxisOption.type = DISCRETE;
                         }
+
+                        thisAxisOption._txtClassName = 'vn-svg-x-txt';
                     }
 
                     if (coordinate.isY(axis) && axis !== DEFAULT_Y_AXIS) {
                         thisAxisOption.opposite = true;
+                    }
+
+                    if(coordinate.isY(axis)){
+                        thisAxisOption._txtClassName = 'vn-svg-y-txt';
+                    }else {
+                        thisAxisOption._txtClassName = 'vn-svg-x-txt';
                     }
 
                     thisAxisOption._svgWidth = this.options.width;
@@ -1396,6 +1404,7 @@
                     label = stage.text(reverse ? (beginX + model.totalWidth - length + distance) : (beginX + length - distance), beginY, text).attr({
                         'font-size':this.options.fontSize
                     });
+                    label.node.setAttribute('class',this.options._txtClassName );
                     view.labelElements.push(label);
                     bbox = label.getBBox();
                     var line = Math.sqrt(Math.pow(bbox.width, 2) + Math.pow(bbox.height, 2)),
@@ -1854,6 +1863,7 @@
             text = paper.text(_x + width + span, _y + lineHeight/ 2, names[i]).attr({
                 'font-size':opt.fontSize
             });
+            text.node.setAttribute('class', 'vn-svg-legend-txt');
 
             textWidth = text.getBBox().width;
             text.translate(textWidth / 2, 0);
@@ -1865,6 +1875,7 @@
                 'stroke-width':0,
                 'cursor':'pointer'
             });
+            item.node.setAttribute('class','vn-svg-legend-dot');
             itemSet.push(item);
             textSet.push(text);
             isVertical ? totalWidth.push(textWidth) : totalWidth += textWidth;
@@ -1891,6 +1902,7 @@
                 self.toFront();
             });
 
+        border.node.setAttribute('class','vn-svg-legend-rect');
 
         this.border = border;
         this.itemSet = itemSet;
@@ -2003,6 +2015,7 @@
             'font-size':opt.fontSize,
             'font-weight':opt.fontWeight
         });
+        text.node.setAttribute('class', 'vn-title');
 
         textWidth = text.getBBox().width;
         totalWidth = textWidth + padding * 2;
