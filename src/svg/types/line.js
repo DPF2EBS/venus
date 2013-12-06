@@ -49,6 +49,7 @@
                 areaOpacity:0.1,        //area opacity if area enabled
                 beginAnimate:false,     //enable begin animate or not
                 dotSelect:true,         //enable dots select or not
+                enableToolTip:true,
                 columnHover:false        //enable column hover or not
             }, opt.line),
             dotRadius = lineOpt.dotRadius,
@@ -83,7 +84,7 @@
                 return point;
             }
 
-            function activeDot(dot) {
+            function activeDot(dot,event) {
                 var icon = dot._iconObj,
                 point = dot.data('point');
                 if (dot._selected_ || dot.node.style.display==="none" || dot._active_) {
@@ -93,11 +94,13 @@
                 icon.animate({
                     width: lineOpt.dotRadius * 4
                 }, 100);
-                dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
+                var info = {
                     x:point.xTick,
                     y:point.yTick,
                     label:point.label
-                }));
+                };
+                lineOpt.enableToolTip && dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,info));
+                self.events.fire('dotActive',event,dot, info);
             }
             function inActiveDot(dot){
                 var icon = dot._iconObj,
@@ -110,6 +113,7 @@
                     width: dotRadius *2
                 }, 100);
                 dot.toolTipHide();
+                self.events.fire('dotInactive',dot);
             }
 
             /*
@@ -284,11 +288,11 @@
                             'stroke':'none'
                         }).hover(
                         //hover event which shows the toolTip and make the dot bigger
-                        function () {
-                            activeDot(this);
+                        function (e) {
+                            activeDot(this,e);
                         },
-                        function () {
-                            inActiveDot(this);
+                        function (e) {
+                            inActiveDot(this,e);
                         }).data('point', d);
 
                         dot._iconObj = icon;
@@ -445,7 +449,7 @@
                                     dot !== minDot && inActiveDot(dot);
                                 });
                             });
-                            minDot && activeDot(minDot);
+                            minDot && activeDot(minDot,e);
                         }else{
                             //active the latest column dots
                             minDot = [];
@@ -467,7 +471,7 @@
                                 });
                             });
                             minDot.forEach(function(dot){
-                                activeDot(dot);
+                                activeDot(dot,e);
                             });
                         }
                     }

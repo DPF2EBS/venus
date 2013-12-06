@@ -84,6 +84,9 @@
 
     }
     var bar = new Venus.SvgChart(container, _data, options);
+    bar.events.on('dotActive',function(){
+        console.log(arguments)
+    })
 </script>
 <script type="text/javascript">
     var container2 = document.getElementById('chart_container2'),
