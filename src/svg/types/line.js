@@ -97,7 +97,7 @@
                 }, 100);
                 dot.toolTip(raphael, icon.position().x, icon.position().y, self.options.tooltip.call(self,{
                     x:point.xValue,
-                    y:point.yValue,
+                    y:util.numberFormat(point.yValue),
                     label:point.label
                 }));
             }

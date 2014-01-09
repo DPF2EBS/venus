@@ -252,4 +252,43 @@
         }
         return res;
     }
+    
+
+    util.numberFormat = function(number, decimals, dec_point, thousands_sep) {
+        // Set the default values here, instead so we can use them in the replace below.
+        thousands_sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
+        dec_point = (typeof dec_point === 'undefined') ? '.' : dec_point;
+        
+        // Work out the unicode representation for the decimal place and thousand sep.        
+        var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
+        var u_sep = ('\\u'+('0000'+(thousands_sep.charCodeAt(0).toString(16))).slice(-4));
+        
+        // Fix the number, so that it's an actual number.
+        number = (number + '')
+                .replace('\.', dec_point) // because the number if passed in as a float (having . as decimal point per definition) we need to replace this with the passed in decimal point character
+                .replace(new RegExp(u_sep,'g'),'')
+                .replace(new RegExp(u_dec,'g'),'.')
+                .replace(new RegExp('[^0-9+\-Ee.]','g'),'');
+        
+        var n = !isFinite(+number) ? 0 : +number,
+            s = '',
+            toFixedFix = function (n, decimals) {
+                var k = Math.pow(10, decimals);
+                return '' + Math.round(n * k) / k;
+            };
+        
+        //smart to generate decimals if n is integer then decimals = 0 elif n has  one digit in the decimal then decimals = 1 else decimals = 2 
+        decimals = !isFinite(+decimals) ? (n === Math.round(n) ? 0 : (n*10 === Math.round(n*10) ? 1 : 2)) : Math.abs(decimals);
+            
+        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+        s = (decimals ? toFixedFix(n, decimals) : '' + Math.round(n)).split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, thousands_sep);
+        }
+        if ((s[1] || '').length < decimals) {
+            s[1] = s[1] || '';
+            s[1] += new Array(decimals - s[1].length + 1).join('0');
+        }
+        return s.join(dec_point);        
+    }
 })();
